@@ -2,8 +2,7 @@
 using System.Collections;
 
 public abstract class BaseStructure : MonoBehaviour, IRemovable {
-    public int maxHealth;
-
+    protected int maxHealth;
     protected int level;
     protected int health;
     

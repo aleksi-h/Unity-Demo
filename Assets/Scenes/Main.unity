@@ -194,6 +194,57 @@ MeshFilter:
   m_PrefabInternal: {fileID: 1915598832}
   m_GameObject: {fileID: 63626005}
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &119090609
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 119090611}
+  - 132: {fileID: 119090610}
+  m_Layer: 0
+  m_Name: Workers
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!132 &119090610
+GUIText:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 119090609}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Text: Workers
+  m_Anchor: 0
+  m_Alignment: 0
+  m_PixelOffset: {x: 0, y: -10}
+  m_LineSpacing: 1
+  m_TabSize: 4
+  m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+  m_Material: {fileID: 0}
+  m_FontSize: 0
+  m_FontStyle: 0
+  m_Color:
+    serializedVersion: 2
+    rgba: 4294967295
+  m_PixelCorrect: 1
+  m_RichText: 1
+--- !u!4 &119090611
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 119090609}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: .850000024, y: .939999998, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1751810789}
+  m_RootOrder: 3
 --- !u!1 &128331616
 GameObject:
   m_ObjectHideFlags: 0
@@ -2605,7 +2656,7 @@ GameObject:
   - 4: {fileID: 1019805691}
   - 132: {fileID: 1019805690}
   m_Layer: 0
-  m_Name: GUI Text
+  m_Name: Wood
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2622,7 +2673,7 @@ GUIText:
   m_Text: 'Wood '
   m_Anchor: 0
   m_Alignment: 0
-  m_PixelOffset: {x: 10, y: -10}
+  m_PixelOffset: {x: 0, y: -10}
   m_LineSpacing: 1
   m_TabSize: 4
   m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
@@ -3266,8 +3317,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   structures:
   - {fileID: 100000, guid: a2e179c9d9fd3be439e47665ed5feeb4, type: 2}
-  - {fileID: 100000, guid: e85fdbaa50482dd4e87969f0380c8b42, type: 2}
-  - {fileID: 100000, guid: 4c3fed082b6c02e4db5602384aff5af5, type: 2}
+  - {fileID: 100000, guid: a4d6be37b9dc3ce43a2825bbef21fec7, type: 2}
+  - {fileID: 100000, guid: 2ced9c8702fb53a4880d52b198aba80a, type: 2}
+  - {fileID: 100000, guid: 3cc432c6386547e4498888913adbde86, type: 2}
 --- !u!4 &1272204122
 Transform:
   m_ObjectHideFlags: 0
@@ -3798,6 +3850,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   woodCountDisplay: {fileID: 1019805690}
+  foodCountDisplay: {fileID: 1842998390}
+  workerCountDisplay: {fileID: 119090610}
 --- !u!4 &1485132596
 Transform:
   m_ObjectHideFlags: 0
@@ -4505,8 +4559,61 @@ Transform:
   m_Children:
   - {fileID: 1019805691}
   - {fileID: 859355908}
+  - {fileID: 1842998391}
+  - {fileID: 119090611}
   m_Father: {fileID: 0}
   m_RootOrder: 3
+--- !u!1 &1842998389
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 1842998391}
+  - 132: {fileID: 1842998390}
+  m_Layer: 0
+  m_Name: Food
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!132 &1842998390
+GUIText:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1842998389}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Text: Food
+  m_Anchor: 0
+  m_Alignment: 0
+  m_PixelOffset: {x: 0, y: -10}
+  m_LineSpacing: 1
+  m_TabSize: 4
+  m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+  m_Material: {fileID: 0}
+  m_FontSize: 0
+  m_FontStyle: 0
+  m_Color:
+    serializedVersion: 2
+    rgba: 4294967295
+  m_PixelCorrect: 1
+  m_RichText: 1
+--- !u!4 &1842998391
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1842998389}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: .850000024, y: .970000029, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1751810789}
+  m_RootOrder: 2
 --- !u!1001 &1893053634
 Prefab:
   m_ObjectHideFlags: 0

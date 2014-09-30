@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 /*
  * 
+ * TODO kirjota se vaiht eht. toteutus
  * */
 public class Grid : Singleton<Grid>
 {

@@ -8,31 +8,64 @@ using System.Collections;
 public class ResourceManager : Singleton<ResourceManager>
 {    
     public GUIText woodCountDisplay;
-    private long woodCount;
-    private long woodCapacity;
+    public GUIText foodCountDisplay;
+    public GUIText workerCountDisplay;
+    private int woodCount;
+    private int woodCapacity;
+    private int foodCount;
+    private int foodCapacity;
+    private int workerCount;
    
     void Start()
     {
         woodCapacity = 0;
-        woodCountDisplay.text = "Wood " + woodCount.ToString();
+        foodCapacity = 0;
+        updateGUITexts();
     }
 
-    public void AddWood(int addedWood)
+    public void AddWood(int amount)
     {
-        woodCount += addedWood;
+        woodCount += amount;
         if (woodCount > woodCapacity)
         {
             woodCount = woodCapacity;
         }
-        updateGUIText();
+        updateGUITexts();
     }
 
-    public void IncreaseCapacity(int addedCapacity)
+    public void AddFood(int amount)
+    {
+        foodCount += amount;
+        if (foodCount > foodCapacity)
+        {
+            foodCount = foodCapacity;
+        }
+        updateGUITexts();
+    }
+
+    public void AddWorkers(int amount)
+    {
+        workerCount += amount;
+        updateGUITexts();
+    }
+
+    public void RemoveWorkers(int amount)
+    {
+        workerCount -= amount;
+        updateGUITexts();
+    }
+
+    public void IncreaseWoodCapacity(int addedCapacity)
     {
         woodCapacity += addedCapacity;
     }
 
-    public void DecreaseCapacity(int removedCapacity)
+    public void IncreaseFoodCapacity(int addedCapacity)
+    {
+        foodCapacity += addedCapacity;
+    }
+
+    public void DecreaseWoodCapacity(int removedCapacity)
     {
         woodCapacity -= removedCapacity;
         if (woodCapacity < 0)
@@ -42,12 +75,28 @@ public class ResourceManager : Singleton<ResourceManager>
         if (woodCount > woodCapacity)
         {
             woodCount = woodCapacity;
-            updateGUIText();
+            updateGUITexts();
         }
     }
 
-    private void updateGUIText()
+    public void DecreaseFoodCapacity(int removedCapacity)
+    {
+        foodCapacity -= removedCapacity;
+        if (foodCapacity < 0)
+        {
+            foodCapacity = 0;
+        }
+        if (foodCount > foodCapacity)
+        {
+            foodCount = foodCapacity;
+            updateGUITexts();
+        }
+    }
+
+    private void updateGUITexts()
     {
         woodCountDisplay.text = "Wood " + woodCount.ToString();
+        foodCountDisplay.text = "Food " + foodCount.ToString();
+        workerCountDisplay.text = "Workers " + workerCount.ToString();
     }
 }

@@ -10,8 +10,9 @@ public class GUIManager : Singleton<GUIManager>
     public Transform GridRoot;
 
     private bool btnStorageVisible = true;
-    private bool btnTowerVisible = true;
     private bool btnSawmillVisible = true;
+    private bool btnHutVisible = true;
+    private bool btnFieldVisible = true;
     private bool btnCancelVisible = false;
     private bool btnDeleteVisible = false;
     private bool btnMoveVisible = false;
@@ -35,20 +36,29 @@ public class GUIManager : Singleton<GUIManager>
             }
         }
 
-        if (btnTowerVisible)
+        if (btnSawmillVisible)
         {
-            if (GUI.Button(new Rect(20, 90, 80, 40), "Tower"))
+            if (GUI.Button(new Rect(20, 90, 80, 40), "Sawmill"))
             {
                 GameManager.Instance.BuildStructure(1);
                 ShowPlacementGUI();
             }
         }
 
-        if (btnSawmillVisible)
+        if (btnHutVisible)
         {
-            if (GUI.Button(new Rect(20, 140, 80, 40), "Sawmill"))
+            if (GUI.Button(new Rect(20, 140, 80, 40), "Hut"))
             {
                 GameManager.Instance.BuildStructure(2);
+                ShowPlacementGUI();
+            }
+        }
+
+        if (btnFieldVisible)
+        {
+            if (GUI.Button(new Rect(20, 190, 80, 40), "Field"))
+            {
+                GameManager.Instance.BuildStructure(3);
                 ShowPlacementGUI();
             }
         }
@@ -115,8 +125,9 @@ public class GUIManager : Singleton<GUIManager>
         HideAllGUIElements();
 
         btnStorageVisible = true;
-        btnTowerVisible = true;
         btnSawmillVisible = true;
+        btnHutVisible = true;
+        btnFieldVisible = true;
     }
 
     public void ShowStructureGUI()
@@ -143,8 +154,9 @@ public class GUIManager : Singleton<GUIManager>
         HidePlacementGrid();
         Grid.Instance.HideHighlight();
         btnStorageVisible = false;
-        btnTowerVisible = false;
         btnSawmillVisible = false;
+        btnHutVisible = false;
+        btnFieldVisible = false;
         btnCancelVisible = false;
         btnDeleteVisible = false;
         btnMoveVisible = false; 

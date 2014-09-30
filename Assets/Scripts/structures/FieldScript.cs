@@ -1,9 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class SawmillScript : ProducerStructure {
+public class FieldScript : ProducerStructure {
 
-	protected override void Start () {
+    protected override void Start()
+    {
         base.Start();
         productionInterval = 1.0f;
         productionRate = 10;
@@ -12,7 +13,7 @@ public class SawmillScript : ProducerStructure {
         health = maxHealth;
 
         InvokeRepeating("ProduceResources", 0, productionInterval);
-	}
+    }
 
     protected override void Update()
     {
@@ -26,6 +27,6 @@ public class SawmillScript : ProducerStructure {
 
     protected override void ProduceResources()
     {
-        ResourceManager.Instance.AddWood(productionRate);
+        ResourceManager.Instance.AddFood(productionRate);
     }
 }
