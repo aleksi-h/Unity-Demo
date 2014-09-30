@@ -96,6 +96,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 347d7002e9908ec4380bfbc57bf5563d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  costInWood: 300
+  costInFood: 0
+  productionInterval: 1
+  productionRate: 10
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1

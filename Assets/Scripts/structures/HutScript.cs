@@ -23,4 +23,12 @@ public class HutScript : BaseStructure {
         ResourceManager.Instance.RemoveWorkers(workersAccomodated);
         Destroy(this.gameObject);
     }
+
+    public override void Upgrade()
+    {
+    }
+
+    public override void Damage(int amount)
+    {
+    }
 }

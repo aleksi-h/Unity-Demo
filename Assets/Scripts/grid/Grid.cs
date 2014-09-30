@@ -4,7 +4,9 @@ using System.Collections.Generic;
 
 /*
  * 
- * TODO kirjota se vaiht eht. toteutus
+ * NOTE: If the List<Node> implementation turns out to be too slow because of all the iteration, 
+ * it can be replaced by a simple Node[ , , ] array, 
+ * where indices are accessed by [posX/interval, posY/interval, posZ/interval]
  * */
 public class Grid : Singleton<Grid>
 {
@@ -53,14 +55,15 @@ public class Grid : Singleton<Grid>
 
     public void HighLightFreeNodes()
     {
-        Vector3 offset1 = new Vector3(2, 0, 2);
-        Vector3 offset2 = new Vector3(-2, 0, 2);
-        Material whiteDiffuseMat = new Material(Shader.Find("Unlit/Texture"));
+        Vector3 offset1 = new Vector3(1.9f, 0, 1.9f);
+        Vector3 offset2 = new Vector3(-1.9f, 0, 1.9f);
+        //Material whiteDiffuseMat = new Material(Shader.Find("Unlit/Texture"));
 
         //create a shitload of objects to draw a square around each free node
         foreach (Node node in nodes)
         {
-            Vector3 elevatedNodePosition = new Vector3(node.position.x, node.position.y+0.1f, node.position.z);
+            if (node.occupied) { continue; }
+            Vector3 elevatedNodePosition = new Vector3(node.position.x, node.position.y + 0.1f, node.position.z);
             GameObject obj = new GameObject();
             obj.transform.parent = transform;
             LineRenderer line = obj.AddComponent<LineRenderer>();
@@ -96,6 +99,9 @@ public class Grid : Singleton<Grid>
 
     public Vector3 GetNearestFreeNode(float x, float y, float z)
     {
+        //this method only accepts ground level positions
+        if (y != 0) { return new Vector3(x, y, z); }
+
         //round the position to match node positions
         int nearestX = (int)Mathf.Round(x / 5) * nodeInterval;
         int nearestZ = (int)Mathf.Round(z / 5) * nodeInterval;

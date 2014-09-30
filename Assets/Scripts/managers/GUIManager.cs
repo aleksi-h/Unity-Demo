@@ -31,8 +31,7 @@ public class GUIManager : Singleton<GUIManager>
         {
             if (GUI.Button(new Rect(20, 40, 80, 40), "Storage"))
             {
-                GameManager.Instance.BuildStructure(0);
-                ShowPlacementGUI();
+                BuildingManager.instance.BuildStructure(BuildingManager.instance.storage);
             }
         }
 
@@ -40,8 +39,7 @@ public class GUIManager : Singleton<GUIManager>
         {
             if (GUI.Button(new Rect(20, 90, 80, 40), "Sawmill"))
             {
-                GameManager.Instance.BuildStructure(1);
-                ShowPlacementGUI();
+                BuildingManager.instance.BuildStructure(BuildingManager.instance.sawmill);
             }
         }
 
@@ -49,8 +47,7 @@ public class GUIManager : Singleton<GUIManager>
         {
             if (GUI.Button(new Rect(20, 140, 80, 40), "Hut"))
             {
-                GameManager.Instance.BuildStructure(2);
-                ShowPlacementGUI();
+                BuildingManager.instance.BuildStructure(BuildingManager.instance.hut);
             }
         }
 
@@ -58,8 +55,7 @@ public class GUIManager : Singleton<GUIManager>
         {
             if (GUI.Button(new Rect(20, 190, 80, 40), "Field"))
             {
-                GameManager.Instance.BuildStructure(3);
-                ShowPlacementGUI();
+                BuildingManager.instance.BuildStructure(BuildingManager.instance.field);
             }
         }
 
@@ -75,7 +71,7 @@ public class GUIManager : Singleton<GUIManager>
         {
             if (GUI.Button(new Rect(20, 90, 80, 40), "Delete"))
             {
-                GameManager.Instance.DeleteStructure();
+                BuildingManager.Instance.DeleteStructure();
             }
         }
 
@@ -83,7 +79,7 @@ public class GUIManager : Singleton<GUIManager>
         {
             if (GUI.Button(new Rect(20, 140, 80, 40), "Move"))
             {
-                GameManager.Instance.MoveStructure();
+                BuildingManager.Instance.MoveStructure();
             }
         }
 
@@ -91,35 +87,12 @@ public class GUIManager : Singleton<GUIManager>
         {
             if (GUI.Button(new Rect(20, 40, 80, 40), "Confirm"))
             {
-                GameManager.Instance.ConfirmBuild();
+                BuildingManager.Instance.ConfirmBuild();
             }
         }
     }
 
-    private void ShowPlacementGrid()
-    {
-        if (!placementGridVisible)
-        {
-            foreach (Transform square in GridRoot)
-            {
-                //square.gameObject.renderer.enabled = true;
-            }
-            placementGridVisible = true;
-        }
-    }
-
-    private void HidePlacementGrid()
-    {
-        if (placementGridVisible)
-        {
-            foreach (Transform square in GridRoot)
-            {
-                square.gameObject.renderer.enabled = false;
-            }
-            placementGridVisible = false;
-        }
-    }
-
+    
     public void ShowDefaultGUI()
     {
         HideAllGUIElements();
@@ -142,7 +115,6 @@ public class GUIManager : Singleton<GUIManager>
     public void ShowPlacementGUI()
     {
         HideAllGUIElements();
-        ShowPlacementGrid();
 
         //btnCancelVisible = true;
         btnConfirmVisible = true;
@@ -151,7 +123,6 @@ public class GUIManager : Singleton<GUIManager>
 
     private void HideAllGUIElements()
     {
-        HidePlacementGrid();
         Grid.Instance.HideHighlight();
         btnStorageVisible = false;
         btnSawmillVisible = false;

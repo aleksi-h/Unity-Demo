@@ -6,7 +6,7 @@ using System.Collections;
  * 
  */
 public class ResourceManager : Singleton<ResourceManager>
-{    
+{
     public GUIText woodCountDisplay;
     public GUIText foodCountDisplay;
     public GUIText workerCountDisplay;
@@ -16,10 +16,13 @@ public class ResourceManager : Singleton<ResourceManager>
     private int foodCapacity;
     private int workerCount;
    
-    void Start()
+    public override void Awake()
     {
-        woodCapacity = 0;
-        foodCapacity = 0;
+        base.Awake();
+        woodCapacity = 500;
+        foodCapacity = 500;
+        woodCount = 500;
+        foodCount = 500;
         updateGUITexts();
     }
 
@@ -33,12 +36,32 @@ public class ResourceManager : Singleton<ResourceManager>
         updateGUITexts();
     }
 
+    public void RemoveWood(int amount)
+    {
+        woodCount -= amount;
+        if (woodCount < 0)
+        {
+            woodCount = 0;
+        }
+        updateGUITexts();
+    }
+
     public void AddFood(int amount)
     {
         foodCount += amount;
         if (foodCount > foodCapacity)
         {
             foodCount = foodCapacity;
+        }
+        updateGUITexts();
+    }
+
+    public void RemoveFood(int amount)
+    {
+        foodCount -= amount;
+        if (foodCount < 0)
+        {
+            foodCount = 0;
         }
         updateGUITexts();
     }
@@ -91,6 +114,11 @@ public class ResourceManager : Singleton<ResourceManager>
             foodCount = foodCapacity;
             updateGUITexts();
         }
+    }
+
+    public bool CanAfford(int wood, int food)
+    {
+        return (woodCount >= wood && foodCount >= food);
     }
 
     private void updateGUITexts()

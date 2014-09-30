@@ -30,4 +30,12 @@ public class StorageScript : BaseStructure
         ResourceManager.Instance.DecreaseFoodCapacity(foodCapacity);
         Destroy(this.gameObject);
     }
+
+    public override void Upgrade()
+    {
+    }
+
+    public override void Damage(int amount)
+    {
+    }
 }

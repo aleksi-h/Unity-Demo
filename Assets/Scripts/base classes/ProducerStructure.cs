@@ -2,12 +2,13 @@
 using System.Collections;
 
 public abstract class ProducerStructure : BaseStructure {
-    protected float productionInterval; //how often
-    protected int productionRate; //how much
+    public float productionInterval; //how often
+    public int productionRate; //how much
 
     protected override void Start()
     {
        base.Start();
+       InvokeRepeating("ProduceResources", 0, productionInterval);
     }
 
     protected virtual void ProduceResources()

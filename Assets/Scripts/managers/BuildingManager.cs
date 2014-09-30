@@ -1,11 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class GameManager : Singleton<GameManager>
+public class BuildingManager : Singleton<BuildingManager>
 {
-    public GameObject[] structures;
+    public GameObject hut;
+    public GameObject storage;
+    public GameObject sawmill;
+    public GameObject field;
 
-    private LayerMask placementLayerMask = 1 << 9;
     private LayerMask structureLayerMask = 1 << 10;
     private LayerMask groundLayerMask = 1 << 11;
 
@@ -15,13 +17,12 @@ public class GameManager : Singleton<GameManager>
     private bool structureSelected;
     private int structureIndex;
     private GameObject selectedStructure;
-    private GameObject selectedSquare;
 
     void Start()
     {
         state = State.Idle;
     }
-
+     
     void Update()
     {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -34,13 +35,6 @@ public class GameManager : Singleton<GameManager>
                         if (Physics.Raycast(ray, out hit, 1100, structureLayerMask))
                         {
                             selectedStructure = hit.collider.gameObject;
-                            /*
-                            Vector3 down = transform.TransformDirection(Vector3.down);
-                            Vector3 position = selectedStructure.transform.position;
-                            Vector3 elevatedPosition = new Vector3(position.x, position.y + 1, position.z);
-                            if (Physics.Raycast(elevatedPosition, down, out hit, 10, placementLayerMask))
-                            {selectedSquare = hit.collider.gameObject;}
-                             */
                             structureSelected = true;
                             GUIManager.Instance.ShowStructureGUI();
                         }
@@ -61,12 +55,18 @@ public class GameManager : Singleton<GameManager>
         }
     }
 
-    public void BuildStructure(int index)
+    public void BuildStructure(GameObject structure)
     {
-        Vector3 pos = new Vector3(0, 0, 0);
-        selectedStructure = (GameObject)Instantiate(structures[index], pos, Quaternion.identity);
-        state = State.Moving;
-        GUIManager.Instance.ShowPlacementGUI();
+        BaseStructure building = structure.GetComponent<BaseStructure>();
+        if (ResourceManager.Instance.CanAfford(building.costInWood, building.costInFood))
+        {
+            ResourceManager.Instance.RemoveWood(building.costInWood);
+            ResourceManager.Instance.RemoveFood(building.costInFood);
+            Vector3 pos = new Vector3(0, 0, 0);
+            selectedStructure = (GameObject)Instantiate(structure, pos, Quaternion.identity);
+            state = State.Moving;
+            GUIManager.Instance.ShowPlacementGUI();
+        }
     }
 
     public void RemoveSelection()
