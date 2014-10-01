@@ -5,9 +5,15 @@ public abstract class BaseStructure : MonoBehaviour, IRemovable, IUpgradeable, I
     public int costInWood;
     public int costInFood;
 
+    protected StructureType type;
     protected int maxHealth;
     protected int level;
     protected int health;
+
+    public StructureType Type
+    {
+        get { return type; }
+    }
 
     protected virtual void Awake()
     {

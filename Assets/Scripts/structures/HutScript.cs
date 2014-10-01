@@ -4,12 +4,13 @@ using System.Collections;
 public class HutScript : BaseStructure {
     private int workersAccomodated = 2;
 
-    protected override void Start()
+    protected override void Awake()
     {
-        base.Start();
+        base.Awake();
         level = 1;
         maxHealth = 1000;
         health = maxHealth;
+        type = StructureType.hut;
         ResourceManager.Instance.AddWorkers(workersAccomodated);
     }
 

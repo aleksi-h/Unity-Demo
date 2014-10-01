@@ -9,6 +9,7 @@ public class SawmillScript : ProducerStructure {
         level = 1;
         maxHealth = 1000;
         health = maxHealth;
+        type = StructureType.sawmill;
     }
 
 	protected override void Start () {

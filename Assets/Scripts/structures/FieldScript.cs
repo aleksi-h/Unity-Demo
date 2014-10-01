@@ -3,12 +3,13 @@ using System.Collections;
 
 public class FieldScript : ProducerStructure {
 
-    protected override void Start()
+    protected override void Awake()
     {
-        base.Start();
+        base.Awake();
         level = 1;
         maxHealth = 1000;
         health = maxHealth;
+        type = StructureType.field;
     }
 
     protected override void Update()
@@ -27,7 +28,8 @@ public class FieldScript : ProducerStructure {
 
     public override void Damage(int amount)
     {
-    }
+    }
+
     protected override void ProduceResources()
     {
         ResourceManager.Instance.AddFood(productionRate);

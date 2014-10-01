@@ -2,7 +2,7 @@
 using System.Collections;
 
 /*
- * A singleton Resource manager that persists between scenes 
+ * Singleton Resource manager that persists between scenes 
  * 
  */
 public class ResourceManager : Singleton<ResourceManager>
@@ -10,6 +10,10 @@ public class ResourceManager : Singleton<ResourceManager>
     public GUIText woodCountDisplay;
     public GUIText foodCountDisplay;
     public GUIText workerCountDisplay;
+    public int initialWoodCapacity;
+    public int initialFoodCapacity;
+    public int initialWoodCount;
+    public int initialFoodCount;
     private int woodCount;
     private int woodCapacity;
     private int foodCount;
@@ -19,10 +23,10 @@ public class ResourceManager : Singleton<ResourceManager>
     public override void Awake()
     {
         base.Awake();
-        woodCapacity = 500;
-        foodCapacity = 500;
-        woodCount = 500;
-        foodCount = 500;
+        woodCapacity = initialWoodCapacity;
+        foodCapacity = initialFoodCapacity;
+        woodCount = initialWoodCount;
+        foodCount = initialFoodCount;
         updateGUITexts();
     }
 

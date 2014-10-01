@@ -112,13 +112,12 @@ public class GUIManager : Singleton<GUIManager>
         btnMoveVisible = true;
     }
 
-    public void ShowPlacementGUI()
+    public void ShowPlacementGUI(StructureType type)
     {
         HideAllGUIElements();
 
-        //btnCancelVisible = true;
         btnConfirmVisible = true;
-        Grid.Instance.HighLightFreeNodes();
+        Grid.Instance.HighLightValidNodes(type);
     }
 
     private void HideAllGUIElements()

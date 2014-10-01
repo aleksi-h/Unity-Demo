@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 /*
+ * This singleton represents a dynamic 3D Grid. It's instantiated as a flat 2D grid, which then expands upward as buildings are added.
  * 
  * NOTE: If the List<Node> implementation turns out to be too slow because of all the iteration, 
  * it can be replaced by a simple Node[ , , ] array, 
@@ -12,22 +13,25 @@ public class Grid : Singleton<Grid>
 {
     public Material material;
 
-    private List<Node> nodes;
-    private List<GameObject> highlightLines;
-
     //width & depth in nodes
     public int gridLengthX;
     public int gridLengthZ;
+
+    public int nodeInterval;
+
+    private List<Node> nodes;
+    private List<GameObject> highlightLines;
 
     private int borderXLower;
     private int borderXUpper;
     private int borderZLower;
     private int borderZUpper;
-    
-    private int nodeInterval = 5;
 
-    void Start()
+    private Dictionary<StructureType, List<StructureType>> stackOrder = new Dictionary<StructureType, List<StructureType>>();
+
+    public override void Awake()
     {
+        base.Awake();
         //calculate borders so that the center node is at the center of the grid
         int gridCenterX = (int)transform.position.x;
         int gridCenterZ = (int)transform.position.z;
@@ -51,18 +55,29 @@ public class Grid : Singleton<Grid>
                 nodes.Add(node);
             }
         }
+
+        //define what can be built on what
+        // key/value => structure/structures that can be built on it
+        stackOrder.Add(StructureType.hut, new List<StructureType> { StructureType.hut, StructureType.field });
+        stackOrder.Add(StructureType.storage, new List<StructureType> { StructureType.hut, StructureType.field });
+        stackOrder.Add(StructureType.sawmill, new List<StructureType> { StructureType.field });
+        stackOrder.Add(StructureType.field, new List<StructureType>());
     }
 
-    public void HighLightFreeNodes()
+    //draws a highlight-square around nodes that are valid build positions for the specified structure type
+    public void HighLightValidNodes(StructureType type)
     {
-        Vector3 offset1 = new Vector3(1.9f, 0, 1.9f);
-        Vector3 offset2 = new Vector3(-1.9f, 0, 1.9f);
+        float radius = nodeInterval / 2.5f;
+        Vector3 offset1 = new Vector3(radius, 0, radius);
+        Vector3 offset2 = new Vector3(-radius, 0, radius);
         //Material whiteDiffuseMat = new Material(Shader.Find("Unlit/Texture"));
 
-        //create a shitload of objects to draw a square around each free node
+        //create a shitload of objects to draw a square around each free node (might need a better solution than LineRenderer)
         foreach (Node node in nodes)
         {
             if (node.occupied) { continue; }
+            if (node.nextNodeDown != null && !IsNodeCompatible(node.nextNodeDown, type)) { continue; }
+
             Vector3 elevatedNodePosition = new Vector3(node.position.x, node.position.y + 0.1f, node.position.z);
             GameObject obj = new GameObject();
             obj.transform.parent = transform;
@@ -75,7 +90,6 @@ public class Grid : Singleton<Grid>
             Vector3 corner2 = elevatedNodePosition - offset2;
             Vector3 corner3 = elevatedNodePosition + offset1;
             Vector3 corner4 = elevatedNodePosition + offset2;
-
             line.SetPosition(0, corner1);
             line.SetPosition(1, corner2);
             line.SetPosition(2, corner3);
@@ -97,30 +111,74 @@ public class Grid : Singleton<Grid>
         }
     }
 
-    public Vector3 GetNearestFreeNode(float x, float y, float z)
+    //returns the newPos rounded to nearest valid node location. 
+    //if the nearest location is invalid for this structure type, returns currentPos
+    public Vector3 GetNearestValidNode(Vector3 currentPos, Vector3 newPos, StructureType type)
     {
-        //this method only accepts ground level positions
-        if (y != 0) { return new Vector3(x, y, z); }
+        //round the position to nearest node position
+        int nearestX = (int)Mathf.Round(newPos.x / nodeInterval) * nodeInterval;
+        int nearestZ = (int)Mathf.Round(newPos.z / nodeInterval) * nodeInterval;
+        int y = 0; //only considering ground level positions here
 
-        //round the position to match node positions
-        int nearestX = (int)Mathf.Round(x / 5) * nodeInterval;
-        int nearestZ = (int)Mathf.Round(z / 5) * nodeInterval;
-
-        //restrict buildings movement inside the grid
+        //cehck if the position is outside grid boundaries
         if (nearestX < borderXLower) { nearestX = borderXLower; }
         if (nearestX > borderXUpper) { nearestX = borderXUpper; }
         if (nearestZ < borderZLower) { nearestZ = borderZLower; }
         if (nearestZ > borderZUpper) { nearestZ = borderZUpper; }
 
-        Vector3 pos = new Vector3(nearestX, y, nearestZ);
-        if (IsNodeOccupied(pos))
+        Vector3 newPosition = new Vector3(nearestX, y, nearestZ);
+
+        if (!IsNodeOccupied(newPosition)) { return newPosition; }
+        else 
         {
-            return GetTopOfStack(pos);
+            Node topNode = GetTopmostStructure(newPosition);
+            if (IsNodeCompatible(topNode, type))
+            {
+                return GetTopmostStructure(newPosition).nextNodeUp.position;
+            }
+            else { return currentPos; }
         }
-        else
+    }
+
+    //adds a building to the node
+    public void BuildToNode(Vector3 pos, StructureType type)
+    {
+        Node node = getNodeByPosition(pos);
+        if (node != null)
         {
-            return pos;
+            node.occupied = true;
+            node.structureType = type;
         }
+        if (node.nextNodeDown != null)
+        {
+            node.nextNodeDown.nextNodeUp = node;
+        }
+
+        //add a free node on top of the building
+        Node newNode = new Node(new Vector3(pos.x, pos.y + nodeInterval, pos.z), false);
+        newNode.nextNodeDown = node;
+        node.nextNodeUp = newNode;
+        AddNode(newNode);
+    }
+
+    //removes any building from the node
+    public void RemoveFromNode(Vector3 pos)
+    {
+        Node node = getNodeByPosition(pos);
+        if (node != null)
+        {
+            node.occupied = false;
+            RemoveNode(node.nextNodeUp);
+        }
+    }
+
+    //only the topmost building is movable/removable
+    public bool IsBuildingMoveable(Vector3 pos)
+    {
+        Node node = getNodeByPosition(pos);
+        if (node.nextNodeUp == null) { return false; }
+        if (node.nextNodeUp.occupied) { return false; }
+        return true;
     }
 
     private bool IsNodeOccupied(Vector3 pos)
@@ -134,49 +192,30 @@ public class Grid : Singleton<Grid>
         return false;
     }
 
-    private Vector3 GetTopOfStack(Vector3 pos)
+    //decides if "newStructure" can be built in "node", based on the rules written in "stackOrder" dictionary
+    private bool IsNodeCompatible(Node node, StructureType newStructure)
     {
-        foreach (Node node in nodes)
+        StructureType lowerStructure = node.structureType;
+        List<StructureType> compatibleStructures;
+        stackOrder.TryGetValue(lowerStructure, out compatibleStructures);
+        if (compatibleStructures.Contains(newStructure))
         {
-            if (node.position.x == pos.x && node.position.z == pos.z && !node.occupied)
-            {
-                return node.position;
-            }
+            return true;
         }
-        Debug.LogError("No free node on top of the building");
-        return new Vector3(0, 0, 0);
+        else { return false; }
     }
 
-    public void BuildToNode(Vector3 pos)
-    {
-        Node node = getNodeByPosition(pos);
-        Node nextNodeDown = getNodeByPosition(new Vector3(pos.x, pos.y - nodeInterval, pos.z));
-
-        if (node != null)
-        {
-            node.occupied = true;
-        }
-        if (nextNodeDown != null)
-        {
-            nextNodeDown.nextNodeUp = node;
-        }
-
-        //add a free node on top of the building
-        Node newNode = new Node(new Vector3(pos.x, pos.y + nodeInterval, pos.z), false);
-        node.nextNodeUp = newNode;
-        AddNode(newNode);
-    }
-
-    public void RemoveFromNode(Vector3 pos)
+    //returns the highest occupied node
+    private Node GetTopmostStructure(Vector3 pos)
     {
         Node node = getNodeByPosition(pos);
-        if (node != null)
+        while (node.nextNodeUp.occupied)
         {
-            node.occupied = false;
-            RemoveNode(node.nextNodeUp);
+            node = node.nextNodeUp;
         }
+        return node;
     }
-
+    
     private Node getNodeByPosition(Vector3 pos)
     {
         foreach (Node node in nodes)
@@ -187,14 +226,6 @@ public class Grid : Singleton<Grid>
             }
         }
         return null;
-    }
-
-    public bool IsBuildingTopMost(Vector3 pos)
-    {
-        Node node = getNodeByPosition(pos);
-        if (node.nextNodeUp == null) { return false; }
-        if (node.nextNodeUp.occupied) { return false; }
-        return true;
     }
 
     private void AddNode(Node node)

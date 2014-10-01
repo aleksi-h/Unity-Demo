@@ -3,18 +3,16 @@ using System.Collections;
 
 public class StorageScript : BaseStructure
 {
-    private int woodCapacity;
-    private int foodCapacity;
+    private int woodCapacity = 500;
+    private int foodCapacity = 500;
 
-    protected override void Start()
+    protected override void Awake()
     {
-        base.Start();
-        woodCapacity = 500;
-        foodCapacity = 500;
+        base.Awake();
         level = 1;
         maxHealth = 1000;
         health = maxHealth;
-
+        type = StructureType.storage;
         ResourceManager.Instance.IncreaseWoodCapacity(woodCapacity);
         ResourceManager.Instance.IncreaseFoodCapacity(foodCapacity);
     }

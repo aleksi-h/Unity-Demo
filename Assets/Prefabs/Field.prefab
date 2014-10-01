@@ -96,7 +96,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a34fdc405ecfac24f83279efc463f8e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  costInWood: 200
+  costInWood: 100
   costInFood: 0
   productionInterval: 1
   productionRate: 10
