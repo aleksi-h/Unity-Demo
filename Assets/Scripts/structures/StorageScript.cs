@@ -3,8 +3,7 @@ using System.Collections;
 
 public class StorageScript : BaseStructure
 {
-    private int woodCapacity = 500;
-    private int foodCapacity = 500;
+    public Resource capacity;
 
     protected override void Awake()
     {
@@ -13,8 +12,7 @@ public class StorageScript : BaseStructure
         maxHealth = 1000;
         health = maxHealth;
         type = StructureType.storage;
-        ResourceManager.Instance.IncreaseWoodCapacity(woodCapacity);
-        ResourceManager.Instance.IncreaseFoodCapacity(foodCapacity);
+        ResourceManager.Instance.IncreaseResourceCapacity(capacity);
     }
 
     protected override void Update()
@@ -24,8 +22,7 @@ public class StorageScript : BaseStructure
 
     public override void Remove()
     {
-        ResourceManager.Instance.DecreaseWoodCapacity(woodCapacity);
-        ResourceManager.Instance.DecreaseFoodCapacity(foodCapacity);
+        ResourceManager.Instance.DecreaseResourceCapacity(capacity);
         Destroy(this.gameObject);
     }
 

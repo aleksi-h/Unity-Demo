@@ -3,7 +3,7 @@ using System.Collections;
 
 public abstract class ProducerStructure : BaseStructure {
     public float productionInterval; //how often
-    public int productionRate; //how much
+    public Resource producedPerInterval; //how much
 
     protected override void Start()
     {

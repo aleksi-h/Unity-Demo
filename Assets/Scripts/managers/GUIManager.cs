@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
 
 /*
  * A singleton GUI manager that persists between scenes
@@ -16,8 +16,13 @@ public class GUIManager : Singleton<GUIManager>
     private bool btnCancelVisible = false;
     private bool btnDeleteVisible = false;
     private bool btnMoveVisible = false;
+    private bool btnUpgradeVisible = false;
     private bool btnConfirmVisible = false;
-    private bool placementGridVisible;
+
+    public override void Awake()
+    {
+        base.Awake();
+    }
     
     void Start()
     {
@@ -83,6 +88,14 @@ public class GUIManager : Singleton<GUIManager>
             }
         }
 
+        if (btnUpgradeVisible)
+        {
+            if (GUI.Button(new Rect(20, 190, 80, 40), "Upgrade"))
+            {
+                BuildingManager.Instance.UpgradeStructure();
+            }
+        }
+
         if (btnConfirmVisible)
         {
             if (GUI.Button(new Rect(20, 40, 80, 40), "Confirm"))
@@ -92,7 +105,6 @@ public class GUIManager : Singleton<GUIManager>
         }
     }
 
-    
     public void ShowDefaultGUI()
     {
         HideAllGUIElements();
@@ -110,6 +122,7 @@ public class GUIManager : Singleton<GUIManager>
         btnCancelVisible = true;
         btnDeleteVisible = true;
         btnMoveVisible = true;
+        btnUpgradeVisible = true;
     }
 
     public void ShowPlacementGUI(StructureType type)
@@ -129,7 +142,8 @@ public class GUIManager : Singleton<GUIManager>
         btnFieldVisible = false;
         btnCancelVisible = false;
         btnDeleteVisible = false;
-        btnMoveVisible = false; 
+        btnMoveVisible = false;
+        btnUpgradeVisible = false;
         btnConfirmVisible = false;
     }
 }

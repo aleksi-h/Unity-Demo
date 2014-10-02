@@ -655,10 +655,12 @@ MonoBehaviour:
   woodCountDisplay: {fileID: 1019805690}
   foodCountDisplay: {fileID: 1842998390}
   workerCountDisplay: {fileID: 119090610}
-  initialWoodCapacity: 1000
-  initialFoodCapacity: 1000
-  initialWoodCount: 1000
-  initialFoodCount: 1000
+  initialResourceCapacity:
+    wood: 5000
+    food: 5000
+  initialResourceCount:
+    wood: 5000
+    food: 5000
 --- !u!4 &1485132596
 Transform:
   m_ObjectHideFlags: 0

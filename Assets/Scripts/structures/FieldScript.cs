@@ -1,7 +1,32 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class FieldScript : ProducerStructure {
+public class FieldScript : ProducerStructure, IUpgradeable {
+
+    #region IUpgradeable
+    public Resource upgradeCost;
+    public Resource UpgradeCost
+    {
+        get { return upgradeCost; }
+    }
+
+    public int upgradeDuration;
+    public int UpgradeDuration
+    {
+        get { return upgradeDuration; }
+    }
+
+    public GameObject nextLevelPrefab;
+    public GameObject NextLevelPrefab
+    {
+        get { return nextLevelPrefab; }
+    }
+
+    public override void Upgrade()
+    {
+        CancelInvoke("ProduceResources");
+    }
+    #endregion
 
     protected override void Awake()
     {
@@ -22,16 +47,12 @@ public class FieldScript : ProducerStructure {
         Destroy(this.gameObject);
     }
 
-    public override void Upgrade()
-    {
-    }
-
     public override void Damage(int amount)
     {
     }
 
     protected override void ProduceResources()
     {
-        ResourceManager.Instance.AddFood(productionRate);
+        ResourceManager.Instance.AddResources(producedPerInterval);
     }
 }

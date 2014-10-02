@@ -14,7 +14,7 @@ GameObject:
   - 65: {fileID: 6500000}
   - 114: {fileID: 11400000}
   m_Layer: 10
-  m_Name: Sawmill
+  m_Name: FieldLvl2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -27,7 +27,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 100000}
   m_LocalRotation: {x: -5.96046448e-08, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.98023224e-08, y: -.5, z: 2.98023224e-08}
+  m_LocalPosition: {x: -1.49011612e-08, y: -.100000001, z: 0}
   m_LocalScale: {x: 4, y: 5, z: 4}
   m_Children: []
   m_Father: {fileID: 0}
@@ -44,7 +44,7 @@ Renderer:
   m_LightmapIndex: 255
   m_LightmapTilingOffset: {x: 1, y: 1, z: 0, w: 0}
   m_Materials:
-  - {fileID: 2100000, guid: 3bfff4feb5553af468f93ecf1b1114de, type: 2}
+  - {fileID: 2100000, guid: 0a1ec436dcaac0e429e51da775ca3581, type: 2}
   m_SubsetIndices: 
   m_StaticBatchRoot: {fileID: 0}
   m_UseLightProbes: 0
@@ -58,7 +58,7 @@ MeshFilter:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 100000}
-  m_Mesh: {fileID: 4300002, guid: b904122bf9736904eba87fa72457584b, type: 3}
+  m_Mesh: {fileID: 4300000, guid: 0997731f9e03ee84b8dcdf78373f5ca4, type: 3}
 --- !u!65 &6500000
 BoxCollider:
   m_ObjectHideFlags: 1
@@ -69,8 +69,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1.20000005, y: 1, z: 1.20000005}
-  m_Center: {x: 0, y: .5, z: 0}
+  m_Size: {x: 1, y: .200000003, z: 1}
+  m_Center: {x: 0, y: .100000001, z: 0}
 --- !u!95 &9500000
 Animator:
   serializedVersion: 3
@@ -79,7 +79,7 @@ Animator:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 100000}
   m_Enabled: 1
-  m_Avatar: {fileID: 9000000, guid: b904122bf9736904eba87fa72457584b, type: 3}
+  m_Avatar: {fileID: 9000000, guid: 0997731f9e03ee84b8dcdf78373f5ca4, type: 3}
   m_Controller: {fileID: 0}
   m_CullingMode: 0
   m_UpdateMode: 0
@@ -93,13 +93,21 @@ MonoBehaviour:
   m_GameObject: {fileID: 100000}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 347d7002e9908ec4380bfbc57bf5563d, type: 3}
+  m_Script: {fileID: 11500000, guid: a34fdc405ecfac24f83279efc463f8e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  costInWood: 300
-  costInFood: 0
+  cost:
+    wood: 0
+    food: 0
   productionInterval: 1
-  productionRate: 10
+  producedPerInterval:
+    wood: 0
+    food: 50
+  upgradeCost:
+    wood: 0
+    food: 0
+  upgradeDuration: 0
+  nextLevelPrefab: {fileID: 0}
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1

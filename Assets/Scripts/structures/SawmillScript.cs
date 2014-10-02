@@ -1,7 +1,33 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class SawmillScript : ProducerStructure {
+public class SawmillScript : ProducerStructure, IUpgradeable
+{
+
+    #region IUpgradeable
+    public Resource upgradeCost;
+    public Resource UpgradeCost
+    {
+        get { return upgradeCost; }
+    }
+
+    public int upgradeDuration;
+    public int UpgradeDuration
+    {
+        get { return upgradeDuration; }
+    }
+
+    public GameObject nextLevelPrefab;
+    public GameObject NextLevelPrefab
+    {
+        get { return nextLevelPrefab; }
+    }
+
+    public override void Upgrade()
+    {
+        CancelInvoke("ProduceResources");
+    }
+    #endregion
 
     protected override void Awake()
     {
@@ -28,11 +54,7 @@ public class SawmillScript : ProducerStructure {
 
     protected override void ProduceResources()
     {
-        ResourceManager.Instance.AddWood(productionRate);
-    }
-
-    public override void Upgrade()
-    {
+        ResourceManager.Instance.AddResources(producedPerInterval);
     }
 
     public override void Damage(int amount)

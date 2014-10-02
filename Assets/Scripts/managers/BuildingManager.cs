@@ -57,10 +57,9 @@ public class BuildingManager : Singleton<BuildingManager>
     public void BuildStructure(GameObject obj)
     {
         BaseStructure structure = obj.GetComponent<BaseStructure>();
-        if (ResourceManager.Instance.CanAfford(structure.costInWood, structure.costInFood))
+        if (ResourceManager.Instance.CanAfford(structure.cost))
         {
-            ResourceManager.Instance.RemoveWood(structure.costInWood);
-            ResourceManager.Instance.RemoveFood(structure.costInFood);
+            ResourceManager.Instance.RemoveResources(structure.cost);
             Vector3 pos = new Vector3(0, 0, 0);
             selectedStructure = (GameObject)Instantiate(obj, pos, Quaternion.identity);
             selectedType = selectedStructure.GetComponent<BaseStructure>().Type;
@@ -105,5 +104,24 @@ public class BuildingManager : Singleton<BuildingManager>
         Grid.Instance.BuildToNode(selectedStructure.transform.position, selectedType);
         state = State.Idle;
         GUIManager.Instance.ShowDefaultGUI();
+    }
+
+    public void UpgradeStructure()
+    {
+        IUpgradeable upgradeable = selectedStructure.GetInterface<IUpgradeable>();
+        if (upgradeable != null)
+        {
+            Resource upgradeCost = upgradeable.UpgradeCost;
+            if (ResourceManager.Instance.CanAfford(upgradeCost) && upgradeable.NextLevelPrefab != null)
+            {
+                ResourceManager.Instance.RemoveResources(upgradeCost);
+                int duration = upgradeable.UpgradeDuration;
+                GameObject nextLevelPrefab = upgradeable.NextLevelPrefab;
+                Builder builder = gameObject.AddComponent<Builder>();
+                builder.UpgradeStructure(selectedStructure, duration, nextLevelPrefab);
+                upgradeable.Upgrade();
+                GUIManager.Instance.ShowDefaultGUI();
+            }
+        }
     }
 }

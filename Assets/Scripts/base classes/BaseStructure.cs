@@ -1,15 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public abstract class BaseStructure : MonoBehaviour, IRemovable, IUpgradeable, IDamageable {
-    public int costInWood;
-    public int costInFood;
-
-    protected StructureType type;
+public abstract class BaseStructure : MonoBehaviour, IRemovable, IDamageable {
+    public Resource cost;
+    
     protected int maxHealth;
     protected int level;
     protected int health;
-
+    protected StructureType type;
     public StructureType Type
     {
         get { return type; }
