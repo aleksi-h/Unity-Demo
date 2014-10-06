@@ -99,6 +99,7 @@ MonoBehaviour:
   cost:
     wood: 100
     food: 100
+  buildTime: 5
   productionInterval: 1
   producedPerInterval:
     wood: 0

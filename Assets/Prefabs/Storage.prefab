@@ -99,6 +99,7 @@ MonoBehaviour:
   cost:
     wood: 300
     food: 0
+  buildTime: 5
   capacity:
     wood: 500
     food: 500

@@ -1,31 +1,39 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class SawmillScript : ProducerStructure, IUpgradeable
+public class SawmillScript : BaseStructure, IUpgradeable, IProducer
 {
 
     #region IUpgradeable
-    public Resource upgradeCost;
-    public Resource UpgradeCost
-    {
-        get { return upgradeCost; }
-    }
-
-    public int upgradeDuration;
-    public int UpgradeDuration
-    {
-        get { return upgradeDuration; }
-    }
-
     public GameObject nextLevelPrefab;
     public GameObject NextLevelPrefab
     {
+
         get { return nextLevelPrefab; }
     }
 
-    public void Upgrade()
+    public void PrepareForUpgrade()
     {
         CancelInvoke("ProduceResources");
+    }
+    #endregion
+
+    #region IProducer
+    public float productionInterval;
+    public float ProductionInterval
+    {
+        get { return productionInterval; }
+    }
+
+    public Resource producedPerInterval;
+    public Resource ProducedPerInterval
+    {
+        get { return producedPerInterval; }
+    }
+
+    public void ProduceResources()
+    {
+        ResourceManager.Instance.AddResources(producedPerInterval);
     }
     #endregion
 
@@ -48,15 +56,14 @@ public class SawmillScript : ProducerStructure, IUpgradeable
         base.Update();
     }
 
+    public override void Activate()
+    {
+        InvokeRepeating("ProduceResources", 0, productionInterval);
+    }
+
     public override void Remove()
     {
         Destroy(this.gameObject);
-    }
-
-    protected override void ProduceResources()
-    {
-        base.ProduceResources();
-        ResourceManager.Instance.AddResources(producedPerInterval);
     }
 
     public override void Damage(int amount)

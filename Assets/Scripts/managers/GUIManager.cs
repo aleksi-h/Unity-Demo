@@ -100,7 +100,7 @@ public class GUIManager : Singleton<GUIManager>
         {
             if (GUI.Button(new Rect(20, 40, 80, 40), "Confirm"))
             {
-                BuildingManager.Instance.ConfirmBuild();
+                BuildingManager.Instance.ConfirmPosition();
             }
         }
     }

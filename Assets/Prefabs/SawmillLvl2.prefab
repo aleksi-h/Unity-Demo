@@ -97,17 +97,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cost:
-    wood: 0
+    wood: 2000
     food: 0
+  buildTime: 5
+  nextLevelPrefab: {fileID: 0}
   productionInterval: 1
   producedPerInterval:
     wood: 50
     food: 0
-  upgradeCost:
-    wood: 3000
-    food: 0
-  upgradeDuration: 60
-  nextLevelPrefab: {fileID: 0}
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1

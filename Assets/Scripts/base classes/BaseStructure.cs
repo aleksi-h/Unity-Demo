@@ -3,6 +3,7 @@ using System.Collections;
 
 public abstract class BaseStructure : MonoBehaviour, IRemovable, IDamageable {
     public Resource cost;
+    public int buildTime;
     
     protected int maxHealth;
     protected int level;
@@ -24,6 +25,8 @@ public abstract class BaseStructure : MonoBehaviour, IRemovable, IDamageable {
 	protected virtual void Update ()
     {
 	}
+
+    public abstract void Activate();
 
     public abstract void Remove();
 

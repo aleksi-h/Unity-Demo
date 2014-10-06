@@ -99,6 +99,7 @@ MonoBehaviour:
   cost:
     wood: 200
     food: 0
+  buildTime: 5
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1

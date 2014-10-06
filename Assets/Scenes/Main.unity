@@ -187,7 +187,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 591753913}
-  m_LocalRotation: {x: .408217937, y: -.234569728, z: .109381661, w: .875426114}
+  m_LocalRotation: {x: -.408217907, y: .234569788, z: -.109381691, w: -.875426054}
   m_LocalPosition: {x: .0940485001, y: .963891029, z: -.605566025}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
@@ -208,7 +208,7 @@ Light:
   m_SpotAngle: 30
   m_CookieSize: 10
   m_Shadows:
-    m_Type: 1
+    m_Type: 0
     m_Resolution: -1
     m_Strength: 1
     m_Bias: .0500000007
@@ -470,7 +470,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1105666115}
-  m_LocalRotation: {x: .0593911819, y: .925416589, z: .336824089, w: -.163175941}
+  m_LocalRotation: {x: -.0593911968, y: -.925416589, z: -.336824179, w: .163175941}
   m_LocalPosition: {x: .0940485001, y: .963891029, z: -.605566025}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
@@ -507,6 +507,7 @@ MonoBehaviour:
   storage: {fileID: 100000, guid: a2e179c9d9fd3be439e47665ed5feeb4, type: 2}
   sawmill: {fileID: 100000, guid: a4d6be37b9dc3ce43a2825bbef21fec7, type: 2}
   field: {fileID: 100000, guid: 3cc432c6386547e4498888913adbde86, type: 2}
+  builder: {fileID: 100000, guid: f98ff08ed2c24d14da12561321337949, type: 2}
 --- !u!4 &1272204122
 Transform:
   m_ObjectHideFlags: 0
@@ -661,6 +662,7 @@ MonoBehaviour:
   initialResourceCount:
     wood: 5000
     food: 5000
+  initialWorkerCount: 4
 --- !u!4 &1485132596
 Transform:
   m_ObjectHideFlags: 0
@@ -832,7 +834,8 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 89.9235687, y: 4.38303423, z: -.516254425}
   m_LocalScale: {x: 4, y: 4, z: 1}
-  m_Children: []
+  m_Children:
+  - {fileID: 2061348815}
   m_Father: {fileID: 0}
   m_RootOrder: 7
 --- !u!114 &1893971353
@@ -885,8 +888,8 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 2061348813}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: -22.4808922, y: -1.09575856, z: .516254425}
+  m_LocalScale: {x: .25, y: .25, z: 1}
   m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 8
+  m_Father: {fileID: 1893971352}
+  m_RootOrder: 0

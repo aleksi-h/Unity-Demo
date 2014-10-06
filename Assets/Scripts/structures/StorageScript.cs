@@ -12,12 +12,21 @@ public class StorageScript : BaseStructure
         maxHealth = 1000;
         health = maxHealth;
         type = StructureType.storage;
-        ResourceManager.Instance.IncreaseResourceCapacity(capacity);
     }
 
     protected override void Update()
     {
         base.Update();
+    }
+
+    protected override void Start()
+    {
+        base.Start();
+    }
+
+    public override void Activate()
+    {
+        ResourceManager.Instance.IncreaseResourceCapacity(capacity);
     }
 
     public override void Remove()

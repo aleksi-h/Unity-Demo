@@ -7,15 +7,18 @@ public class BuildingManager : Singleton<BuildingManager>
     public GameObject storage;
     public GameObject sawmill;
     public GameObject field;
+    public GameObject builder;
 
     private LayerMask structureLayerMask = 1 << 10;
     private LayerMask groundLayerMask = 1 << 11;
 
     private bool moving;
+    private bool building;
     private bool structureSelected;
     private int structureIndex;
     private GameObject selectedStructure;
     private StructureType selectedType;
+    private GameObject currentBuilder;
 
     void Start()
     {
@@ -48,7 +51,7 @@ public class BuildingManager : Singleton<BuildingManager>
             //to make testing easier on a pc
             if (Input.GetMouseButtonDown(1))
             {
-                ConfirmBuild();
+                ConfirmPosition();
             }
         }
     }
@@ -63,6 +66,7 @@ public class BuildingManager : Singleton<BuildingManager>
             selectedStructure = (GameObject)Instantiate(obj, pos, Quaternion.identity);
             selectedType = selectedStructure.GetComponent<BaseStructure>().Type;
             moving = true;
+            building = true;
             GUIManager.Instance.ShowPlacementGUI(selectedType);
         }
     }
@@ -98,27 +102,35 @@ public class BuildingManager : Singleton<BuildingManager>
         }
     }
 
-    public void ConfirmBuild()
+    public void ConfirmPosition()
     {
-        Grid.Instance.BuildToNode(selectedStructure.transform.position, selectedType);
         moving = false;
+        Grid.Instance.BuildToNode(selectedStructure.transform.position, selectedType);
+        if (building)
+        {
+            currentBuilder = (GameObject)Instantiate(builder, selectedStructure.transform.position, Quaternion.identity);
+            int duration = selectedStructure.GetComponent<BaseStructure>().buildTime;
+            currentBuilder.GetComponent<Builder>().BuildStructure(selectedStructure, duration);
+            building = false;
+        }
         GUIManager.Instance.ShowDefaultGUI();
     }
 
     public void UpgradeStructure()
     {
         IUpgradeable upgradeable = selectedStructure.GetInterface<IUpgradeable>();
-        if (upgradeable != null)
+        if (upgradeable != null && upgradeable.NextLevelPrefab != null)
         {
-            Resource upgradeCost = upgradeable.UpgradeCost;
-            if (ResourceManager.Instance.CanAfford(upgradeCost) && upgradeable.NextLevelPrefab != null)
+            BaseStructure nextLevel = upgradeable.NextLevelPrefab.GetComponent<BaseStructure>();           
+            Resource upgradeCost = nextLevel.cost;
+            if (ResourceManager.Instance.CanAfford(upgradeCost))
             {
                 ResourceManager.Instance.RemoveResources(upgradeCost);
-                int duration = upgradeable.UpgradeDuration;
+                int duration = nextLevel.buildTime;
                 GameObject nextLevelPrefab = upgradeable.NextLevelPrefab;
-                Builder builder = gameObject.AddComponent<Builder>();
-                builder.UpgradeStructure(selectedStructure, duration, nextLevelPrefab);
-                upgradeable.Upgrade();
+                upgradeable.PrepareForUpgrade();
+                currentBuilder = (GameObject)Instantiate(builder, selectedStructure.transform.position, Quaternion.identity);
+                currentBuilder.GetComponent<Builder>().UpgradeStructure(selectedStructure, duration, nextLevelPrefab);
                 GUIManager.Instance.ShowDefaultGUI();
             }
         }

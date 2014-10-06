@@ -12,6 +12,7 @@ public class ResourceManager : Singleton<ResourceManager>
     public GUIText workerCountDisplay;
     public Resource initialResourceCapacity;
     public Resource initialResourceCount;
+    public int initialWorkerCount;
     private Resource resourceCount;
     private Resource resourceCapacity;
     private int workerCount;
@@ -21,6 +22,7 @@ public class ResourceManager : Singleton<ResourceManager>
         base.Awake();
         resourceCapacity = initialResourceCapacity;
         resourceCount = initialResourceCount;
+        workerCount = initialWorkerCount;
         updateGUITexts();
     }
 

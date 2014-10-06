@@ -11,12 +11,16 @@ public class HutScript : BaseStructure {
         maxHealth = 1000;
         health = maxHealth;
         type = StructureType.hut;
-        ResourceManager.Instance.AddWorkers(workersAccomodated);
     }
 
     protected override void Update()
     {
         base.Update();
+    }
+
+    public override void Activate()
+    {
+        ResourceManager.Instance.AddWorkers(workersAccomodated);
     }
 
     public override void Remove()

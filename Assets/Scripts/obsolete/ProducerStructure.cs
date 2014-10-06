@@ -8,7 +8,7 @@ public abstract class ProducerStructure : BaseStructure {
     protected override void Start()
     {
        base.Start();
-       InvokeRepeating("ProduceResources", 0, productionInterval);
+       //InvokeRepeating("ProduceResources", 0, productionInterval);
     }
 
     protected virtual void ProduceResources()
