@@ -13,6 +13,6 @@ public abstract class ProducerStructure : BaseStructure {
 
     protected virtual void ProduceResources()
     {
-
+        
     }
 }

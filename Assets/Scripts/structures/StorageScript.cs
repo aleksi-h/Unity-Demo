@@ -26,10 +26,6 @@ public class StorageScript : BaseStructure
         Destroy(this.gameObject);
     }
 
-    public override void Upgrade()
-    {
-    }
-
     public override void Damage(int amount)
     {
     }

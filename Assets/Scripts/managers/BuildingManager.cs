@@ -11,9 +11,7 @@ public class BuildingManager : Singleton<BuildingManager>
     private LayerMask structureLayerMask = 1 << 10;
     private LayerMask groundLayerMask = 1 << 11;
 
-    private enum State { Idle, Moving }
-    private State state;
-
+    private bool moving;
     private bool structureSelected;
     private int structureIndex;
     private GameObject selectedStructure;
@@ -21,15 +19,14 @@ public class BuildingManager : Singleton<BuildingManager>
 
     void Start()
     {
-        state = State.Idle;
     }
 
     void Update()
     {
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        RaycastHit hit;
-        if (state == State.Idle && Input.GetMouseButtonDown(0))
+        if (!moving && Input.GetMouseButtonDown(0))
         {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
             if (Physics.Raycast(ray, out hit, 1100, structureLayerMask))
             {
                 selectedStructure = hit.collider.gameObject;
@@ -38,8 +35,10 @@ public class BuildingManager : Singleton<BuildingManager>
                 GUIManager.Instance.ShowStructureGUI();
             }
         }
-        if (state == State.Moving)
+        if (moving)
         {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
             if (Physics.Raycast(ray, out hit, 1100, groundLayerMask))
             {
                 Vector3 currentPosition = selectedStructure.transform.position;
@@ -63,14 +62,14 @@ public class BuildingManager : Singleton<BuildingManager>
             Vector3 pos = new Vector3(0, 0, 0);
             selectedStructure = (GameObject)Instantiate(obj, pos, Quaternion.identity);
             selectedType = selectedStructure.GetComponent<BaseStructure>().Type;
-            state = State.Moving;
+            moving = true;
             GUIManager.Instance.ShowPlacementGUI(selectedType);
         }
     }
 
     public void RemoveSelection()
     {
-        state = State.Idle;
+        moving = false;
         structureSelected = false;
     }
 
@@ -94,7 +93,7 @@ public class BuildingManager : Singleton<BuildingManager>
         if (Grid.Instance.IsBuildingMoveable(selectedStructure.transform.position))
         {
             Grid.Instance.RemoveFromNode(selectedStructure.transform.position);
-            state = State.Moving;
+            moving = true;
             GUIManager.Instance.ShowPlacementGUI(selectedType);
         }
     }
@@ -102,7 +101,7 @@ public class BuildingManager : Singleton<BuildingManager>
     public void ConfirmBuild()
     {
         Grid.Instance.BuildToNode(selectedStructure.transform.position, selectedType);
-        state = State.Idle;
+        moving = false;
         GUIManager.Instance.ShowDefaultGUI();
     }
 

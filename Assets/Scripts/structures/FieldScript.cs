@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class FieldScript : ProducerStructure, IUpgradeable {
+public class FieldScript : ProducerStructure, IUpgradeable 
+{
 
     #region IUpgradeable
     public Resource upgradeCost;
@@ -22,7 +23,7 @@ public class FieldScript : ProducerStructure, IUpgradeable {
         get { return nextLevelPrefab; }
     }
 
-    public override void Upgrade()
+    public void Upgrade()
     {
         CancelInvoke("ProduceResources");
     }
@@ -53,6 +54,7 @@ public class FieldScript : ProducerStructure, IUpgradeable {
 
     protected override void ProduceResources()
     {
+        base.ProduceResources();
         ResourceManager.Instance.AddResources(producedPerInterval);
     }
 }

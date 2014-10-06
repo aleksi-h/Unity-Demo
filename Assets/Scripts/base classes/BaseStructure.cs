@@ -27,7 +27,5 @@ public abstract class BaseStructure : MonoBehaviour, IRemovable, IDamageable {
 
     public abstract void Remove();
 
-    public abstract void Upgrade();
-
     public abstract void Damage(int amount);
 }

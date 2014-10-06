@@ -23,7 +23,7 @@ public class SawmillScript : ProducerStructure, IUpgradeable
         get { return nextLevelPrefab; }
     }
 
-    public override void Upgrade()
+    public void Upgrade()
     {
         CancelInvoke("ProduceResources");
     }
@@ -38,7 +38,8 @@ public class SawmillScript : ProducerStructure, IUpgradeable
         type = StructureType.sawmill;
     }
 
-	protected override void Start () {
+	protected override void Start () 
+    {
         base.Start();
 	}
 
@@ -54,6 +55,7 @@ public class SawmillScript : ProducerStructure, IUpgradeable
 
     protected override void ProduceResources()
     {
+        base.ProduceResources();
         ResourceManager.Instance.AddResources(producedPerInterval);
     }
 
