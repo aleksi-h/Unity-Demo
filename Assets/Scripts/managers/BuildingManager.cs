@@ -20,24 +20,8 @@ public class BuildingManager : Singleton<BuildingManager>
     private StructureType selectedType;
     private GameObject currentBuilder;
 
-    void Start()
-    {
-    }
-
     void Update()
     {
-        if (!moving && Input.GetMouseButtonDown(0))
-        {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
-            if (Physics.Raycast(ray, out hit, 1100, structureLayerMask))
-            {
-                selectedStructure = hit.collider.gameObject;
-                selectedType = selectedStructure.GetComponent<BaseStructure>().Type;
-                structureSelected = true;
-                GUIManager.Instance.ShowStructureGUI();
-            }
-        }
         if (moving)
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -48,10 +32,28 @@ public class BuildingManager : Singleton<BuildingManager>
                 selectedStructure.transform.position = Grid.Instance.GetNearestValidNode(currentPosition, hit.point, selectedType);
             }
 
+#if UNITY_EDITOR
             //to make testing easier on a pc
             if (Input.GetMouseButtonDown(1))
             {
                 ConfirmPosition();
+            }
+#endif
+        }
+    }
+
+    public void OnClick()
+    {
+        if (!moving)
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
+            if (Physics.Raycast(ray, out hit, 1100, structureLayerMask))
+            {
+                selectedStructure = hit.collider.gameObject;
+                selectedType = selectedStructure.GetComponent<BaseStructure>().Type;
+                structureSelected = true;
+                GUIManager.Instance.ShowStructureGUI();
             }
         }
     }

@@ -20,7 +20,6 @@ public class Grid : Singleton<Grid>
     public int nodeInterval;
 
     private List<Node> nodes;
-    private List<GameObject> highlightLines;
 
     private int borderXLower;
     private int borderXUpper;
@@ -32,6 +31,7 @@ public class Grid : Singleton<Grid>
     public override void Awake()
     {
         base.Awake();
+
         //calculate borders so that the center node is at the center of the grid
         int gridCenterX = (int)transform.position.x;
         int gridCenterZ = (int)transform.position.z;
@@ -45,7 +45,6 @@ public class Grid : Singleton<Grid>
         if (gridLengthZ % 2 == 0) { borderZUpper -= 1 * nodeInterval; }
 
         //initialize the grid by creating the first layer of nodes
-        highlightLines = new List<GameObject>();
         nodes = new List<Node>();
         for (int i = borderXLower; i <= borderXUpper; i+=nodeInterval)
         {
@@ -67,47 +66,20 @@ public class Grid : Singleton<Grid>
     //draws a highlight-square around nodes that are valid build positions for the specified structure type
     public void HighLightValidNodes(StructureType type)
     {
-        float radius = nodeInterval / 2.5f;
-        Vector3 offset1 = new Vector3(radius, 0, radius);
-        Vector3 offset2 = new Vector3(-radius, 0, radius);
-        //Material whiteDiffuseMat = new Material(Shader.Find("Unlit/Texture"));
-
-        //create a shitload of objects to draw a square around each free node (might need a better solution than LineRenderer)
         foreach (Node node in nodes)
         {
             if (node.occupied) { continue; }
             if (node.nextNodeDown != null && !IsNodeCompatible(node.nextNodeDown, type)) { continue; }
 
-            Vector3 elevatedNodePosition = new Vector3(node.position.x, node.position.y + 0.1f, node.position.z);
-            GameObject obj = new GameObject();
-            obj.transform.parent = transform;
-            LineRenderer line = obj.AddComponent<LineRenderer>();
-            line.material = material;
-            line.SetWidth(0.2F, 0.2F);
-            line.SetVertexCount(5);
-
-            Vector3 corner1 = elevatedNodePosition - offset1;
-            Vector3 corner2 = elevatedNodePosition - offset2;
-            Vector3 corner3 = elevatedNodePosition + offset1;
-            Vector3 corner4 = elevatedNodePosition + offset2;
-            line.SetPosition(0, corner1);
-            line.SetPosition(1, corner2);
-            line.SetPosition(2, corner3);
-            line.SetPosition(3, corner4);
-            line.SetPosition(4, corner1);
-            highlightLines.Add(obj);
+            node.HighLight();
         }
     }
-
+    
     public void HideHighlight()
     {
-        if (highlightLines!=null)
+        foreach (Node node in nodes)
         {
-            while (highlightLines.Count > 0)
-            {
-                Destroy(highlightLines[0]);
-                highlightLines.RemoveAt(0);
-            }
+            node.HideHighLight();
         }
     }
 
