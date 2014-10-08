@@ -13,7 +13,13 @@ public class FieldScript : BaseStructure, IUpgradeable, IProducer
 
     public void PrepareForUpgrade()
     {
+        structureActive = false;
         CancelInvoke("ProduceResources");
+    }
+
+    public bool UpgradeAllowed()
+    {
+        return structureActive;
     }
     #endregion
 
@@ -52,12 +58,18 @@ public class FieldScript : BaseStructure, IUpgradeable, IProducer
 
     public override void Activate()
     {
+        base.Activate();
         InvokeRepeating("ProduceResources", 0, productionInterval);
     }
 
     public override void Remove()
     {
         Destroy(this.gameObject);
+    }
+
+    public override bool RemovalAllowed()
+    {
+        return structureActive;
     }
 
     public override void Damage(int amount)

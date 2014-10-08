@@ -13,7 +13,7 @@ public class BuildingManager : Singleton<BuildingManager>
     private LayerMask groundLayerMask = 1 << 11;
 
     private bool moving;
-    private bool building;
+    private bool newStructure;
     private bool structureSelected;
     private int structureIndex;
     private GameObject selectedStructure;
@@ -68,7 +68,7 @@ public class BuildingManager : Singleton<BuildingManager>
             selectedStructure = (GameObject)Instantiate(obj, pos, Quaternion.identity);
             selectedType = selectedStructure.GetComponent<BaseStructure>().Type;
             moving = true;
-            building = true;
+            newStructure = true;
             GUIManager.Instance.ShowPlacementGUI(selectedType);
         }
     }
@@ -84,7 +84,7 @@ public class BuildingManager : Singleton<BuildingManager>
         if (structureSelected && Grid.Instance.IsBuildingMoveable(selectedStructure.transform.position))
         {
             IRemovable removable = selectedStructure.GetInterface<IRemovable>();
-            if (removable != null)
+            if (removable != null && removable.RemovalAllowed())
             {
                 removable.Remove();
                 Grid.Instance.RemoveFromNode(selectedStructure.transform.position);
@@ -108,12 +108,12 @@ public class BuildingManager : Singleton<BuildingManager>
     {
         moving = false;
         Grid.Instance.BuildToNode(selectedStructure.transform.position, selectedType);
-        if (building)
+        if (newStructure)
         {
             currentBuilder = (GameObject)Instantiate(builder, selectedStructure.transform.position, Quaternion.identity);
             int duration = selectedStructure.GetComponent<BaseStructure>().buildTime;
             currentBuilder.GetComponent<Builder>().BuildStructure(selectedStructure, duration);
-            building = false;
+            newStructure = false;
         }
         GUIManager.Instance.ShowDefaultGUI();
     }
@@ -121,7 +121,7 @@ public class BuildingManager : Singleton<BuildingManager>
     public void UpgradeStructure()
     {
         IUpgradeable upgradeable = selectedStructure.GetInterface<IUpgradeable>();
-        if (upgradeable != null && upgradeable.NextLevelPrefab != null)
+        if (upgradeable != null && upgradeable.UpgradeAllowed() && upgradeable.NextLevelPrefab != null)
         {
             BaseStructure nextLevel = upgradeable.NextLevelPrefab.GetComponent<BaseStructure>();           
             Resource upgradeCost = nextLevel.cost;

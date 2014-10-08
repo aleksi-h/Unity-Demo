@@ -10,4 +10,5 @@ public interface IUpgradeable
     }
 
     void PrepareForUpgrade();
+    bool UpgradeAllowed();
 }

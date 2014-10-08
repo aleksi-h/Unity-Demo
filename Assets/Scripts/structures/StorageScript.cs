@@ -26,6 +26,7 @@ public class StorageScript : BaseStructure
 
     public override void Activate()
     {
+        base.Activate();
         ResourceManager.Instance.IncreaseResourceCapacity(capacity);
     }
 
@@ -33,6 +34,11 @@ public class StorageScript : BaseStructure
     {
         ResourceManager.Instance.DecreaseResourceCapacity(capacity);
         Destroy(this.gameObject);
+    }
+
+    public override bool RemovalAllowed()
+    {
+        return structureActive;
     }
 
     public override void Damage(int amount)

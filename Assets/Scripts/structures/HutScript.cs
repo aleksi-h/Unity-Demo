@@ -20,6 +20,7 @@ public class HutScript : BaseStructure {
 
     public override void Activate()
     {
+        base.Activate();
         ResourceManager.Instance.AddWorkers(workersAccomodated);
     }
 
@@ -27,6 +28,11 @@ public class HutScript : BaseStructure {
     {
         ResourceManager.Instance.RemoveWorkers(workersAccomodated);
         Destroy(this.gameObject);
+    }
+
+    public override bool RemovalAllowed()
+    {
+        return structureActive;
     }
 
     public override void Damage(int amount)
