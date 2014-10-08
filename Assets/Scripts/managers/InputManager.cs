@@ -6,6 +6,8 @@ public class InputManager : Singleton<InputManager> {
     public Camera camera;
     public float speed;
 
+    //TODO use events to send touches?
+
     void Update()
     {
 
