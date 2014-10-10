@@ -1,124 +1,62 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class InputManager : Singleton<InputManager> {
-    
-    public Camera mainCamera;
-    public float speed;
-    public float additionalBorderPadding; //to restrict camera from moving too close to borders
+public class InputManager : Singleton<InputManager>
+{
+    public delegate void TapEvent(Vector3 tapPos);
+    public static event TapEvent OnTap;
 
-    public GUIText camPosDisplay;
+    public delegate void DragEvent(Touch t);
+    public static event DragEvent OnDrag;
 
-    private Transform cameraTransform;
-    private float cameraPointDistance; //ground distance between camera transform and the point in ground at which the camera is pointing
-    private GameObject cameraPointSimulator;
-    private Transform cameraPoint;
-    Vector3 correctedPosition;
+    public delegate void RotateEvent(Touch t1, Touch t2);
+    public static event RotateEvent OnRotate;
 
-    //TODO use events to send touches?
-
-    public override void Awake()
-    {
-        cameraPointSimulator = new GameObject();
-        cameraPoint = cameraPointSimulator.transform;
-        cameraTransform = mainCamera.transform;
-
-        //calculate cameraPointDistance: A = B*sin(a) / sin(b) (a & b = angles, A & B = sides)
-        float cameraAngle = 90 - cameraTransform.eulerAngles.x;
-        float cameraHeight = cameraTransform.position.y;
-        cameraPointDistance = (cameraHeight * Mathf.Sin(Mathf.Deg2Rad * cameraAngle)) / (Mathf.Sin(Mathf.Deg2Rad * (180 - (90 + cameraAngle))));
-        cameraPointDistance += additionalBorderPadding;
-    }
+    private bool idle;
 
     void Update()
     {
-
-        //**********************ROTATE**********************
+        //rotate
         if (Input.touchCount == 2)
         {
-            Touch finger1;
-            Touch finger2;
-
-            //finger1 is always on the left, to keep turn direction constant, regardless of which finger touched the screen first
-            if (Input.GetTouch(0).position.x < Input.GetTouch(1).position.x)
+            idle = false;
+            if (OnRotate != null)
             {
-                finger1 = Input.GetTouch(0);
-                finger2 = Input.GetTouch(1);
-            }
-            else
-            {
-                finger1 = Input.GetTouch(1);
-                finger2 = Input.GetTouch(0);
-            }
-
-            if (finger1.phase == TouchPhase.Moved || finger2.phase == TouchPhase.Moved)
-            {
-                float finger1DistanceMoved = finger1.deltaPosition.y;
-                float finger2DistanceMoved = -finger2.deltaPosition.y;
-                float combinedDistanceMoved = finger1DistanceMoved + finger2DistanceMoved;
-
-                float originalX = cameraTransform.eulerAngles.x;
-                float originalZ = cameraTransform.eulerAngles.z;
-                cameraTransform.Rotate(new Vector3(-originalX, 0, -originalZ)); //set X and Z to 0 to isolate rotation to Y-axis
-                cameraTransform.Rotate(new Vector3(0, combinedDistanceMoved, 0)); //apply rotation to Y-axis
-                cameraTransform.Rotate(new Vector3(originalX, 0, originalZ)); //reapply X and Z rotations
-
-                ApplyCorrections();
+                OnRotate(Input.GetTouch(0), Input.GetTouch(1));
             }
         }
-
-        //**********************PAN**********************
+        //drag
         else if (Input.touchCount == 1 && Input.GetTouch(0).phase == TouchPhase.Moved)
         {
-            float moveDistanceX = Input.GetTouch(0).deltaPosition.x * -speed;
-            float moveDistanceZ = Input.GetTouch(0).deltaPosition.y * -speed;
-            //cameraTransform.Translate(-touchDeltaPosition.x * speed, -touchDeltaPosition.y * speed, 0);
-
-            float originalX = cameraTransform.eulerAngles.x;
-            float originalZ = cameraTransform.eulerAngles.z;
-            cameraTransform.Rotate(new Vector3(-originalX, 0, -originalZ)); //remove X and Z rotation from the camera to retain it's height when moved
-            cameraTransform.Translate(moveDistanceX, 0, moveDistanceZ); //move the camera
-            cameraTransform.Rotate(new Vector3(originalX, 0, originalZ)); //reapply X and Z rotations
-
-            ApplyCorrections();
+            idle = false;
+            if (OnDrag != null)
+            {
+                OnDrag(Input.GetTouch(0));
+            }
         }
-
-        //**********************TAP**********************
-        else if (Input.touchCount == 1)
+        //tap
+        else if (Input.touchCount == 1 && idle)
         {
-             BuildingManager.Instance.OnClick();
+            if (Input.GetTouch(0).phase == TouchPhase.Ended && Input.GetTouch(0).tapCount == 1)
+            {
+                if (OnTap != null)
+                {
+                    Touch t = Input.GetTouch(0);
+                    OnTap(new Vector3(t.position.x, t.position.y, 0));
+                }
+            }
         }
 #if UNITY_EDITOR
         else if (Input.GetMouseButtonDown(0))
         {
-            BuildingManager.Instance.OnClick();
+            if (OnTap != null)
+            {
+                //OnTap(Input.mousePosition);
+            }
         }
 #endif
 
-        camPosDisplay.text = "Cam Pos: " + cameraTransform.position + " Cam rot: "+cameraTransform.eulerAngles;
-    }
-
-
-    //apply corrections to camera position to restrict movement inside playable area
-    private void ApplyCorrections()
-    {
-        correctedPosition = cameraTransform.position;
-        if (correctedPosition.x < Constants.PLAYABLE_AREA_MIN_X) { correctedPosition.x = Constants.PLAYABLE_AREA_MIN_X; }
-        if (correctedPosition.x > Constants.PLAYABLE_AREA_MAX_X) { correctedPosition.x = Constants.PLAYABLE_AREA_MAX_X; }
-        if (correctedPosition.z < Constants.PLAYABLE_AREA_MIN_Z) { correctedPosition.z = Constants.PLAYABLE_AREA_MIN_Z; }
-        if (correctedPosition.z > Constants.PLAYABLE_AREA_MAX_Z) { correctedPosition.z = Constants.PLAYABLE_AREA_MAX_Z; }
-        cameraTransform.position = correctedPosition;
-
-        //simulate the position at which the camera is pointing, by doing Translate on the ghost transform "cameraPoint"
-        cameraPoint.position = cameraTransform.position;
-        cameraPoint.rotation = cameraTransform.rotation;
-        cameraPoint.Translate(0, 0, cameraPointDistance);
-        correctedPosition = cameraTransform.position;
-        if (cameraPoint.position.x < Constants.PLAYABLE_AREA_MIN_X) { correctedPosition.x += Constants.PLAYABLE_AREA_MIN_X - cameraPoint.position.x; }
-        if (cameraPoint.position.x > Constants.PLAYABLE_AREA_MAX_X) { correctedPosition.x += Constants.PLAYABLE_AREA_MAX_X - cameraPoint.position.x; }
-        if (cameraPoint.position.z < Constants.PLAYABLE_AREA_MIN_Z) { correctedPosition.z += Constants.PLAYABLE_AREA_MIN_Z - cameraPoint.position.z; }
-        if (cameraPoint.position.z > Constants.PLAYABLE_AREA_MAX_Z) { correctedPosition.z += Constants.PLAYABLE_AREA_MAX_Z - cameraPoint.position.z; }
-        cameraTransform.position = correctedPosition;
+        if (Input.touchCount == 0) { idle = true; }
     }
 
 #if UNITY_EDITOR

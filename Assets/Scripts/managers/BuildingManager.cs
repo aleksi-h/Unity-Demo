@@ -20,9 +20,26 @@ public class BuildingManager : Singleton<BuildingManager>
     private StructureType selectedType;
     private GameObject currentBuilder;
 
-    void Update()
+    void Start()
     {
-        if (moving)
+        InputManager.OnTap += OnTap;
+    }
+
+    private void OnTap(Vector3 tapPos)
+    {
+        if (!moving)
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
+            if (Physics.Raycast(ray, out hit, 1100, structureLayerMask))
+            {
+                selectedStructure = hit.collider.gameObject;
+                selectedType = selectedStructure.GetComponent<BaseStructure>().Type;
+                structureSelected = true;
+                GUIManager.Instance.ShowStructureGUI();
+            }
+        }
+        else
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
@@ -39,22 +56,6 @@ public class BuildingManager : Singleton<BuildingManager>
                 ConfirmPosition();
             }
 #endif
-        }
-    }
-
-    public void OnClick()
-    {
-        if (!moving)
-        {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
-            if (Physics.Raycast(ray, out hit, 1100, structureLayerMask))
-            {
-                selectedStructure = hit.collider.gameObject;
-                selectedType = selectedStructure.GetComponent<BaseStructure>().Type;
-                structureSelected = true;
-                GUIManager.Instance.ShowStructureGUI();
-            }
         }
     }
 
