@@ -2,6 +2,7 @@
 using System.Collections;
 
 public class InputManager : Singleton<InputManager> {
+
     public delegate void TapEvent(Vector3 tapPos);
     public static event TapEvent OnTap;
 
@@ -20,54 +21,56 @@ public class InputManager : Singleton<InputManager> {
     }
 
     void Update() {
-        if (state == State.IDLE) { UpdateState(); }
+        //if (UICamera.hoveredObject == null) {
+            if (state == State.IDLE) { UpdateState(); }
 
-        switch (state) {
-            case State.PINCHING:
-                if (Input.touchCount < 2) { state = State.IDLE; }
-                else if (OnPinch != null) {
-                    Touch t0 = Input.GetTouch(0);
-                    Touch t1 = Input.GetTouch(1);
-                    Vector2 t0PrevPos = t0.position - t0.deltaPosition;
-                    Vector2 t1PrevPos = t1.position - t1.deltaPosition;
-                    float prevFrameDeltaMag = (t0PrevPos - t1PrevPos).magnitude;
-                    float deltaMag = (t0.position - t1.position).magnitude;
-                    float deltaMagnitudeDiff = prevFrameDeltaMag - deltaMag;
-                    OnPinch(deltaMagnitudeDiff);
-                }
-                break;
-            case State.ROTATING:
-                if (Input.touchCount < 2) { state = State.IDLE; }
-                else if (OnRotate != null) {
-                    Touch t0 = Input.GetTouch(0);
-                    Touch t1 = Input.GetTouch(1);
-
-                    //make sure that leftmost touch is t0
-                    if (t0.position.x > t1.position.x) {
-                        Touch aux = t0;
-                        t0 = t1;
-                        t1 = aux;
+            switch (state) {
+                case State.PINCHING:
+                    if (Input.touchCount < 2) { state = State.IDLE; }
+                    else if (OnPinch != null) {
+                        Touch t0 = Input.GetTouch(0);
+                        Touch t1 = Input.GetTouch(1);
+                        Vector2 t0PrevPos = t0.position - t0.deltaPosition;
+                        Vector2 t1PrevPos = t1.position - t1.deltaPosition;
+                        float prevFrameDeltaMag = (t0PrevPos - t1PrevPos).magnitude;
+                        float deltaMag = (t0.position - t1.position).magnitude;
+                        float deltaMagnitudeDiff = prevFrameDeltaMag - deltaMag;
+                        OnPinch(deltaMagnitudeDiff);
                     }
-                    float t0DistanceMoved = t0.deltaPosition.y;
-                    float t1DistanceMoved = -t1.deltaPosition.y;
-                    float combinedDistanceMoved = t0DistanceMoved + t1DistanceMoved;
-                    OnRotate(combinedDistanceMoved);
-                }
-                break;
-            case State.DRAGGING:
-                if (Input.touchCount != 1) { state = State.IDLE; }
-                else if (OnDrag != null) { OnDrag(Input.GetTouch(0).deltaPosition); }
-                break;
-            case State.TAPPING:
-                if (OnTap != null) {
-                    Touch t = Input.GetTouch(0);
-                    OnTap(new Vector3(t.position.x, t.position.y, 0));
-                }
-                state = State.IDLE;
-                break;
-            default:
-                break;
-        }
+                    break;
+                case State.ROTATING:
+                    if (Input.touchCount < 2) { state = State.IDLE; }
+                    else if (OnRotate != null) {
+                        Touch t0 = Input.GetTouch(0);
+                        Touch t1 = Input.GetTouch(1);
+
+                        //make sure that leftmost touch is t0
+                        if (t0.position.x > t1.position.x) {
+                            Touch aux = t0;
+                            t0 = t1;
+                            t1 = aux;
+                        }
+                        float t0DistanceMoved = t0.deltaPosition.y;
+                        float t1DistanceMoved = -t1.deltaPosition.y;
+                        float combinedDistanceMoved = t0DistanceMoved + t1DistanceMoved;
+                        OnRotate(combinedDistanceMoved);
+                    }
+                    break;
+                case State.DRAGGING:
+                    if (Input.touchCount != 1) { state = State.IDLE; }
+                    else if (OnDrag != null) { OnDrag(Input.GetTouch(0).deltaPosition); }
+                    break;
+                case State.TAPPING:
+                    if (OnTap != null) {
+                        Touch t = Input.GetTouch(0);
+                        OnTap(new Vector3(t.position.x, t.position.y, 0));
+                    }
+                    state = State.IDLE;
+                    break;
+                default:
+                    break;
+            }
+        //}
     }
 
     private void UpdateState() {
