@@ -43,6 +43,11 @@ public class StatueScript : BaseStructure, IUpgradeable, IProducer {
         type = StructureType.Special;
     }
 
+    public override void Activate() {
+        base.Activate();
+        InvokeRepeating("ProduceResources", 0, productionInterval);
+    }
+
     public override void Damage(int amount) {
 
     }

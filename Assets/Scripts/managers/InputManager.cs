@@ -100,8 +100,6 @@ public class InputManager : Singleton<InputManager> {
         else if (Input.touchCount == 1) {
             Touch t = Input.GetTouch(0);
             float deltaMovement = Mathf.Abs(t.deltaPosition.x) + Mathf.Abs(t.deltaPosition.y);
-            Debug.Log(deltaMovement);
-
             if (deltaMovement > 3) {
                 state = State.DRAGGING;
             }

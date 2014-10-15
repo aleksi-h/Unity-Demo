@@ -56,10 +56,10 @@ public class ResourceManager : Singleton<ResourceManager> {
     public void DecreaseResourceCapacity(Resource removedCapacity) {
         resourceCapacity -= removedCapacity;
 
-        if (resourceCapacity.wood < 0) { resourceCapacity.wood = 0; }
+        //if (resourceCapacity.wood < 0) { resourceCapacity.wood = 0; }
         if (resourceCount.wood > resourceCapacity.wood) { resourceCount.wood = resourceCapacity.wood; }
 
-        if (resourceCapacity.food < 0) { resourceCapacity.food = 0; }
+        //if (resourceCapacity.food < 0) { resourceCapacity.food = 0; }
         if (resourceCount.food > resourceCapacity.food) { resourceCount.food = resourceCapacity.food; }
 
         updateGUITexts();

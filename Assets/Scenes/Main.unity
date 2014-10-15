@@ -3011,11 +3011,12 @@ MonoBehaviour:
   initialResourceCapacity:
     wood: 5000
     food: 5000
+    currency: 0
   initialResourceCount:
     wood: 5000
     food: 5000
+    currency: 100
   initialWorkerCount: 4
-  initialCurrencyCount: 100
 --- !u!4 &1485132596
 Transform:
   m_ObjectHideFlags: 0
@@ -3752,7 +3753,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0a8dccc7cf22b2b498501479fceeb602, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dragTreshold: 0
+  dragTreshold: 3
 --- !u!4 &1921742727
 Transform:
   m_ObjectHideFlags: 0

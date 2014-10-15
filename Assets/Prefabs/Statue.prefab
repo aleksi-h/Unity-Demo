@@ -13,7 +13,7 @@ GameObject:
   - 95: {fileID: 9500000}
   - 65: {fileID: 6500000}
   - 114: {fileID: 11400000}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Statue
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -99,12 +99,14 @@ MonoBehaviour:
   cost:
     wood: 0
     food: 0
+    currency: 0
   buildTime: 0
   nextLevelPrefab: {fileID: 0}
-  productionInterval: 0
+  productionInterval: 10
   producedPerInterval:
     wood: 0
     food: 0
+    currency: 1
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1

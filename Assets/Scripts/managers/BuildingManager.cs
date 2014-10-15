@@ -22,6 +22,7 @@ public class BuildingManager : Singleton<BuildingManager> {
 
     void Start() {
         GameObject obj = (GameObject)Instantiate(statue, new Vector3(0, 0, 0), Quaternion.identity);
+        Grid.Instance.BuildToNode(obj.transform.position, selectedType);
         obj.GetComponent<BaseStructure>().Activate();
         InputManager.OnTap += OnTap;
     }

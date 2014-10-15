@@ -61,16 +61,6 @@ public class SawmillScript : BaseStructure, IUpgradeable, IProducer
         type = StructureType.Sawmill;
     }
 
-	protected override void Start () 
-    {
-        base.Start();
-	}
-
-    protected override void Update()
-    {
-        base.Update();
-    }
-
     public override void Activate()
     {
         base.Activate();
