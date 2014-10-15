@@ -2,6 +2,7 @@
 using System.Collections;
 
 public class InputManager : Singleton<InputManager> {
+    public float dragTreshold; //minimum move distance (x+y) to be recognized as drag
 
     public delegate void TapEvent(Vector3 tapPos);
     public static event TapEvent OnTap;
@@ -96,12 +97,16 @@ public class InputManager : Singleton<InputManager> {
                 else { state = State.ROTATING; }
             }
         }
-        else if (Input.touchCount == 1 && Input.GetTouch(0).phase == TouchPhase.Moved) {
-            state = State.DRAGGING;
-        }
         else if (Input.touchCount == 1) {
-            if (Input.GetTouch(0).phase == TouchPhase.Ended && Input.GetTouch(0).tapCount == 1) {
-                state = State.TAPPING;
+            Touch t = Input.GetTouch(0);
+            float deltaMovement = Mathf.Abs(t.deltaPosition.x) + Mathf.Abs(t.deltaPosition.y);
+            Debug.Log(deltaMovement);
+
+            if (deltaMovement > 3) {
+                state = State.DRAGGING;
+            }
+            else if (Input.GetTouch(0).phase == TouchPhase.Ended) {
+                    state = State.TAPPING;
             }
         }
 #if UNITY_EDITOR
@@ -113,4 +118,3 @@ public class InputManager : Singleton<InputManager> {
 #endif
     }
 }
-
