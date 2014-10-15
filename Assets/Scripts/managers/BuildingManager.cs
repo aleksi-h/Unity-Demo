@@ -53,8 +53,8 @@ public class BuildingManager : Singleton<BuildingManager> {
 
     public void BuildStructure(GameObject obj) {
         BaseStructure structure = obj.GetComponent<BaseStructure>();
-        if (ResourceManager.Instance.CanAfford(structure.cost)) {
-            ResourceManager.Instance.RemoveResources(structure.cost);
+        if (ResourceManager.Instance.CanAffordResources(structure.cost)) {
+            ResourceManager.Instance.PayWithResources(structure.cost);
             Vector3 pos = new Vector3(0, 0, 0);
             selectedStructure = (GameObject)Instantiate(obj, pos, Quaternion.identity);
             selectedType = selectedStructure.GetComponent<BaseStructure>().Type;
@@ -101,8 +101,8 @@ public class BuildingManager : Singleton<BuildingManager> {
         if (upgradeable != null && upgradeable.UpgradeAllowed() && upgradeable.NextLevelPrefab != null) {
             BaseStructure nextLevel = upgradeable.NextLevelPrefab.GetComponent<BaseStructure>();
             Resource upgradeCost = nextLevel.cost;
-            if (ResourceManager.Instance.CanAfford(upgradeCost)) {
-                ResourceManager.Instance.RemoveResources(upgradeCost);
+            if (ResourceManager.Instance.CanAffordResources(upgradeCost)) {
+                ResourceManager.Instance.PayWithResources(upgradeCost);
                 int duration = nextLevel.buildTime;
                 GameObject nextLevelPrefab = upgradeable.NextLevelPrefab;
                 upgradeable.PrepareForUpgrade();
