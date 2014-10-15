@@ -1,9 +1,20 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class StorageScript : BaseStructure
+public class StorageScript : BaseStructure, IRemovable
 {
     public Resource capacity;
+
+    #region IRemovable
+    public void Remove() {
+        ResourceManager.Instance.DecreaseResourceCapacity(capacity);
+        Destroy(this.gameObject);
+    }
+
+    public bool RemovalAllowed() {
+        return structureActive;
+    }
+    #endregion
 
     protected override void Awake()
     {
@@ -11,7 +22,7 @@ public class StorageScript : BaseStructure
         level = 1;
         maxHealth = 1000;
         health = maxHealth;
-        type = StructureType.storage;
+        type = StructureType.Storage;
     }
 
     protected override void Update()
@@ -28,17 +39,6 @@ public class StorageScript : BaseStructure
     {
         base.Activate();
         ResourceManager.Instance.IncreaseResourceCapacity(capacity);
-    }
-
-    public override void Remove()
-    {
-        ResourceManager.Instance.DecreaseResourceCapacity(capacity);
-        Destroy(this.gameObject);
-    }
-
-    public override bool RemovalAllowed()
-    {
-        return structureActive;
     }
 
     public override void Damage(int amount)
