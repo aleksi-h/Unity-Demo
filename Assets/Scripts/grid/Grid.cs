@@ -57,10 +57,11 @@ public class Grid : Singleton<Grid>
 
         //define what can be built on what
         // key/value => structure/structures that can be built on it
-        stackOrder.Add(StructureType.hut, new List<StructureType> { StructureType.hut, StructureType.field });
-        stackOrder.Add(StructureType.storage, new List<StructureType> { StructureType.hut, StructureType.field });
-        stackOrder.Add(StructureType.sawmill, new List<StructureType> { StructureType.field });
-        stackOrder.Add(StructureType.field, new List<StructureType>());
+        stackOrder.Add(StructureType.Hut, new List<StructureType> { StructureType.Hut, StructureType.Field });
+        stackOrder.Add(StructureType.Storage, new List<StructureType> { StructureType.Hut, StructureType.Field });
+        stackOrder.Add(StructureType.Sawmill, new List<StructureType> { StructureType.Field });
+        stackOrder.Add(StructureType.Field, new List<StructureType>());
+        stackOrder.Add(StructureType.Special, new List<StructureType>());
     }
 
     //draws a highlight-square around nodes that are valid build positions for the specified structure type

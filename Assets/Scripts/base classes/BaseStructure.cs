@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public abstract class BaseStructure : MonoBehaviour, IRemovable, IDamageable {
+public abstract class BaseStructure : MonoBehaviour, IDamageable {
     public Resource cost;
     public int buildTime;
     
@@ -14,11 +14,6 @@ public abstract class BaseStructure : MonoBehaviour, IRemovable, IDamageable {
     {
         get { return type; }
     }
-
-    #region IRemovable
-    public abstract void Remove();
-    public abstract bool RemovalAllowed();
-    #endregion
 
     #region IDamageable
     public abstract void Damage(int amount);

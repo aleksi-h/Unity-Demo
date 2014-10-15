@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class FieldScript : BaseStructure, IUpgradeable, IProducer
+public class FieldScript : BaseStructure, IUpgradeable, IProducer, IRemovable
 {
 
     #region IUpgradeable
@@ -42,13 +42,24 @@ public class FieldScript : BaseStructure, IUpgradeable, IProducer
     }
     #endregion
 
+    #region IRemovable
+    public void Remove() {
+        Destroy(this.gameObject);
+    }
+
+    public bool RemovalAllowed() {
+        return structureActive;
+    }
+    #endregion
+
+
     protected override void Awake()
     {
         base.Awake();
         level = 1;
         maxHealth = 1000;
         health = maxHealth;
-        type = StructureType.field;
+        type = StructureType.Field;
     }
 
     protected override void Update()
@@ -60,16 +71,6 @@ public class FieldScript : BaseStructure, IUpgradeable, IProducer
     {
         base.Activate();
         InvokeRepeating("ProduceResources", 0, productionInterval);
-    }
-
-    public override void Remove()
-    {
-        Destroy(this.gameObject);
-    }
-
-    public override bool RemovalAllowed()
-    {
-        return structureActive;
     }
 
     public override void Damage(int amount)

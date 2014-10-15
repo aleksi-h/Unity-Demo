@@ -7,6 +7,7 @@ public class BuildingManager : Singleton<BuildingManager> {
     public GameObject sawmill;
     public GameObject field;
     public GameObject builder;
+    public GameObject statue;
 
     private LayerMask structureLayerMask = 1 << 10;
     private LayerMask groundLayerMask = 1 << 11;
@@ -20,6 +21,8 @@ public class BuildingManager : Singleton<BuildingManager> {
     private GameObject currentBuilder;
 
     void Start() {
+        GameObject obj = (GameObject)Instantiate(statue, new Vector3(0, 0, 0), Quaternion.identity);
+        obj.GetComponent<BaseStructure>().Activate();
         InputManager.OnTap += OnTap;
     }
 

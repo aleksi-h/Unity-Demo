@@ -42,13 +42,23 @@ public class SawmillScript : BaseStructure, IUpgradeable, IProducer
     }
     #endregion
 
+    #region IRemovable
+    public void Remove() {
+        Destroy(this.gameObject);
+    }
+
+    public bool RemovalAllowed() {
+        return structureActive;
+    }
+    #endregion
+
     protected override void Awake()
     {
         base.Awake();
         level = 1;
         maxHealth = 1000;
         health = maxHealth;
-        type = StructureType.sawmill;
+        type = StructureType.Sawmill;
     }
 
 	protected override void Start () 
@@ -65,16 +75,6 @@ public class SawmillScript : BaseStructure, IUpgradeable, IProducer
     {
         base.Activate();
         InvokeRepeating("ProduceResources", 0, productionInterval);
-    }
-
-    public override void Remove()
-    {
-        Destroy(this.gameObject);
-    }
-
-    public override bool RemovalAllowed()
-    {
-        return structureActive;
     }
 
     public override void Damage(int amount)
