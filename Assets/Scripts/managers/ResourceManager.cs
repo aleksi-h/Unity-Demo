@@ -13,18 +13,15 @@ public class ResourceManager : Singleton<ResourceManager> {
     public Resource initialResourceCapacity;
     public Resource initialResourceCount;
     public int initialWorkerCount;
-    public int initialCurrencyCount;
     private Resource resourceCount;
     private Resource resourceCapacity;
     private int workerCount;
-    private int currencyCount;
 
     public override void Awake() {
         base.Awake();
         resourceCapacity = initialResourceCapacity;
         resourceCount = initialResourceCount;
         workerCount = initialWorkerCount;
-        currencyCount = initialCurrencyCount;
         updateGUITexts();
     }
 
@@ -35,20 +32,10 @@ public class ResourceManager : Singleton<ResourceManager> {
         updateGUITexts();
     }
 
-    public void AddCurrency(int amount) {
-        currencyCount += amount;
-        updateGUITexts();
-    }
-
     public void PayWithResources(Resource cost) {
         resourceCount -= cost;
         //if (resourceCount.wood < 0) { resourceCount.wood = 0; }
         //if (resourceCount.food < 0) { resourceCount.food = 0; }
-        updateGUITexts();
-    }
-
-    public void PayWithCurrency(int cost) {
-        currencyCount -= cost;
         updateGUITexts();
     }
 
@@ -82,14 +69,10 @@ public class ResourceManager : Singleton<ResourceManager> {
         return resourceCount >= cost;
     }
 
-    public bool CanAffordCurrency(int cost) {
-        return currencyCount >= cost;
-    }
-
     private void updateGUITexts() {
         woodCountDisplay.text = "Wood " + resourceCount.wood.ToString();
         foodCountDisplay.text = "Food " + resourceCount.food.ToString();
         workerCountDisplay.text = "Workers " + workerCount.ToString();
-        currencyCountDisplay.text = "Currency " + currencyCount.ToString();
+        currencyCountDisplay.text = "Currency " + resourceCount.currency.ToString();
     }
 }
