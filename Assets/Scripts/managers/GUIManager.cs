@@ -78,6 +78,7 @@ public class GUIManager : Singleton<GUIManager> {
     }
 
     public void ShowStructureGUI() {
+        //TODO get a ref to structure & enable/disable buttons based on availability eg. 0 workers, disable "add worker" button
         HideAllGUIElements();
         NGUITools.SetActive(structurePanel, true);
     }

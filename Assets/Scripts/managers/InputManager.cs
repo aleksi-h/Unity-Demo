@@ -110,7 +110,7 @@ public class InputManager : Singleton<InputManager> {
 #if UNITY_EDITOR
         else if (Input.GetMouseButtonDown(0)) {
             if (OnTap != null) {
-                //OnTap(Input.mousePosition);
+                OnTap(Input.mousePosition);
             }
         }
 #endif

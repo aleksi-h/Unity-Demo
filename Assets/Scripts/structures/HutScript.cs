@@ -1,19 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class HutScript : BaseStructure, IRemovable {
+public class HutScript : BaseStructure {
     private int workersAccomodated = 2;
-
-    #region IRemovable
-    public void Remove() {
-        ResourceManager.Instance.RemoveWorkers(workersAccomodated);
-        Destroy(this.gameObject);
-    }
-
-    public bool RemovalAllowed() {
-        return structureActive;
-    }
-    #endregion
 
     protected override void Awake() {
         base.Awake();

@@ -21,7 +21,7 @@ public class BuildingManager : Singleton<BuildingManager> {
     private GameObject currentBuilder;
 
     void Start() {
-        GameObject obj = (GameObject)Instantiate(statue, new Vector3(0, 0, 0), Quaternion.identity);
+        GameObject obj = (GameObject)Instantiate(statue, new Vector3(-10, 0, 0), Quaternion.identity);
         Grid.Instance.BuildToNode(obj.transform.position, selectedType);
         obj.GetComponent<BaseStructure>().Activate();
         InputManager.OnTap += OnTap;
@@ -56,9 +56,18 @@ public class BuildingManager : Singleton<BuildingManager> {
     }
 
     public void BuildStructure(GameObject obj) {
+        bool canAffordStructure = true;
         BaseStructure structure = obj.GetComponent<BaseStructure>();
-        if (ResourceManager.Instance.CanAffordResources(structure.cost)) {
-            ResourceManager.Instance.PayWithResources(structure.cost);
+        if (!ResourceManager.Instance.CanAffordResources(structure.cost)) {
+            canAffordStructure = false;
+        }
+        if (obj.ImplementsInterface<IEmployer>()) {
+            if (!ResourceManager.Instance.HasFreeWorkers(obj.GetInterface<IEmployer>().MinWorkerCount)) {
+                canAffordStructure = false;
+            }
+        }
+        if (canAffordStructure) {
+            ResourceManager.Instance.PayResources(structure.cost);
             Vector3 pos = new Vector3(0, 0, 0);
             selectedStructure = (GameObject)Instantiate(obj, pos, Quaternion.identity);
             selectedType = selectedStructure.GetComponent<BaseStructure>().Type;
@@ -106,7 +115,7 @@ public class BuildingManager : Singleton<BuildingManager> {
             BaseStructure nextLevel = upgradeable.NextLevelPrefab.GetComponent<BaseStructure>();
             Resource upgradeCost = nextLevel.cost;
             if (ResourceManager.Instance.CanAffordResources(upgradeCost)) {
-                ResourceManager.Instance.PayWithResources(upgradeCost);
+                ResourceManager.Instance.PayResources(upgradeCost);
                 int duration = nextLevel.buildTime;
                 GameObject nextLevelPrefab = upgradeable.NextLevelPrefab;
                 upgradeable.PrepareForUpgrade();

@@ -1,8 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Builder : MonoBehaviour
-{
+public class Builder : MonoBehaviour {
     private int duration;
     private GameObject structure;
     private GameObject upgradedStructure;
@@ -11,23 +10,19 @@ public class Builder : MonoBehaviour
     private string displayText;
     private Transform myTransform;
 
-    public void Awake()
-    {
+    public void Awake() {
         //caching transform to avoid the lookup each time
         myTransform = transform;
     }
 
-    public void Update()
-    {
-        if (structure != null)
-        {
+    public void Update() {
+        if (structure != null) {
             myTransform.position = structure.transform.position;
             SetDisplayPosition(myTransform.position);
         }
     }
 
-    public void BuildStructure(GameObject structuretoBuild, int buildDuration)
-    {
+    public void BuildStructure(GameObject structuretoBuild, int buildDuration) {
         duration = buildDuration;
         myTransform.position = structuretoBuild.transform.position;
         structure = structuretoBuild;
@@ -36,8 +31,7 @@ public class Builder : MonoBehaviour
         InvokeRepeating("CheckBuildProgress", 0, 1.0F);
     }
 
-    public void UpgradeStructure(GameObject target, int upgradeDuration, GameObject nextLevelPrefab)
-    {
+    public void UpgradeStructure(GameObject target, int upgradeDuration, GameObject nextLevelPrefab) {
         duration = upgradeDuration;
         myTransform.position = target.transform.position;
         structure = target;
@@ -47,16 +41,14 @@ public class Builder : MonoBehaviour
         InvokeRepeating("CheckUpgradeProgress", 0, 1.0F);
     }
 
-    private void SetDisplayPosition(Vector3 position)
-    {
+    private void SetDisplayPosition(Vector3 position) {
         displayPosition = Camera.main.WorldToViewportPoint(position);
         displayPosition.x -= 0.04f;
         displayPosition.y -= 0.02f;
         display.transform.position = displayPosition;
     }
 
-    private void addDisplay(string text)
-    {
+    private void addDisplay(string text) {
         display = new GameObject("Display");
         display.transform.parent = myTransform;
         display.AddComponent<GUIText>();
@@ -65,36 +57,34 @@ public class Builder : MonoBehaviour
         SetDisplayPosition(myTransform.position);
     }
 
-    private void CheckBuildProgress()
-    {
+    private void CheckBuildProgress() {
         if (duration <= 0) { BuildFinished(); }
         else { display.guiText.text = displayText + duration; }
         duration--;
     }
 
-    private void CheckUpgradeProgress()
-    {
+    private void CheckUpgradeProgress() {
         if (duration <= 0) { UpgradeFinished(); }
         else { display.guiText.text = displayText + duration; }
         duration--;
     }
 
-    private void BuildFinished()
-    {
+    private void BuildFinished() {
         CancelInvoke("CheckBuildProgress");
         Destroy(display);
         structure.GetComponent<BaseStructure>().Activate();
         Destroy(gameObject);
     }
 
-    private void UpgradeFinished()
-    {
+    private void UpgradeFinished() {
         CancelInvoke("CheckUpgradeProgress");
         Destroy(display);
-        Destroy(structure);
+        if (structure.ImplementsInterface<IRemovable>()) {
+            structure.GetInterface<IRemovable>().Remove();
+        }
+        else { Destroy(structure); }
         GameObject upgraded = (GameObject)Instantiate(upgradedStructure, myTransform.position, Quaternion.identity);
         upgraded.GetComponent<BaseStructure>().Activate();
         Destroy(gameObject);
     }
 }
-

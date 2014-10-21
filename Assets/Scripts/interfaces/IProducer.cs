@@ -1,15 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public interface IProducer
-{
-    float ProductionInterval
-    {
+public interface IProducer {
+    float ProductionInterval {
         get;
     }
 
-    Resource ProducedPerInterval
-    {
+    Resource ProducedPerInterval {
         get;
     }
 

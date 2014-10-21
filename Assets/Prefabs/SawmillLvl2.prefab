@@ -99,12 +99,16 @@ MonoBehaviour:
   cost:
     wood: 2000
     food: 0
+    currency: 0
   buildTime: 5
   nextLevelPrefab: {fileID: 0}
   productionInterval: 1
   producedPerInterval:
     wood: 50
     food: 0
+    currency: 0
+  minWorkerCount: 2
+  maxWorkerCount: 5
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1

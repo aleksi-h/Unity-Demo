@@ -2326,7 +2326,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 2
 --- !u!1 &1281139897
 GameObject:
   m_ObjectHideFlags: 0
@@ -3004,9 +3004,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5320bcf0f69801c4da43ede9e72a78e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  worker: {fileID: 100000, guid: 7bcf3d62825f8b640832924df36b38ef, type: 2}
   woodCountDisplay: {fileID: 1019805690}
   foodCountDisplay: {fileID: 1842998390}
-  workerCountDisplay: {fileID: 119090610}
+  freeWorkerCountDisplay: {fileID: 119090610}
   currencyCountDisplay: {fileID: 1996203893}
   initialResourceCapacity:
     wood: 5000
@@ -3028,7 +3029,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 3
 --- !u!1 &1513246322
 GameObject:
   m_ObjectHideFlags: 0
@@ -3660,7 +3661,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1893971350}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 89.9235687, y: 4.38303423, z: -.516254425}
+  m_LocalPosition: {x: 89.9235687, y: 6.38126421, z: -.516254425}
   m_LocalScale: {x: 4, y: 4, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -3765,7 +3766,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 1
 --- !u!1 &1983052558
 GameObject:
   m_ObjectHideFlags: 0
@@ -3908,7 +3909,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 4
 --- !u!1 &2093819669
 GameObject:
   m_ObjectHideFlags: 0
