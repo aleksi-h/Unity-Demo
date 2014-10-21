@@ -4,6 +4,7 @@ using System.Collections.Generic;
 public class GUIManager : Singleton<GUIManager> {
     public Transform GridRoot;
 
+    public GameObject timerDisplay;
     public GameObject buildPanel;
     public GameObject confirmBuildPanel;
     public GameObject structurePanel;
@@ -12,12 +13,14 @@ public class GUIManager : Singleton<GUIManager> {
     public GameObject confirmButtonLabel;
 
     private GameObject structureToBuild;
+    private List<GameObject> timerDisplays;
 
     public override void Awake() {
         base.Awake();
+        timerDisplays = new List<GameObject>(1);
     }
 
-    void Start() {
+    public void Start() {
         HideAllGUIElements();
         ShowDefaultGUI();
     }
@@ -64,6 +67,24 @@ public class GUIManager : Singleton<GUIManager> {
         BuildingManager.Instance.DeleteStructure();
     }
 
+
+    public GameObject AddTimerDisplay(GameObject caller, string text) {
+        GameObject display = (GameObject)Instantiate(timerDisplay, caller.transform.position, Quaternion.identity);
+        display.transform.parent = transform;
+        display.guiText.text = text;
+        display.GetComponent<TimerDisplay>().FollowObject(caller);
+        timerDisplays.Add(display);
+        return display;
+    }
+
+    public void UpdateTimerDisplay(GameObject display, string text) {
+        display.guiText.text = text;
+    }
+
+    public void RemoveTimerDisplay(GameObject display) {
+        timerDisplays.Remove(display);
+        Destroy(display);
+    }
 
     public void showBuildDialog(GameObject obj) {
         HideAllGUIElements();

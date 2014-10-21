@@ -3,15 +3,21 @@ using System.Collections;
 
 public abstract class BaseStructure : MonoBehaviour, IDamageable {
     public Resource cost;
-    public int buildTime;
-    
+    public float buildTime;
+
+    protected delegate void LongProcess();
+    protected LongProcess longProcess;
+    protected float processDuration;
+    protected const float processUpdateInterval = 1.0f;
+    protected GameObject timerDisplay;
+
+    protected Transform myTransform;
     protected bool structureActive;
     protected int maxHealth;
     protected int level;
     protected int health;
     protected StructureType type;
-    public StructureType Type
-    {
+    public StructureType Type {
         get { return type; }
     }
 
@@ -19,19 +25,45 @@ public abstract class BaseStructure : MonoBehaviour, IDamageable {
     public abstract void Damage(int amount);
     #endregion
 
-    protected virtual void Awake()
-    {
+    public void Build() {
+        StartLongProcess(BuildProcess, buildTime);
     }
 
-	protected virtual void Start () 
-    {
-	}
-	
-	protected virtual void Update ()
-    {
-	}
+    protected virtual void Awake() {
+        myTransform = transform;
+    }
 
-    public virtual void Activate(){
+    protected virtual void Start() {
+    }
+
+    protected virtual void Update() {
+    }
+
+    public virtual void Activate() {
         structureActive = true;
+    }
+
+    protected virtual void StartLongProcess(LongProcess process, float duration) {
+        longProcess = process;
+        processDuration = duration;
+        timerDisplay = GUIManager.Instance.AddTimerDisplay(gameObject, "ready in " + processDuration);
+        InvokeRepeating("UpdateLongProcess", 1.0f, processUpdateInterval);
+    }
+
+    protected virtual void UpdateLongProcess() {
+        processDuration -= processUpdateInterval;
+        if (processDuration <= 0) {
+            CancelInvoke("UpdateLongProcess");
+            longProcess();
+        }
+        else {
+            GUIManager.Instance.UpdateTimerDisplay(timerDisplay, "ready in " + processDuration);
+        }
+
+    }
+
+    private void BuildProcess() {
+        GUIManager.Instance.RemoveTimerDisplay(timerDisplay);
+        Activate();
     }
 }

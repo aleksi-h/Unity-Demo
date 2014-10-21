@@ -11,12 +11,23 @@ public class SawmillScript : BaseStructure, IUpgradeable, IProducer, IEmployer, 
         get { return nextLevelPrefab; }
     }
 
-    public void PrepareForUpgrade() {
-        CancelInvoke("ProduceResources");
-    }
-
     public bool UpgradeAllowed() {
         return structureActive;
+    }
+
+    public void Upgrade() {
+        structureActive = false;
+        CancelInvoke("ProduceResources");
+        gameObject.GetComponent<BoxCollider>().enabled = false;
+        float duration = nextLevelPrefab.GetComponent<BaseStructure>().buildTime;
+        StartLongProcess(UpgradeProcess, duration);
+    }
+
+    private void UpgradeProcess() {
+        GUIManager.Instance.RemoveTimerDisplay(timerDisplay);
+        GameObject upgraded = (GameObject)Instantiate(nextLevelPrefab, myTransform.position, Quaternion.identity);
+        Remove(); //loppuuko scriptin suoritus?
+        upgraded.GetComponent<BaseStructure>().Activate();
     }
     #endregion
 

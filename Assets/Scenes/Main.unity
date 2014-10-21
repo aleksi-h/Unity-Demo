@@ -265,6 +265,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   GridRoot: {fileID: 2061348815}
+  timerDisplay: {fileID: 100000, guid: fce5cc6bb767c4342a7d5d6f771d39d8, type: 2}
   buildPanel: {fileID: 2093819669}
   confirmBuildPanel: {fileID: 652756059}
   structurePanel: {fileID: 1513246322}
@@ -2313,7 +2314,6 @@ MonoBehaviour:
   storage: {fileID: 100000, guid: a2e179c9d9fd3be439e47665ed5feeb4, type: 2}
   sawmill: {fileID: 100000, guid: a4d6be37b9dc3ce43a2825bbef21fec7, type: 2}
   field: {fileID: 100000, guid: 3cc432c6386547e4498888913adbde86, type: 2}
-  builder: {fileID: 100000, guid: f98ff08ed2c24d14da12561321337949, type: 2}
   statue: {fileID: 100000, guid: 8bdaa694d49cf7b4c9d0726f5c60dae2, type: 2}
 --- !u!4 &1272204122
 Transform:

@@ -36,6 +36,7 @@ public class ResourceManager : Singleton<ResourceManager> {
     }
 
     public GameObject RequestWorker(GameObject requestingStructure) {
+        if (freeWorkers.Count == 0) { return null; }
         GameObject worker = freeWorkers[0];
         freeWorkers.RemoveAt(0);
         worker.GetComponent<Worker>().AssignToStructure(requestingStructure);

@@ -10,12 +10,23 @@ public class StatueScript : BaseStructure, IUpgradeable, IProducer {
         get { return nextLevelPrefab; }
     }
 
-    public void PrepareForUpgrade() {
-        CancelInvoke("ProduceResources");
-    }
-
     public bool UpgradeAllowed() {
         return structureActive;
+    }
+
+    public void Upgrade() {
+        structureActive = false;
+        CancelInvoke("ProduceResources");
+        gameObject.GetComponent<BoxCollider>().enabled = false;
+        float duration = nextLevelPrefab.GetComponent<BaseStructure>().buildTime;
+        StartLongProcess(UpgradeProcess, duration);
+    }
+
+    private void UpgradeProcess() {
+        GUIManager.Instance.RemoveTimerDisplay(timerDisplay);
+        GameObject upgraded = (GameObject)Instantiate(nextLevelPrefab, myTransform.position, Quaternion.identity);
+        Destroy(gameObject);
+        upgraded.GetComponent<BaseStructure>().Activate();
     }
     #endregion
 

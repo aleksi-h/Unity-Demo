@@ -1,14 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public interface IUpgradeable
-{
+public interface IUpgradeable {
 
-    GameObject NextLevelPrefab
-    {
-        get;
-    }
-
-    void PrepareForUpgrade();
+    GameObject NextLevelPrefab { get; }
+    void Upgrade();
     bool UpgradeAllowed();
 }
