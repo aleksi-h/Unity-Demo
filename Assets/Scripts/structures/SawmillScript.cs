@@ -2,34 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class SawmillScript : BaseStructure, IUpgradeable, IProducer, IEmployer, IRemovable {
-
-    #region IUpgradeable
-    public GameObject nextLevelPrefab;
-    public GameObject NextLevelPrefab {
-
-        get { return nextLevelPrefab; }
-    }
-
-    public bool UpgradeAllowed() {
-        return structureActive;
-    }
-
-    public void Upgrade() {
-        structureActive = false;
-        CancelInvoke("ProduceResources");
-        gameObject.GetComponent<BoxCollider>().enabled = false;
-        float duration = nextLevelPrefab.GetComponent<BaseStructure>().buildTime;
-        StartLongProcess(UpgradeProcess, duration);
-    }
-
-    private void UpgradeProcess() {
-        GUIManager.Instance.RemoveTimerDisplay(timerDisplay);
-        GameObject upgraded = (GameObject)Instantiate(nextLevelPrefab, myTransform.position, Quaternion.identity);
-        Remove(); //loppuuko scriptin suoritus?
-        upgraded.GetComponent<BaseStructure>().Activate();
-    }
-    #endregion
+public class SawmillScript : UpgradableStructure, IProducer, IEmployer, IRemovable {
 
     #region IProducer
     public float productionInterval;
@@ -102,7 +75,16 @@ public class SawmillScript : BaseStructure, IUpgradeable, IProducer, IEmployer, 
         for (int i = 0; i < minWorkerCount; i++) {
             AddWorker();
         }
-    } 
+    }
+
+    public override void Upgrade() {
+        base.Upgrade();
+        CancelInvoke("ProduceResources");
+    }
+
+    protected override void FinishUpgrade() {
+        Remove();
+    }
 
     public override void Activate() {
         base.Activate();

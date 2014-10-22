@@ -1,34 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class StatueScript : BaseStructure, IUpgradeable, IProducer {
-
-    #region IUpgradeable
-    public GameObject nextLevelPrefab;
-    public GameObject NextLevelPrefab {
-
-        get { return nextLevelPrefab; }
-    }
-
-    public bool UpgradeAllowed() {
-        return structureActive;
-    }
-
-    public void Upgrade() {
-        structureActive = false;
-        CancelInvoke("ProduceResources");
-        gameObject.GetComponent<BoxCollider>().enabled = false;
-        float duration = nextLevelPrefab.GetComponent<BaseStructure>().buildTime;
-        StartLongProcess(UpgradeProcess, duration);
-    }
-
-    private void UpgradeProcess() {
-        GUIManager.Instance.RemoveTimerDisplay(timerDisplay);
-        GameObject upgraded = (GameObject)Instantiate(nextLevelPrefab, myTransform.position, Quaternion.identity);
-        Destroy(gameObject);
-        upgraded.GetComponent<BaseStructure>().Activate();
-    }
-    #endregion
+public class StatueScript : UpgradableStructure, IProducer {
 
     #region IProducer
     public float productionInterval;
@@ -52,6 +25,15 @@ public class StatueScript : BaseStructure, IUpgradeable, IProducer {
         maxHealth = 1000;
         health = maxHealth;
         type = StructureType.Special;
+    }
+
+    public override void Upgrade() {
+        base.Upgrade();
+        CancelInvoke("ProduceResources");
+    }
+
+    protected override void FinishUpgrade() {
+        Destroy(gameObject);
     }
 
     public override void Activate() {

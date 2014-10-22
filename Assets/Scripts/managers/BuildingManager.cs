@@ -105,4 +105,10 @@ public class BuildingManager : Singleton<BuildingManager> {
             }
         }
     }
+
+    public void Upgraded(GameObject oldGo, GameObject newGo) {
+        if (selectedStructure == oldGo) {
+            selectedStructure = newGo;
+        }
+    }
 }
