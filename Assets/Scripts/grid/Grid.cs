@@ -9,8 +9,7 @@ using System.Collections.Generic;
  * it can be replaced by a simple Node[ , , ] array, 
  * where indices are accessed by [posX/interval, posY/interval, posZ/interval]
  * */
-public class Grid : Singleton<Grid>
-{
+public class Grid : Singleton<Grid> {
     public Material material;
 
     //width & depth in nodes
@@ -28,8 +27,7 @@ public class Grid : Singleton<Grid>
 
     private Dictionary<StructureType, List<StructureType>> stackOrder = new Dictionary<StructureType, List<StructureType>>();
 
-    public override void Awake()
-    {
+    public override void Awake() {
         base.Awake();
 
         //calculate borders so that the center node is at the center of the grid
@@ -46,10 +44,8 @@ public class Grid : Singleton<Grid>
 
         //initialize the grid by creating the first layer of nodes
         nodes = new List<Node>();
-        for (int i = borderXLower; i <= borderXUpper; i+=nodeInterval)
-        {
-            for (int j = borderZLower; j <= borderZUpper; j+=nodeInterval)
-            {
+        for (int i = borderXLower; i <= borderXUpper; i += nodeInterval) {
+            for (int j = borderZLower; j <= borderZUpper; j += nodeInterval) {
                 Node node = new Node(new Vector3(i, 0, j), false);
                 nodes.Add(node);
             }
@@ -65,29 +61,24 @@ public class Grid : Singleton<Grid>
     }
 
     //draws a highlight-square around nodes that are valid build positions for the specified structure type
-    public void HighLightValidNodes(StructureType type)
-    {
-        foreach (Node node in nodes)
-        {
+    public void HighLightValidNodes(StructureType type) {
+        foreach (Node node in nodes) {
             if (node.occupied) { continue; }
             if (node.nextNodeDown != null && !IsNodeCompatible(node.nextNodeDown, type)) { continue; }
 
             node.HighLight();
         }
     }
-    
-    public void HideHighlight()
-    {
-        foreach (Node node in nodes)
-        {
+
+    public void HideHighlight() {
+        foreach (Node node in nodes) {
             node.HideHighLight();
         }
     }
 
     //returns the newPos rounded to nearest valid node location. 
     //if the nearest location is invalid for this structure type, returns currentPos
-    public Vector3 GetNearestValidNode(Vector3 currentPos, Vector3 newPos, StructureType type)
-    {
+    public Vector3 GetNearestValidNode(Vector3 currentPos, Vector3 newPos, StructureType type) {
         //round the position to nearest node position
         int nearestX = (int)Mathf.Round(newPos.x / nodeInterval) * nodeInterval;
         int nearestZ = (int)Mathf.Round(newPos.z / nodeInterval) * nodeInterval;
@@ -102,11 +93,9 @@ public class Grid : Singleton<Grid>
         Vector3 newPosition = new Vector3(nearestX, y, nearestZ);
 
         if (!IsNodeOccupied(newPosition)) { return newPosition; }
-        else 
-        {
+        else {
             Node topNode = GetTopmostStructure(newPosition);
-            if (IsNodeCompatible(topNode, type))
-            {
+            if (IsNodeCompatible(topNode, type)) {
                 return GetTopmostStructure(newPosition).nextNodeUp.position;
             }
             else { return currentPos; }
@@ -114,16 +103,13 @@ public class Grid : Singleton<Grid>
     }
 
     //adds a building to the node
-    public void BuildToNode(Vector3 pos, StructureType type)
-    {
+    public void BuildToNode(Vector3 pos, StructureType type) {
         Node node = getNodeByPosition(pos);
-        if (node != null)
-        {
+        if (node != null) {
             node.occupied = true;
             node.structureType = type;
         }
-        if (node.nextNodeDown != null)
-        {
+        if (node.nextNodeDown != null) {
             node.nextNodeDown.nextNodeUp = node;
         }
 
@@ -134,31 +120,26 @@ public class Grid : Singleton<Grid>
         AddNode(newNode);
     }
 
-    //removes any building from the node
-    public void RemoveFromNode(Vector3 pos)
-    {
+    //removes building from the node at "pos"
+    public void RemoveFromNode(Vector3 pos) {
         Node node = getNodeByPosition(pos);
-        if (node != null)
-        {
+        if (node != null) {
             node.occupied = false;
             RemoveNode(node.nextNodeUp);
         }
     }
 
     //only the topmost building is movable/removable
-    public bool IsBuildingMoveable(Vector3 pos)
-    {
+    public bool IsBuildingMoveable(Vector3 pos) {
         Node node = getNodeByPosition(pos);
         if (node.nextNodeUp == null) { return false; }
         if (node.nextNodeUp.occupied) { return false; }
         return true;
     }
 
-    private bool IsNodeOccupied(Vector3 pos)
-    {
+    private bool IsNodeOccupied(Vector3 pos) {
         Node node = getNodeByPosition(pos);
-        if (node != null)
-        {
+        if (node != null) {
             return node.occupied;
         }
         Debug.LogError("Node not found");
@@ -166,50 +147,41 @@ public class Grid : Singleton<Grid>
     }
 
     //decides if "newStructure" can be built in "node", based on the rules written in "stackOrder" dictionary
-    private bool IsNodeCompatible(Node node, StructureType newStructure)
-    {
+    private bool IsNodeCompatible(Node node, StructureType newStructure) {
         StructureType lowerStructure = node.structureType;
         List<StructureType> compatibleStructures;
         stackOrder.TryGetValue(lowerStructure, out compatibleStructures);
-        if (compatibleStructures.Contains(newStructure))
-        {
+        if (compatibleStructures.Contains(newStructure)) {
             return true;
         }
         else { return false; }
     }
 
     //returns the highest occupied node
-    private Node GetTopmostStructure(Vector3 pos)
-    {
+    private Node GetTopmostStructure(Vector3 pos) {
         Node node = getNodeByPosition(pos);
-        while (node.nextNodeUp.occupied)
-        {
+        while (node.nextNodeUp.occupied) {
             node = node.nextNodeUp;
         }
         return node;
     }
-    
-    private Node getNodeByPosition(Vector3 pos)
-    {
-        foreach (Node node in nodes)
-        {
-            if (pos.Equals(node.position))
-            {
+
+    private Node getNodeByPosition(Vector3 pos) {
+        foreach (Node node in nodes) {
+            if (pos.Equals(node.position)) {
                 return node;
             }
         }
         return null;
     }
 
-    private void AddNode(Node node)
-    {
+    private void AddNode(Node node) {
         nodes.Add(node);
     }
 
-    private void RemoveNode(Node node)
-    {
-        if (node != null)
-        {
+    private void RemoveNode(Node node) {
+        if (node != null) {
+            node.Destroy();
             nodes.Remove(node);
         }
     }

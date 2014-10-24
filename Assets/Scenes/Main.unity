@@ -236,7 +236,7 @@ Transform:
   m_LocalScale: {x: 4, y: 4, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 10
+  m_RootOrder: 9
 --- !u!1 &221410549
 GameObject:
   m_ObjectHideFlags: 0
@@ -2217,7 +2217,7 @@ Transform:
   m_Children:
   - {fileID: 736011169}
   m_Father: {fileID: 0}
-  m_RootOrder: 11
+  m_RootOrder: 10
 --- !u!114 &1202518933
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2407,7 +2407,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1281139897}
-  m_LocalRotation: {x: .5, y: 0, z: 0, w: .866025388}
+  m_LocalRotation: {x: .382683486, y: 0, z: 0, w: .923879564}
   m_LocalPosition: {x: 0, y: 45, z: -30}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
@@ -2426,8 +2426,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scrollSpeed: .200000003
   zoomSpeed: .300000012
-  rotateSpeed: .300000012
-  additionalBorderPadding: 30
+  rotateSpeed: .600000024
+  additionalBorderPadding: 40
   camPosDisplay: {fileID: 444047347}
 --- !u!45 &1281139904
 Skybox:
@@ -3128,6 +3128,7 @@ Transform:
   m_Children:
   - {fileID: 591753914}
   - {fileID: 1105666117}
+  - {fileID: 1893971352}
   m_Father: {fileID: 0}
   m_RootOrder: 7
 --- !u!1 &1573163253
@@ -3661,11 +3662,11 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1893971350}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 89.9235687, y: 6.38126421, z: -.516254425}
+  m_LocalPosition: {x: 89.9235687, y: -3.61873579, z: -.516254425}
   m_LocalScale: {x: 4, y: 4, z: 1}
   m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 9
+  m_Father: {fileID: 1532540074}
+  m_RootOrder: 2
 --- !u!114 &1893971353
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3754,7 +3755,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0a8dccc7cf22b2b498501479fceeb602, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  NGUICamera: {fileID: 736011168}
   dragTreshold: 3
+  longTapTreshold: 1
 --- !u!4 &1921742727
 Transform:
   m_ObjectHideFlags: 0

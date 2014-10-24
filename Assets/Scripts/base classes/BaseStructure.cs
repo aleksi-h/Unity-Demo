@@ -21,12 +21,24 @@ public abstract class BaseStructure : MonoBehaviour, IDamageable {
         get { return type; }
     }
 
+    private LayerMask groundLayerMask = 1 << 11;
+
     #region IDamageable
     public abstract void Damage(int amount);
     #endregion
 
     public void Build() {
         StartLongProcess(BuildProcess, buildTime);
+    }
+
+    public void Move() {
+        InputManager.OnTap += OnTap;
+        Grid.Instance.RemoveFromNode(myTransform.position);
+    }
+
+    public void ConfirmPosition() {
+        InputManager.OnTap -= OnTap;
+        Grid.Instance.BuildToNode(myTransform.position, type);
     }
 
     protected virtual void Awake() {
@@ -65,5 +77,13 @@ public abstract class BaseStructure : MonoBehaviour, IDamageable {
     private void BuildProcess() {
         GUIManager.Instance.RemoveTimerDisplay(timerDisplay);
         Activate();
+    }
+
+    private void OnTap(Vector3 tapPos) {
+        Ray ray = Camera.main.ScreenPointToRay(tapPos);
+        RaycastHit hit;
+        if (Physics.Raycast(ray, out hit, 1100, groundLayerMask)) {
+            myTransform.position = Grid.Instance.GetNearestValidNode(myTransform.position, hit.point, type);
+        }
     }
 }

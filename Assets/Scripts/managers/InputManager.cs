@@ -2,10 +2,15 @@
 using System.Collections;
 
 public class InputManager : Singleton<InputManager> {
+    public Camera NGUICamera;
     public float dragTreshold; //minimum move distance (x+y) to be recognized as drag
+    public float longTapTreshold; //minimum tap length to be recognized as LongTap
 
     public delegate void TapEvent(Vector3 tapPos);
     public static event TapEvent OnTap;
+
+    public delegate void LongTapEvent(Vector3 tapPos);
+    public static event LongTapEvent OnLongTap;
 
     public delegate void DragEvent(Vector2 deltaPos);
     public static event DragEvent OnDrag;
@@ -16,66 +21,84 @@ public class InputManager : Singleton<InputManager> {
     public delegate void PinchEvent(float amount);
     public static event PinchEvent OnPinch;
 
+    private LayerMask uiLayerMask = 1 << 5;
     private State state;
     private enum State {
-        IDLE, PINCHING, ROTATING, DRAGGING, TAPPING
+        IDLE, PINCHING, ROTATING, DRAGGING, TAPPED, LONGTAPPED
     }
+    private float tapLength;
+    private bool touchesClear;
+    private bool tapOnGui;
+    private bool acceptNewGesture;
 
     void Update() {
-        //if (UICamera.hoveredObject == null) {
-            if (state == State.IDLE) { UpdateState(); }
 
-            switch (state) {
-                case State.PINCHING:
-                    if (Input.touchCount < 2) { state = State.IDLE; }
-                    else if (OnPinch != null) {
-                        Touch t0 = Input.GetTouch(0);
-                        Touch t1 = Input.GetTouch(1);
-                        Vector2 t0PrevPos = t0.position - t0.deltaPosition;
-                        Vector2 t1PrevPos = t1.position - t1.deltaPosition;
-                        float prevFrameDeltaMag = (t0PrevPos - t1PrevPos).magnitude;
-                        float deltaMag = (t0.position - t1.position).magnitude;
-                        float deltaMagnitudeDiff = prevFrameDeltaMag - deltaMag;
-                        OnPinch(deltaMagnitudeDiff);
-                    }
-                    break;
-                case State.ROTATING:
-                    if (Input.touchCount < 2) { state = State.IDLE; }
-                    else if (OnRotate != null) {
-                        Touch t0 = Input.GetTouch(0);
-                        Touch t1 = Input.GetTouch(1);
+        if (Input.touchCount == 0) { 
+            touchesClear = true;
+            acceptNewGesture = true;
+        }
+        if (state == State.IDLE && acceptNewGesture) { UpdateState(); } //IDLE ?
 
-                        //make sure that leftmost touch is t0
-                        if (t0.position.x > t1.position.x) {
-                            Touch aux = t0;
-                            t0 = t1;
-                            t1 = aux;
-                        }
-                        float t0DistanceMoved = t0.deltaPosition.y;
-                        float t1DistanceMoved = -t1.deltaPosition.y;
-                        float combinedDistanceMoved = t0DistanceMoved + t1DistanceMoved;
-                        OnRotate(combinedDistanceMoved);
+        switch (state) {
+            case State.PINCHING:
+                if (Input.touchCount < 2) { state = State.IDLE; }
+                else if (OnPinch != null) {
+                    Touch t0 = Input.GetTouch(0);
+                    Touch t1 = Input.GetTouch(1);
+                    Vector2 t0PrevPos = t0.position - t0.deltaPosition;
+                    Vector2 t1PrevPos = t1.position - t1.deltaPosition;
+                    float prevFrameDeltaMag = (t0PrevPos - t1PrevPos).magnitude;
+                    float deltaMag = (t0.position - t1.position).magnitude;
+                    float deltaMagnitudeDiff = prevFrameDeltaMag - deltaMag;
+                    OnPinch(deltaMagnitudeDiff);
+                }
+                break;
+            case State.ROTATING:
+                if (Input.touchCount < 2) { state = State.IDLE; }
+                else if (OnRotate != null) {
+                    Touch t0 = Input.GetTouch(0);
+                    Touch t1 = Input.GetTouch(1);
+
+                    //make sure that leftmost touch is t0
+                    if (t0.position.x > t1.position.x) {
+                        Touch aux = t0;
+                        t0 = t1;
+                        t1 = aux;
                     }
-                    break;
-                case State.DRAGGING:
-                    if (Input.touchCount != 1) { state = State.IDLE; }
-                    else if (OnDrag != null) { OnDrag(Input.GetTouch(0).deltaPosition); }
-                    break;
-                case State.TAPPING:
-                    if (OnTap != null) {
-                        Touch t = Input.GetTouch(0);
-                        OnTap(new Vector3(t.position.x, t.position.y, 0));
-                    }
-                    state = State.IDLE;
-                    break;
-                default:
-                    break;
-            }
-        //}
+                    float t0DistanceMoved = t0.deltaPosition.y;
+                    float t1DistanceMoved = -t1.deltaPosition.y;
+                    float combinedDistanceMoved = t0DistanceMoved + t1DistanceMoved;
+                    OnRotate(combinedDistanceMoved);
+                }
+                break;
+            case State.DRAGGING:
+                if (Input.touchCount != 1) { state = State.IDLE; }
+                else if (OnDrag != null) { OnDrag(Input.GetTouch(0).deltaPosition); }
+                break;
+            case State.LONGTAPPED:
+                if (OnLongTap != null) {
+                    OnLongTap(new Vector3(Input.GetTouch(0).position.x, Input.GetTouch(0).position.y, 0));
+                }
+                acceptNewGesture = false;
+                tapLength = 0;
+                state = State.IDLE;
+                break;
+            case State.TAPPED:
+                if (OnTap != null) {
+                    OnTap(new Vector3(Input.GetTouch(0).position.x, Input.GetTouch(0).position.y, 0));
+                }
+                tapLength = 0;
+                state = State.IDLE;
+                break;
+            default:
+                break;
+        }
     }
 
     private void UpdateState() {
         if (Input.touchCount == 2) {
+            touchesClear = false;
+            tapLength = 0;
             Touch t0 = Input.GetTouch(0);
             Touch t1 = Input.GetTouch(1);
             if (t0.phase == TouchPhase.Moved && t1.phase == TouchPhase.Moved) {
@@ -99,12 +122,29 @@ public class InputManager : Singleton<InputManager> {
         }
         else if (Input.touchCount == 1) {
             Touch t = Input.GetTouch(0);
-            float deltaMovement = Mathf.Abs(t.deltaPosition.x) + Mathf.Abs(t.deltaPosition.y);
-            if (deltaMovement > 3) {
-                state = State.DRAGGING;
+
+            if (touchesClear) {
+                touchesClear = false;
+                //check if touch is on GUI
+                Ray inputRay = NGUICamera.ScreenPointToRay(t.position);
+                RaycastHit hit;
+                tapOnGui = Physics.Raycast(inputRay.origin, inputRay.direction, out hit, Mathf.Infinity, uiLayerMask);
             }
-            else if (Input.GetTouch(0).phase == TouchPhase.Ended) {
-                    state = State.TAPPING;
+
+            //discard taps on GUI
+            if (!tapOnGui) {
+                tapLength += t.deltaTime;
+                float deltaMovement = Mathf.Abs(t.deltaPosition.x) + Mathf.Abs(t.deltaPosition.y);
+                if (deltaMovement > dragTreshold) {
+                    tapLength = 0;
+                    state = State.DRAGGING;
+                }
+                else if (tapLength > longTapTreshold) {
+                    state = State.LONGTAPPED; //TODO puhelimella rekisteröi vasta kun sormen nostaa, editorissa hetikun > 1
+                }
+                else if (t.phase == TouchPhase.Ended) {
+                    state = State.TAPPED;
+                }
             }
         }
 #if UNITY_EDITOR

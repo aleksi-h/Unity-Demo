@@ -26,7 +26,7 @@ public abstract class UpgradableStructure : BaseStructure, IUpgradeable {
 
         //"upgraded".Start() will be called 1 frame after this, so things that need to be done before that, like releasing workers, can be done in FinishUpgrade()
         GameObject upgraded = (GameObject)Instantiate(nextLevelPrefab, myTransform.position, Quaternion.identity);
-        BuildingManager.Instance.Upgraded(gameObject, upgraded);
+        //BuildingManager.Instance.Upgraded(gameObject, upgraded);
         upgraded.GetComponent<BaseStructure>().Activate();
         FinishUpgrade();
     }

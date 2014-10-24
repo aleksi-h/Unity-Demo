@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 public class GUIManager : Singleton<GUIManager> {
     public Transform GridRoot;
-
+    
     public GameObject timerDisplay;
     public GameObject buildPanel;
     public GameObject confirmBuildPanel;
@@ -12,6 +12,8 @@ public class GUIManager : Singleton<GUIManager> {
 
     public GameObject confirmButtonLabel;
 
+    private LayerMask structureLayerMask = 1 << 10;
+    private GameObject selectedStructure;
     private GameObject structureToBuild;
     private List<GameObject> timerDisplays;
 
@@ -23,7 +25,10 @@ public class GUIManager : Singleton<GUIManager> {
     public void Start() {
         HideAllGUIElements();
         ShowDefaultGUI();
+        InputManager.OnTap += OnTap;
+        InputManager.OnLongTap += OnLongTap;
     }
+
 
     //BUILD PANEL
     public void OnClickStorage() {
@@ -53,18 +58,24 @@ public class GUIManager : Singleton<GUIManager> {
 
     //CONFIRM PLACEMENT PANEL
     public void OnClickConfirmPlacement() {
-        BuildingManager.Instance.ConfirmPosition();
+        selectedStructure.GetComponent<BaseStructure>().ConfirmPosition();
+        InputManager.OnTap += OnTap;
+        ShowDefaultGUI();
     }
 
     //STRUCTURE PANEL
     public void OnClickMove() {
-        BuildingManager.Instance.MoveStructure();
+        if (Grid.Instance.IsBuildingMoveable(selectedStructure.transform.position)) {
+            BaseStructure structureBase = selectedStructure.GetComponent<BaseStructure>();
+            structureBase.Move();
+            ShowPlacementGUI(selectedStructure, structureBase.Type);
+        }
     }
     public void OnClickUpgrade() {
-        BuildingManager.Instance.UpgradeStructure();
+        BuildingManager.Instance.UpgradeStructure(selectedStructure);
     }
     public void OnClickDelete() {
-        BuildingManager.Instance.DeleteStructure();
+        BuildingManager.Instance.DeleteStructure(selectedStructure);
     }
 
 
@@ -104,7 +115,9 @@ public class GUIManager : Singleton<GUIManager> {
         NGUITools.SetActive(structurePanel, true);
     }
 
-    public void ShowPlacementGUI(StructureType type) {
+    public void ShowPlacementGUI(GameObject structure, StructureType type) {
+        InputManager.OnTap -= OnTap;
+        selectedStructure = structure;
         HideAllGUIElements();
         NGUITools.SetActive(confirmPlacementPanel, true);
         Grid.Instance.HighLightValidNodes(type);
@@ -116,5 +129,31 @@ public class GUIManager : Singleton<GUIManager> {
         NGUITools.SetActive(buildPanel, false);
         NGUITools.SetActive(confirmBuildPanel, false);
         NGUITools.SetActive(structurePanel, false);
+    }
+
+    private void OnTap(Vector3 tapPos) {
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+        if (Physics.Raycast(ray, out hit, 1100, structureLayerMask)) {
+            selectedStructure = hit.collider.gameObject;
+            ShowStructureGUI();
+        }
+        else {
+            ShowDefaultGUI();
+        }
+    }
+
+    private void OnLongTap(Vector3 tapPos) {
+        Debug.Log("onlongtap");
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+        if (Physics.Raycast(ray, out hit, 1100, structureLayerMask)) {
+            selectedStructure = hit.collider.gameObject;
+            if (Grid.Instance.IsBuildingMoveable(selectedStructure.transform.position)) {
+                BaseStructure structureBase = selectedStructure.GetComponent<BaseStructure>();
+                structureBase.Move();
+                ShowPlacementGUI(selectedStructure, structureBase.Type);
+            }
+        }
     }
 }

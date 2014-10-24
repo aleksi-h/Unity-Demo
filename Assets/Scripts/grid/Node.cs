@@ -1,8 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Node
-{
+public class Node {
     public bool occupied;
     public StructureType structureType;
     public Vector3 position;
@@ -11,33 +10,36 @@ public class Node
     private GameObject obj;
     MeshRenderer renderer;
 
-    public Node(Vector3 pos, bool occupied)
-    {
+    public Node(Vector3 pos, bool occupied) {
         position = pos;
         this.occupied = occupied;
-
         CreateMesh();
     }
 
-    public void HighLight()
-    {
-        renderer.enabled = true;   
+    public void Destroy() {
+        UnityEngine.GameObject.DestroyImmediate(renderer.material);
+        UnityEngine.GameObject.Destroy(obj);
     }
 
-    public void HideHighLight()
-    {
+    public void HighLight() {
+        renderer.enabled = true;
+    }
+
+    public void HideHighLight() {
         renderer.enabled = false;
     }
 
-    private void CreateMesh()
-    {
+    private void CreateMesh() {
         obj = new GameObject("node");
         obj.transform.parent = Grid.Instance.transform;
         MeshFilter meshFilter = obj.AddComponent<MeshFilter>();
         renderer = obj.AddComponent<MeshRenderer>();
+        renderer.castShadows = false;
+        renderer.receiveShadows = false;
         //renderer.material = new Material(Shader.Find("Custom/UnlitColor"));
         //renderer.material.SetColor("_Color", new Color(0.5f, 0.72f, 1f, 1f));
         renderer.material = new Material(Shader.Find("Unlit/Texture"));
+        renderer.enabled = false;
 
         float radius = 1.8f;
         float height = 0.02f;
@@ -52,8 +54,7 @@ public class Node
         Vector3 p7 = new Vector3(radius, 0, radius) + position;
 
         Mesh mesh = meshFilter.sharedMesh;
-        if (mesh == null)
-        {
+        if (mesh == null) {
             meshFilter.mesh = new Mesh();
             mesh = meshFilter.sharedMesh;
         }
