@@ -13,6 +13,7 @@ public abstract class BaseStructure : MonoBehaviour, IDamageable {
 
     protected Transform myTransform;
     protected bool structureActive;
+    protected bool onTapRegistered;
     protected int maxHealth;
     protected int level;
     protected int health;
@@ -33,12 +34,14 @@ public abstract class BaseStructure : MonoBehaviour, IDamageable {
 
     public void Move() {
         InputManager.OnTap += OnTap;
-        Grid.Instance.RemoveFromNode(myTransform.position);
+        onTapRegistered = true;
+        //Grid.Instance.RemoveFromNode(myTransform.position);
     }
 
     public void ConfirmPosition() {
         InputManager.OnTap -= OnTap;
-        Grid.Instance.BuildToNode(myTransform.position, type);
+        onTapRegistered = false;
+        //Grid.Instance.BuildToNode(myTransform.position, type);
     }
 
     protected virtual void Awake() {
@@ -53,6 +56,12 @@ public abstract class BaseStructure : MonoBehaviour, IDamageable {
 
     public virtual void Activate() {
         structureActive = true;
+    }
+
+    protected virtual void OnDestroy() {
+        if (onTapRegistered) {
+            InputManager.OnTap -= OnTap;
+        }
     }
 
     protected virtual void StartLongProcess(LongProcess process, float duration) {
@@ -83,7 +92,12 @@ public abstract class BaseStructure : MonoBehaviour, IDamageable {
         Ray ray = Camera.main.ScreenPointToRay(tapPos);
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit, 1100, groundLayerMask)) {
-            myTransform.position = Grid.Instance.GetNearestValidNode(myTransform.position, hit.point, type);
+            Vector3 newPos = Grid.Instance.GetNearestValidNode(myTransform.position, hit.point, type);
+            if (!myTransform.position.Equals(newPos)) {
+                Grid.Instance.RemoveFromNode(myTransform.position);
+                Grid.Instance.BuildToNode(newPos, type);
+                myTransform.position = newPos;
+            }
         }
     }
 }

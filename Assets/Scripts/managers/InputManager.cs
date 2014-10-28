@@ -2,6 +2,7 @@
 using System.Collections;
 
 public class InputManager : Singleton<InputManager> {
+    public GUIText DebugInfo;
     public Camera NGUICamera;
     public float dragTreshold; //minimum move distance (x+y) to be recognized as drag
     public float longTapTreshold; //minimum tap length to be recognized as LongTap
@@ -133,14 +134,14 @@ public class InputManager : Singleton<InputManager> {
 
             //discard taps on GUI
             if (!tapOnGui) {
-                tapLength += t.deltaTime;
+                tapLength += Time.deltaTime;
                 float deltaMovement = Mathf.Abs(t.deltaPosition.x) + Mathf.Abs(t.deltaPosition.y);
                 if (deltaMovement > dragTreshold) {
                     tapLength = 0;
                     state = State.DRAGGING;
                 }
                 else if (tapLength > longTapTreshold) {
-                    state = State.LONGTAPPED; //TODO puhelimella rekisteröi vasta kun sormen nostaa, editorissa hetikun > 1
+                    state = State.LONGTAPPED;
                 }
                 else if (t.phase == TouchPhase.Ended) {
                     state = State.TAPPED;

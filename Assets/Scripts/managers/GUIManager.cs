@@ -2,13 +2,25 @@
 using System.Collections.Generic;
 
 public class GUIManager : Singleton<GUIManager> {
-    public Transform GridRoot;
+    public Transform gridRoot;
+    public UIRoot uiRoot;
+    public Camera nguiCamera;
     
     public GameObject timerDisplay;
-    public GameObject buildPanel;
+    public GameObject oldBuildPanel;
     public GameObject confirmBuildPanel;
-    public GameObject structurePanel;
     public GameObject confirmPlacementPanel;
+
+    //BUILD MENU
+    public GameObject buildButton;
+    public GameObject buildPanel;
+
+    //CONTEXT MENU
+    public GameObject oldCtxMenu;
+    public GameObject contextMenu;
+    public GameObject contextMenuGrid;
+    public GameObject upgradeButtonPrefab;
+    public GameObject removeButtonPrefab;
 
     public GameObject confirmButtonLabel;
 
@@ -24,11 +36,18 @@ public class GUIManager : Singleton<GUIManager> {
 
     public void Start() {
         HideAllGUIElements();
-        ShowDefaultGUI();
+        ShowDefaultMenu();
         InputManager.OnTap += OnTap;
         InputManager.OnLongTap += OnLongTap;
+        UIEventListener.Get(buildButton).onClick += showBuildMenu;
     }
 
+    //avoid null reference when changing prefab
+    public void UpgradeFinished(GameObject oldGo, GameObject newGo) {
+        if (selectedStructure == oldGo) {
+            selectedStructure = newGo;
+        }
+    }
 
     //BUILD PANEL
     public void OnClickStorage() {
@@ -53,14 +72,14 @@ public class GUIManager : Singleton<GUIManager> {
         BuildingManager.instance.BuildStructure(structureToBuild);
     }
     public void OnClickCancel() {
-        ShowDefaultGUI();
+        ShowDefaultMenu();
     }
 
     //CONFIRM PLACEMENT PANEL
     public void OnClickConfirmPlacement() {
         selectedStructure.GetComponent<BaseStructure>().ConfirmPosition();
         InputManager.OnTap += OnTap;
-        ShowDefaultGUI();
+        ShowDefaultMenu();
     }
 
     //STRUCTURE PANEL
@@ -71,10 +90,10 @@ public class GUIManager : Singleton<GUIManager> {
             ShowPlacementGUI(selectedStructure, structureBase.Type);
         }
     }
-    public void OnClickUpgrade() {
+    public void OnClickUpgrade(GameObject go) {
         BuildingManager.Instance.UpgradeStructure(selectedStructure);
     }
-    public void OnClickDelete() {
+    public void OnClickRemove(GameObject go) {
         BuildingManager.Instance.DeleteStructure(selectedStructure);
     }
 
@@ -83,7 +102,7 @@ public class GUIManager : Singleton<GUIManager> {
         GameObject display = (GameObject)Instantiate(timerDisplay, caller.transform.position, Quaternion.identity);
         display.transform.parent = transform;
         display.guiText.text = text;
-        display.GetComponent<TimerDisplay>().FollowObject(caller);
+        display.GetComponent<FollowGameObject>().FollowObject(caller);
         timerDisplays.Add(display);
         return display;
     }
@@ -104,15 +123,30 @@ public class GUIManager : Singleton<GUIManager> {
         NGUITools.SetActive(confirmBuildPanel, true);
     }
 
-    public void ShowDefaultGUI() {
+    public void ShowDefaultMenu() {
         HideAllGUIElements();
-        NGUITools.SetActive(buildPanel, true);
+        NGUITools.SetActive(oldBuildPanel, true);
+        NGUITools.SetActive(buildButton, true);
     }
 
-    public void ShowStructureGUI() {
-        //TODO get a ref to structure & enable/disable buttons based on availability eg. 0 workers, disable "add worker" button
+    public void ShowContextMenu() {
         HideAllGUIElements();
-        NGUITools.SetActive(structurePanel, true);
+
+        Vector3 offset = new Vector3(0, 15, 0);
+        FollowGameObjectNGUI followScript = contextMenu.GetComponent<FollowGameObjectNGUI>();
+        followScript.setOffset(offset);
+        followScript.SetTarget(selectedStructure);
+
+        NGUITools.SetActive(contextMenu, true);
+        if (selectedStructure.ImplementsInterface<IUpgradeable>()) {
+            GameObject btn = NGUITools.AddChild(contextMenuGrid, upgradeButtonPrefab);
+            UIEventListener.Get(btn).onClick += OnClickUpgrade;
+        }
+        if (selectedStructure.GetInterface<IRemovable>() != null) {
+            GameObject btn = NGUITools.AddChild(contextMenuGrid, removeButtonPrefab);
+            UIEventListener.Get(btn).onClick += OnClickRemove;
+        }
+        contextMenuGrid.GetComponent<UIGrid>().Reposition();
     }
 
     public void ShowPlacementGUI(GameObject structure, StructureType type) {
@@ -123,28 +157,49 @@ public class GUIManager : Singleton<GUIManager> {
         Grid.Instance.HighLightValidNodes(type);
     }
 
+    private void showBuildMenu(GameObject go) {
+        NGUITools.SetActive(buildPanel, true);
+    }
+
     private void HideAllGUIElements() {
         Grid.Instance.HideHighlight();
-        NGUITools.SetActive(confirmPlacementPanel, false);
+
+        //stop following a target when hidden
+        contextMenu.GetComponent<FollowGameObjectNGUI>().SetTarget(null);
+
+        //clear the context menu
+        int menuItemCount = contextMenuGrid.transform.childCount;
+        for (int i = 0; i < menuItemCount; i++) {
+            Transform child = contextMenuGrid.transform.GetChild(0);
+            child.parent = null;
+            Destroy(child.gameObject);
+        }
+
+        NGUITools.SetActive(buildButton, false);
+        //hide all panels
         NGUITools.SetActive(buildPanel, false);
+        NGUITools.SetActive(oldCtxMenu, false);
+        NGUITools.SetActive(contextMenu, false);
+        NGUITools.SetActive(confirmPlacementPanel, false);
+        NGUITools.SetActive(oldBuildPanel, false);
         NGUITools.SetActive(confirmBuildPanel, false);
-        NGUITools.SetActive(structurePanel, false);
     }
 
     private void OnTap(Vector3 tapPos) {
+        Debug.Log("OnTap");
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit, 1100, structureLayerMask)) {
             selectedStructure = hit.collider.gameObject;
-            ShowStructureGUI();
+            ShowContextMenu();
         }
         else {
-            ShowDefaultGUI();
+            ShowDefaultMenu();
         }
     }
 
     private void OnLongTap(Vector3 tapPos) {
-        Debug.Log("onlongtap");
+        Debug.Log("OnLongTap");
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit, 1100, structureLayerMask)) {

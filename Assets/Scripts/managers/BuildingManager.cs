@@ -17,10 +17,6 @@ public class BuildingManager : Singleton<BuildingManager> {
         GameObject obj = (GameObject)Instantiate(statue, new Vector3(-10, 0, 0), Quaternion.identity);
         Grid.Instance.BuildToNode(obj.transform.position, StructureType.Special);
         obj.GetComponent<BaseStructure>().Activate();
-
-        GameObject asd = (GameObject)Instantiate(storage, new Vector3(10, 0, 0), Quaternion.identity);
-        Grid.Instance.BuildToNode(asd.transform.position, StructureType.Special);
-        asd.GetComponent<BaseStructure>().Activate();
     }
 
     public void BuildStructure(GameObject prefab) {
@@ -52,7 +48,7 @@ public class BuildingManager : Singleton<BuildingManager> {
             if (removable != null && removable.RemovalAllowed()) {
                 removable.Remove();
                 Grid.Instance.RemoveFromNode(structure.transform.position);
-                GUIManager.Instance.ShowDefaultGUI();
+                GUIManager.Instance.ShowDefaultMenu();
             }
         }
     }
@@ -64,14 +60,8 @@ public class BuildingManager : Singleton<BuildingManager> {
             if (ResourceManager.Instance.CanAffordResources(upgradeCost)) {
                 ResourceManager.Instance.PayResources(upgradeCost);
                 upgradeable.Upgrade();
-                GUIManager.Instance.ShowDefaultGUI();
+                GUIManager.Instance.ShowDefaultMenu();
             }
         }
     }
-
-    /*public void Upgraded(GameObject oldGo, GameObject newGo) {
-        if (selectedStructure == oldGo) {
-            selectedStructure = newGo;
-        }
-    }*/
 }

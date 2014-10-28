@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class TimerDisplay : MonoBehaviour {
+public class FollowGameObject : MonoBehaviour {
     private Transform myTransform;
     private GameObject target;
     private Transform targetTransform;
@@ -10,7 +10,7 @@ public class TimerDisplay : MonoBehaviour {
         myTransform = transform;
     }
 
-    public void Update() {
+    public void LateUpdate() {
         if (target != null) {
             myTransform.position = Camera.main.WorldToViewportPoint(targetTransform.position);
         }

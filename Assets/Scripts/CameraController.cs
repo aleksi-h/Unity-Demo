@@ -7,6 +7,8 @@ public class CameraController : MonoBehaviour {
     public float zoomSpeed;
     public float rotateSpeed;
     public float additionalBorderPadding; //to restrict camera from moving too close to borders
+    public float minFOV;
+    public float maxFOV;
     public GUIText camPosDisplay;
 
     private Transform myTransform;
@@ -26,6 +28,7 @@ public class CameraController : MonoBehaviour {
         cameraPointDistance = (cameraHeight * Mathf.Sin(Mathf.Deg2Rad * cameraAngle)) / (Mathf.Sin(Mathf.Deg2Rad * (180 - (90 + cameraAngle))));
         cameraPointDistance += additionalBorderPadding;
     }
+
     void Start() {
         InputManager.OnDrag += Pan;
         InputManager.OnRotate += Rotate;
@@ -51,8 +54,7 @@ public class CameraController : MonoBehaviour {
 
     private void Zoom(float amount) {
         camera.fieldOfView += amount * zoomSpeed;
-        camera.fieldOfView = Mathf.Clamp(camera.fieldOfView, 20f, 120f);
-        //Debug.Log("FOV: "+camera.fieldOfView);
+        camera.fieldOfView = Mathf.Clamp(camera.fieldOfView, minFOV, maxFOV);
     }
 
     private void Rotate(float amount) {
