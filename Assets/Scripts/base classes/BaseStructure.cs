@@ -23,25 +23,38 @@ public abstract class BaseStructure : MonoBehaviour, IDamageable {
     }
 
     private LayerMask groundLayerMask = 1 << 11;
+    private Vector3 positionBeforeMove;
 
     #region IDamageable
     public abstract void Damage(int amount);
     #endregion
 
     public void Build() {
+        Grid.Instance.BuildToNode(myTransform.position, type);
         StartLongProcess(BuildProcess, buildTime);
     }
 
+    //start receiving onTap events
     public void Move() {
         InputManager.OnTap += OnTap;
         onTapRegistered = true;
-        //Grid.Instance.RemoveFromNode(myTransform.position);
+        positionBeforeMove = myTransform.position;
     }
 
-    public void ConfirmPosition() {
+    //stop receiving onTap events and go back to previous position
+    public void CancelMove() {
         InputManager.OnTap -= OnTap;
         onTapRegistered = false;
-        //Grid.Instance.BuildToNode(myTransform.position, type);
+        if (!myTransform.position.Equals(positionBeforeMove)) {
+            Grid.Instance.RemoveFromNode(myTransform.position);
+            Grid.Instance.BuildToNode(positionBeforeMove, type);
+            myTransform.position = positionBeforeMove;
+        }
+    }
+
+    public void FinishMove() {
+        InputManager.OnTap -= OnTap;
+        onTapRegistered = false;
     }
 
     protected virtual void Awake() {
@@ -88,6 +101,7 @@ public abstract class BaseStructure : MonoBehaviour, IDamageable {
         Activate();
     }
 
+    //move to selected node
     private void OnTap(Vector3 tapPos) {
         Ray ray = Camera.main.ScreenPointToRay(tapPos);
         RaycastHit hit;

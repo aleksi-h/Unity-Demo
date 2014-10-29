@@ -9,19 +9,6 @@ public class GUIManager : Singleton<GUIManager> {
     public GameObject timerDisplay;
     public GameObject oldBuildPanel;
     public GameObject confirmBuildPanel;
-    public GameObject confirmPlacementPanel;
-
-    //BUILD MENU
-    public GameObject buildButton;
-    public GameObject buildPanel;
-
-    //CONTEXT MENU
-    public GameObject oldCtxMenu;
-    public GameObject contextMenu;
-    public GameObject contextMenuGrid;
-    public GameObject upgradeButtonPrefab;
-    public GameObject removeButtonPrefab;
-
     public GameObject confirmButtonLabel;
 
     private LayerMask structureLayerMask = 1 << 10;
@@ -40,16 +27,43 @@ public class GUIManager : Singleton<GUIManager> {
         InputManager.OnTap += OnTap;
         InputManager.OnLongTap += OnLongTap;
         UIEventListener.Get(buildButton).onClick += showBuildMenu;
+        UIEventListener.Get(acceptButton).onClick += OnClickConfirmMovement;
+        UIEventListener.Get(cancelButton).onClick += OnClickCancelMovement;
+        UIEventListener.Get(sawmillButton).onClick += showBuyMenu;
+        UIEventListener.Get(fieldButton).onClick += showBuyMenu;
+        UIEventListener.Get(storageButton).onClick += showBuyMenu;
+        UIEventListener.Get(hutButton).onClick += showBuyMenu;
+        UIEventListener.Get(buyButton).onClick += onClickBuy;
     }
 
-    //avoid null reference when changing prefab
+    //avoid null reference when changing prefab after upgrade
     public void UpgradeFinished(GameObject oldGo, GameObject newGo) {
         if (selectedStructure == oldGo) {
             selectedStructure = newGo;
         }
     }
 
-    //BUILD PANEL
+    //BUILD MENU
+    public GameObject buildButton;
+    public GameObject buildMenu;
+    public GameObject buildMenuGrid;
+    public GameObject sawmillButton;
+    public GameObject fieldButton;
+    public GameObject storageButton;
+    public GameObject hutButton;
+
+    private void showBuildMenu(GameObject button) {
+        HideAllGUIElements();
+        NGUITools.SetActive(buildMenu, true);
+    }
+
+    public void showBuildDialog(GameObject obj) {
+        HideAllGUIElements();
+        Resource cost = obj.GetComponent<BaseStructure>().cost;
+        confirmButtonLabel.GetComponent<UILabel>().text = "Wood " + cost.wood + "\nFood " + cost.food;
+        NGUITools.SetActive(confirmBuildPanel, true);
+    }
+
     public void OnClickStorage() {
         structureToBuild = BuildingManager.instance.storage;
         showBuildDialog(structureToBuild);
@@ -67,6 +81,35 @@ public class GUIManager : Singleton<GUIManager> {
         showBuildDialog(structureToBuild);
     }
 
+    //BUY MENU
+    public GameObject buyMenu;
+    public GameObject buyButton;
+    public GameObject priceLabel;
+    private void showBuyMenu(GameObject button) {
+        HideAllGUIElements();
+        if (button == sawmillButton) {
+            structureToBuild = BuildingManager.Instance.sawmill;
+        }
+        else if (button == fieldButton) {
+            structureToBuild = BuildingManager.Instance.field;
+        }
+        else if (button == storageButton) {
+            structureToBuild = BuildingManager.Instance.storage;
+        }
+        else if (button == hutButton) {
+            structureToBuild = BuildingManager.Instance.hut;
+        }
+
+        if (structureToBuild != null) {
+            Resource price = structureToBuild.GetComponent<BaseStructure>().cost;
+            priceLabel.GetComponent<UILabel>().text = price.wood + "W " + price.food + "F";
+        }
+        NGUITools.SetActive(buyMenu, true);
+    }
+    private void onClickBuy(GameObject button) {
+        BuildingManager.instance.BuildStructure(structureToBuild);
+    }
+
     //CONFIRM BUILD PANEL
     public void OnClickConfirmBuild() {
         BuildingManager.instance.BuildStructure(structureToBuild);
@@ -75,60 +118,35 @@ public class GUIManager : Singleton<GUIManager> {
         ShowDefaultMenu();
     }
 
-    //CONFIRM PLACEMENT PANEL
-    public void OnClickConfirmPlacement() {
-        selectedStructure.GetComponent<BaseStructure>().ConfirmPosition();
+    //MOVEMENT MENU
+    public GameObject confirmPlacementMenu;
+    public GameObject acceptButton;
+    public GameObject cancelButton;
+
+    private void OnClickConfirmMovement(GameObject go) {
+        Debug.Log(go);
+        selectedStructure.GetComponent<BaseStructure>().FinishMove();
+        InputManager.OnTap += OnTap;
+        ShowDefaultMenu();
+    }
+    private void OnClickCancelMovement(GameObject go) {
+        selectedStructure.GetComponent<BaseStructure>().CancelMove();
         InputManager.OnTap += OnTap;
         ShowDefaultMenu();
     }
 
-    //STRUCTURE PANEL
-    public void OnClickMove() {
-        if (Grid.Instance.IsBuildingMoveable(selectedStructure.transform.position)) {
-            BaseStructure structureBase = selectedStructure.GetComponent<BaseStructure>();
-            structureBase.Move();
-            ShowPlacementGUI(selectedStructure, structureBase.Type);
-        }
-    }
-    public void OnClickUpgrade(GameObject go) {
+    //CONTEXT MENU
+    public GameObject contextMenu;
+    public GameObject contextMenuGrid;
+    public GameObject upgradeButtonPrefab;
+    public GameObject removeButtonPrefab;
+
+    private void OnClickUpgrade(GameObject go) {
         BuildingManager.Instance.UpgradeStructure(selectedStructure);
     }
-    public void OnClickRemove(GameObject go) {
+    private void OnClickRemove(GameObject go) {
         BuildingManager.Instance.DeleteStructure(selectedStructure);
     }
-
-
-    public GameObject AddTimerDisplay(GameObject caller, string text) {
-        GameObject display = (GameObject)Instantiate(timerDisplay, caller.transform.position, Quaternion.identity);
-        display.transform.parent = transform;
-        display.guiText.text = text;
-        display.GetComponent<FollowGameObject>().FollowObject(caller);
-        timerDisplays.Add(display);
-        return display;
-    }
-
-    public void UpdateTimerDisplay(GameObject display, string text) {
-        display.guiText.text = text;
-    }
-
-    public void RemoveTimerDisplay(GameObject display) {
-        timerDisplays.Remove(display);
-        Destroy(display);
-    }
-
-    public void showBuildDialog(GameObject obj) {
-        HideAllGUIElements();
-        Resource cost = obj.GetComponent<BaseStructure>().cost;
-        confirmButtonLabel.GetComponent<UILabel>().text = "Wood "+cost.wood + "\nFood "+cost.food;
-        NGUITools.SetActive(confirmBuildPanel, true);
-    }
-
-    public void ShowDefaultMenu() {
-        HideAllGUIElements();
-        NGUITools.SetActive(oldBuildPanel, true);
-        NGUITools.SetActive(buildButton, true);
-    }
-
     public void ShowContextMenu() {
         HideAllGUIElements();
 
@@ -140,7 +158,7 @@ public class GUIManager : Singleton<GUIManager> {
         NGUITools.SetActive(contextMenu, true);
         if (selectedStructure.ImplementsInterface<IUpgradeable>()) {
             GameObject btn = NGUITools.AddChild(contextMenuGrid, upgradeButtonPrefab);
-            UIEventListener.Get(btn).onClick += OnClickUpgrade;
+            UIEventListener.Get(btn).onClick += OnClickUpgrade;//TODO remove ref somewhere?
         }
         if (selectedStructure.GetInterface<IRemovable>() != null) {
             GameObject btn = NGUITools.AddChild(contextMenuGrid, removeButtonPrefab);
@@ -149,25 +167,49 @@ public class GUIManager : Singleton<GUIManager> {
         contextMenuGrid.GetComponent<UIGrid>().Reposition();
     }
 
+
+    public GameObject AddTimerDisplay(GameObject caller, string text) {
+        GameObject display = (GameObject)Instantiate(timerDisplay, caller.transform.position, Quaternion.identity);
+        display.transform.parent = transform;
+        display.guiText.text = text;
+        display.GetComponent<FollowGameObject>().FollowObject(caller);
+        timerDisplays.Add(display);
+        return display;
+    }
+    public void UpdateTimerDisplay(GameObject display, string text) {
+        display.guiText.text = text;
+    }
+    public void RemoveTimerDisplay(GameObject display) {
+        timerDisplays.Remove(display);
+        Destroy(display);
+    }
+
+    public void ShowDefaultMenu() {
+        HideAllGUIElements();
+        NGUITools.SetActive(oldBuildPanel, true);
+        NGUITools.SetActive(buildButton, true);
+    }
+
+
     public void ShowPlacementGUI(GameObject structure, StructureType type) {
         InputManager.OnTap -= OnTap;
         selectedStructure = structure;
         HideAllGUIElements();
-        NGUITools.SetActive(confirmPlacementPanel, true);
+        Vector3 offset = new Vector3(0, 15, 0);
+        FollowGameObjectNGUI followScript = confirmPlacementMenu.GetComponent<FollowGameObjectNGUI>();
+        followScript.setOffset(offset);
+        followScript.SetTarget(selectedStructure);
+        NGUITools.SetActive(confirmPlacementMenu, true);
         Grid.Instance.HighLightValidNodes(type);
     }
 
-    private void showBuildMenu(GameObject go) {
-        NGUITools.SetActive(buildPanel, true);
-    }
 
     private void HideAllGUIElements() {
-        Grid.Instance.HideHighlight();
-
         //stop following a target when hidden
         contextMenu.GetComponent<FollowGameObjectNGUI>().SetTarget(null);
+        confirmPlacementMenu.GetComponent<FollowGameObjectNGUI>().SetTarget(null);
 
-        //clear the context menu
+        //clear items from context menu grid
         int menuItemCount = contextMenuGrid.transform.childCount;
         for (int i = 0; i < menuItemCount; i++) {
             Transform child = contextMenuGrid.transform.GetChild(0);
@@ -175,12 +217,14 @@ public class GUIManager : Singleton<GUIManager> {
             Destroy(child.gameObject);
         }
 
+        Grid.Instance.HideHighlight();
         NGUITools.SetActive(buildButton, false);
-        //hide all panels
-        NGUITools.SetActive(buildPanel, false);
-        NGUITools.SetActive(oldCtxMenu, false);
+
+        //hide all menus
+        NGUITools.SetActive(buyMenu, false);
+        NGUITools.SetActive(confirmPlacementMenu, false);
+        NGUITools.SetActive(buildMenu, false);
         NGUITools.SetActive(contextMenu, false);
-        NGUITools.SetActive(confirmPlacementPanel, false);
         NGUITools.SetActive(oldBuildPanel, false);
         NGUITools.SetActive(confirmBuildPanel, false);
     }

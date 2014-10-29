@@ -44,50 +44,14 @@ MonoBehaviour:
   - name: button_remove
     outer:
       serializedVersion: 2
-      x: 65
-      y: 127
-      width: 47
-      height: 64
-    inner:
-      serializedVersion: 2
-      x: 65
-      y: 127
-      width: 47
-      height: 64
-    rotated: 0
-    paddingLeft: .148936167
-    paddingRight: .212765962
-    paddingTop: 0
-    paddingBottom: 0
-  - name: button_upgrade
-    outer:
-      serializedVersion: 2
-      x: 65
-      y: 192
-      width: 52
-      height: 64
-    inner:
-      serializedVersion: 2
-      x: 65
-      y: 192
-      width: 52
-      height: 64
-    rotated: 0
-    paddingLeft: .115384616
-    paddingRight: .115384616
-    paddingTop: 0
-    paddingBottom: 0
-  - name: ButtonBuild
-    outer:
-      serializedVersion: 2
-      x: 0
-      y: 127
+      x: 130
+      y: 448
       width: 64
       height: 64
     inner:
       serializedVersion: 2
-      x: 0
-      y: 127
+      x: 130
+      y: 448
       width: 64
       height: 64
     rotated: 0
@@ -95,17 +59,161 @@ MonoBehaviour:
     paddingRight: 0
     paddingTop: 0
     paddingBottom: 0
-  - name: BuildMenuBG
+  - name: button_upgrade
     outer:
       serializedVersion: 2
       x: 0
-      y: 192
+      y: 383
       width: 64
       height: 64
     inner:
       serializedVersion: 2
       x: 0
-      y: 192
+      y: 383
+      width: 64
+      height: 64
+    rotated: 0
+    paddingLeft: 0
+    paddingRight: 0
+    paddingTop: 0
+    paddingBottom: 0
+  - name: ButtonBuild
+    outer:
+      serializedVersion: 2
+      x: 65
+      y: 383
+      width: 64
+      height: 64
+    inner:
+      serializedVersion: 2
+      x: 65
+      y: 383
+      width: 64
+      height: 64
+    rotated: 0
+    paddingLeft: 0
+    paddingRight: 0
+    paddingTop: 0
+    paddingBottom: 0
+  - name: button_accept
+    outer:
+      serializedVersion: 2
+      x: 130
+      y: 383
+      width: 64
+      height: 64
+    inner:
+      serializedVersion: 2
+      x: 130
+      y: 383
+      width: 64
+      height: 64
+    rotated: 0
+    paddingLeft: 0
+    paddingRight: 0
+    paddingTop: 0
+    paddingBottom: 0
+  - name: icon_sawmill
+    outer:
+      serializedVersion: 2
+      x: 0
+      y: 318
+      width: 64
+      height: 64
+    inner:
+      serializedVersion: 2
+      x: 0
+      y: 318
+      width: 64
+      height: 64
+    rotated: 0
+    paddingLeft: 0
+    paddingRight: 0
+    paddingTop: 0
+    paddingBottom: 0
+  - name: build_menu_scroll_area_bg
+    outer:
+      serializedVersion: 2
+      x: 65
+      y: 318
+      width: 64
+      height: 64
+    inner:
+      serializedVersion: 2
+      x: 65
+      y: 318
+      width: 64
+      height: 64
+    rotated: 0
+    paddingLeft: 0
+    paddingRight: 0
+    paddingTop: 0
+    paddingBottom: 0
+  - name: build_menu_bg
+    outer:
+      serializedVersion: 2
+      x: 130
+      y: 318
+      width: 64
+      height: 64
+    inner:
+      serializedVersion: 2
+      x: 130
+      y: 318
+      width: 64
+      height: 64
+    rotated: 0
+    paddingLeft: 0
+    paddingRight: 0
+    paddingTop: 0
+    paddingBottom: 0
+  - name: icon_field
+    outer:
+      serializedVersion: 2
+      x: 0
+      y: 253
+      width: 64
+      height: 64
+    inner:
+      serializedVersion: 2
+      x: 0
+      y: 253
+      width: 64
+      height: 64
+    rotated: 0
+    paddingLeft: 0
+    paddingRight: 0
+    paddingTop: 0
+    paddingBottom: 0
+  - name: icon_storage
+    outer:
+      serializedVersion: 2
+      x: 0
+      y: 448
+      width: 64
+      height: 64
+    inner:
+      serializedVersion: 2
+      x: 0
+      y: 448
+      width: 64
+      height: 64
+    rotated: 0
+    paddingLeft: 0
+    paddingRight: 0
+    paddingTop: 0
+    paddingBottom: 0
+  - name: icon_hut
+    outer:
+      serializedVersion: 2
+      x: 65
+      y: 448
+      width: 64
+      height: 64
+    inner:
+      serializedVersion: 2
+      x: 65
+      y: 448
       width: 64
       height: 64
     rotated: 0
