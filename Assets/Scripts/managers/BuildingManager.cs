@@ -19,27 +19,31 @@ public class BuildingManager : Singleton<BuildingManager> {
         obj.GetComponent<BaseStructure>().Activate();
     }
 
-    public void BuildStructure(GameObject prefab) {
+    public bool CanAffordStructure(GameObject prefab) {
         bool canAffordStructure = true;
-        BaseStructure structure = prefab.GetComponent<BaseStructure>();
-        if (!ResourceManager.Instance.CanAffordResources(structure.cost)) {
+        Resource cost = prefab.GetComponent<BaseStructure>().cost;
+        Resource costInCurrency = Utils.ConvertResourcesToCurrency(cost);
+        if (!ResourceManager.Instance.CanAffordResources(cost) && !ResourceManager.Instance.CanAffordResources(costInCurrency)) {
             canAffordStructure = false;
         }
         if (prefab.ImplementsInterface<IEmployer>()) {
-            if (!ResourceManager.Instance.HasFreeWorkers(prefab.GetInterface<IEmployer>().MinWorkerCount)) {
+            int minWorkerCount = prefab.GetInterface<IEmployer>().MinWorkerCount;
+            if (!ResourceManager.Instance.HasFreeWorkers(minWorkerCount)) {
                 canAffordStructure = false;
             }
         }
-        if (canAffordStructure) {
-            ResourceManager.Instance.PayResources(structure.cost);
-            Vector3 pos = new Vector3(0, 0, 0);
-            GameObject newStructure = (GameObject)Instantiate(prefab, pos, Quaternion.identity);
-            BaseStructure newStructureBase = newStructure.GetComponent<BaseStructure>();
-            selectedType = newStructureBase.Type;
-            newStructureBase.Build();
-            newStructureBase.Move();
-            GUIManager.Instance.ShowPlacementGUI(newStructure,selectedType);
-        }
+        return canAffordStructure;
+    }
+
+    public void BuildStructure(GameObject prefab, Resource cost) {
+        ResourceManager.Instance.PayResources(cost);
+        Vector3 pos = new Vector3(0, 0, 0);
+        GameObject newStructure = (GameObject)Instantiate(prefab, pos, Quaternion.identity);
+        BaseStructure newStructureBase = newStructure.GetComponent<BaseStructure>();
+        selectedType = newStructureBase.Type;
+        newStructureBase.Build();
+        newStructureBase.Move();
+        GUIManager.Instance.ShowPlacementGUI(newStructure, selectedType);
     }
 
     public void DeleteStructure(GameObject structure) {

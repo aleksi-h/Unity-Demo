@@ -2,11 +2,11 @@
 using System.Collections;
 
 public class Utils {
-    private const int currencyValueInFood = 100;
-    private const int currencyValueInWood = 100;
+    private const int currencyValueInFood = 50;
+    private const int currencyValueInWood = 50;
 
     //convert a resource cost into currency cost
-    public static Resource ReplaceResourcesByCurrency(Resource resource) {
+    public static Resource ConvertResourcesToCurrency(Resource resource) {
         int currency = 0;
         //manually rounding up to next int without float conversion (only works for numbers > 0)
         if (resource.wood > 0) { currency += ((resource.wood - 1) / currencyValueInWood) + 1; }

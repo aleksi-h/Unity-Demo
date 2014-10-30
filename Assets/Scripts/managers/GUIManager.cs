@@ -5,15 +5,10 @@ public class GUIManager : Singleton<GUIManager> {
     public Transform gridRoot;
     public UIRoot uiRoot;
     public Camera nguiCamera;
-    
     public GameObject timerDisplay;
-    public GameObject oldBuildPanel;
-    public GameObject confirmBuildPanel;
-    public GameObject confirmButtonLabel;
 
     private LayerMask structureLayerMask = 1 << 10;
     private GameObject selectedStructure;
-    private GameObject structureToBuild;
     private List<GameObject> timerDisplays;
 
     public override void Awake() {
@@ -33,7 +28,8 @@ public class GUIManager : Singleton<GUIManager> {
         UIEventListener.Get(fieldButton).onClick += showBuyMenu;
         UIEventListener.Get(storageButton).onClick += showBuyMenu;
         UIEventListener.Get(hutButton).onClick += showBuyMenu;
-        UIEventListener.Get(buyButton).onClick += onClickBuy;
+        UIEventListener.Get(buyButton1).onClick += onClickBuy1;
+        UIEventListener.Get(buyButton2).onClick += onClickBuy2;
     }
 
     //avoid null reference when changing prefab after upgrade
@@ -57,65 +53,62 @@ public class GUIManager : Singleton<GUIManager> {
         NGUITools.SetActive(buildMenu, true);
     }
 
-    public void showBuildDialog(GameObject obj) {
-        HideAllGUIElements();
-        Resource cost = obj.GetComponent<BaseStructure>().cost;
-        confirmButtonLabel.GetComponent<UILabel>().text = "Wood " + cost.wood + "\nFood " + cost.food;
-        NGUITools.SetActive(confirmBuildPanel, true);
-    }
-
-    public void OnClickStorage() {
-        structureToBuild = BuildingManager.instance.storage;
-        showBuildDialog(structureToBuild);
-    }
-    public void OnClickSawmill() {
-        structureToBuild = BuildingManager.instance.sawmill;
-        showBuildDialog(structureToBuild);
-    }
-    public void OnClickHut() {
-        structureToBuild = BuildingManager.instance.hut;
-        showBuildDialog(structureToBuild);
-    }
-    public void OnClickField() {
-        structureToBuild = BuildingManager.instance.field;
-        showBuildDialog(structureToBuild);
-    }
-
     //BUY MENU
     public GameObject buyMenu;
-    public GameObject buyButton;
-    public GameObject priceLabel;
+    public GameObject structureIcon;
+    public GameObject buyButton1;
+    public GameObject priceLabel1;
+    public GameObject buyButton2;
+    public GameObject priceLabel2;
+    private GameObject structureToBuild;
     private void showBuyMenu(GameObject button) {
         HideAllGUIElements();
+
         if (button == sawmillButton) {
+            structureIcon.GetComponent<UISprite>().spriteName = "icon_sawmill";
             structureToBuild = BuildingManager.Instance.sawmill;
         }
         else if (button == fieldButton) {
+            structureIcon.GetComponent<UISprite>().spriteName = "icon_field";
             structureToBuild = BuildingManager.Instance.field;
         }
         else if (button == storageButton) {
+            structureIcon.GetComponent<UISprite>().spriteName = "icon_storage";
             structureToBuild = BuildingManager.Instance.storage;
         }
         else if (button == hutButton) {
+            structureIcon.GetComponent<UISprite>().spriteName = "icon_hut";
             structureToBuild = BuildingManager.Instance.hut;
         }
 
         if (structureToBuild != null) {
-            Resource price = structureToBuild.GetComponent<BaseStructure>().cost;
-            priceLabel.GetComponent<UILabel>().text = price.wood + "W " + price.food + "F";
+            Resource cost = structureToBuild.GetComponent<BaseStructure>().cost;
+            Resource costInCurrency = Utils.ConvertResourcesToCurrency(cost);
+            priceLabel1.GetComponent<UILabel>().text = cost.wood + "W\n" + cost.food + "F";
+            priceLabel2.GetComponent<UILabel>().text = costInCurrency.currency + "Curr";
+            if (!BuildingManager.Instance.CanAffordStructure(structureToBuild)) {
+                buyButton1.GetComponent<UIImageButton>().isEnabled = false;
+                buyButton2.GetComponent<UIImageButton>().isEnabled = false;
+            }
+            else {
+                if (!ResourceManager.Instance.CanAffordResources(cost)) {
+                    buyButton1.GetComponent<UIImageButton>().isEnabled = true;
+                }
+                if (!ResourceManager.Instance.CanAffordResources(costInCurrency)) {
+                    buyButton2.GetComponent<UIImageButton>().isEnabled = true;
+                }
+            }
         }
         NGUITools.SetActive(buyMenu, true);
     }
-    private void onClickBuy(GameObject button) {
-        BuildingManager.instance.BuildStructure(structureToBuild);
+    private void onClickBuy1(GameObject button) {
+        Resource cost = structureToBuild.GetComponent<BaseStructure>().cost;
+        BuildingManager.instance.BuildStructure(structureToBuild, cost);
     }
-
-    //CONFIRM BUILD PANEL
-    public void OnClickConfirmBuild() {
-        BuildingManager.instance.BuildStructure(structureToBuild);
-    }
-    public void OnClickCancel() {
-        ShowDefaultMenu();
+    private void onClickBuy2(GameObject button) {
+        Resource cost = structureToBuild.GetComponent<BaseStructure>().cost;
+        Resource costInCurrency = Utils.ConvertResourcesToCurrency(cost);
+        BuildingManager.instance.BuildStructure(structureToBuild, costInCurrency);
     }
 
     //MOVEMENT MENU
@@ -123,13 +116,13 @@ public class GUIManager : Singleton<GUIManager> {
     public GameObject acceptButton;
     public GameObject cancelButton;
 
-    private void OnClickConfirmMovement(GameObject go) {
-        Debug.Log(go);
+    private void OnClickConfirmMovement(GameObject button) {
+        Debug.Log(button);
         selectedStructure.GetComponent<BaseStructure>().FinishMove();
         InputManager.OnTap += OnTap;
         ShowDefaultMenu();
     }
-    private void OnClickCancelMovement(GameObject go) {
+    private void OnClickCancelMovement(GameObject button) {
         selectedStructure.GetComponent<BaseStructure>().CancelMove();
         InputManager.OnTap += OnTap;
         ShowDefaultMenu();
@@ -168,6 +161,8 @@ public class GUIManager : Singleton<GUIManager> {
     }
 
 
+
+
     public GameObject AddTimerDisplay(GameObject caller, string text) {
         GameObject display = (GameObject)Instantiate(timerDisplay, caller.transform.position, Quaternion.identity);
         display.transform.parent = transform;
@@ -186,10 +181,8 @@ public class GUIManager : Singleton<GUIManager> {
 
     public void ShowDefaultMenu() {
         HideAllGUIElements();
-        NGUITools.SetActive(oldBuildPanel, true);
         NGUITools.SetActive(buildButton, true);
     }
-
 
     public void ShowPlacementGUI(GameObject structure, StructureType type) {
         InputManager.OnTap -= OnTap;
@@ -202,7 +195,6 @@ public class GUIManager : Singleton<GUIManager> {
         NGUITools.SetActive(confirmPlacementMenu, true);
         Grid.Instance.HighLightValidNodes(type);
     }
-
 
     private void HideAllGUIElements() {
         //stop following a target when hidden
@@ -225,8 +217,6 @@ public class GUIManager : Singleton<GUIManager> {
         NGUITools.SetActive(confirmPlacementMenu, false);
         NGUITools.SetActive(buildMenu, false);
         NGUITools.SetActive(contextMenu, false);
-        NGUITools.SetActive(oldBuildPanel, false);
-        NGUITools.SetActive(confirmBuildPanel, false);
     }
 
     private void OnTap(Vector3 tapPos) {
