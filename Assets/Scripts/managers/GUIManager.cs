@@ -21,7 +21,8 @@ public class GUIManager : Singleton<GUIManager> {
         ShowDefaultMenu();
         InputManager.OnTap += OnTap;
         InputManager.OnLongTap += OnLongTap;
-        UIEventListener.Get(buildButton).onClick += showBuildMenu;
+        UIEventListener.Get(buildButton).onClick += ShowBuildMenu;
+        UIEventListener.Get(closeButton).onClick += OnClickClose;
         UIEventListener.Get(acceptButton).onClick += OnClickConfirmMovement;
         UIEventListener.Get(cancelButton).onClick += OnClickCancelMovement;
         UIEventListener.Get(sawmillButton).onClick += showBuyMenu;
@@ -43,14 +44,19 @@ public class GUIManager : Singleton<GUIManager> {
     public GameObject buildButton;
     public GameObject buildMenu;
     public GameObject buildMenuGrid;
+    public GameObject closeButton;
     public GameObject sawmillButton;
     public GameObject fieldButton;
     public GameObject storageButton;
     public GameObject hutButton;
 
-    private void showBuildMenu(GameObject button) {
+    private void ShowBuildMenu(GameObject button) {
         HideAllGUIElements();
         NGUITools.SetActive(buildMenu, true);
+    }
+
+    private void OnClickClose(GameObject button) {
+        ShowDefaultMenu();
     }
 
     //BUY MENU
@@ -151,7 +157,7 @@ public class GUIManager : Singleton<GUIManager> {
         NGUITools.SetActive(contextMenu, true);
         if (selectedStructure.ImplementsInterface<IUpgradeable>()) {
             GameObject btn = NGUITools.AddChild(contextMenuGrid, upgradeButtonPrefab);
-            UIEventListener.Get(btn).onClick += OnClickUpgrade;//TODO remove ref somewhere?
+            UIEventListener.Get(btn).onClick += OnClickUpgrade;//TODO ref needs to be removed somewhere?
         }
         if (selectedStructure.GetInterface<IRemovable>() != null) {
             GameObject btn = NGUITools.AddChild(contextMenuGrid, removeButtonPrefab);
