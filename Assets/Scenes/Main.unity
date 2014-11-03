@@ -244,7 +244,7 @@ Transform:
   m_LocalScale: {x: 4, y: 4, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 9
+  m_RootOrder: 8
 --- !u!1 &221410549
 GameObject:
   m_ObjectHideFlags: 0
@@ -297,6 +297,10 @@ MonoBehaviour:
   contextMenuGrid: {fileID: 1712761137}
   upgradeButtonPrefab: {fileID: 100000, guid: 339780440753f01409769843cf7e6b19, type: 2}
   removeButtonPrefab: {fileID: 100002, guid: add657bd6bfd2e44ca9168208fe977eb, type: 2}
+  addworkerButtonPrefab: {fileID: 100000, guid: 98669138439a6834099d543228f7cde3,
+    type: 2}
+  removeworkerButtonPrefab: {fileID: 100002, guid: ae2218a880d74ca418eab16217f680a4,
+    type: 2}
 --- !u!4 &221410551
 Transform:
   m_ObjectHideFlags: 0
@@ -1886,7 +1890,7 @@ Transform:
   m_LocalScale: {x: 8, y: .00100000005, z: 8}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 5
 --- !u!1 &1019805689
 GameObject:
   m_ObjectHideFlags: 0
@@ -2312,7 +2316,7 @@ Transform:
   m_Children:
   - {fileID: 736011169}
   m_Father: {fileID: 0}
-  m_RootOrder: 10
+  m_RootOrder: 9
 --- !u!114 &1202518933
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2496,8 +2500,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 70, z: -30}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_Father: {fileID: 1485132596}
+  m_RootOrder: 0
 --- !u!114 &1281139903
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2828,7 +2832,8 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
+  m_Children:
+  - {fileID: 1281139902}
   m_Father: {fileID: 0}
   m_RootOrder: 4
 --- !u!1 &1532540073
@@ -2860,7 +2865,7 @@ Transform:
   - {fileID: 1105666117}
   - {fileID: 1893971352}
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 6
 --- !u!1 &1544473464
 GameObject:
   m_ObjectHideFlags: 0
@@ -3005,7 +3010,7 @@ MonoBehaviour:
   normalSprite: button_remove
   hoverSprite: button_remove
   pressedSprite: button_remove
-  disabledSprite: button_remove
+  disabledSprite: button_remove_inactive
 --- !u!65 &1644846457
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -3182,7 +3187,7 @@ MonoBehaviour:
   normalSprite: button_accept
   hoverSprite: button_accept
   pressedSprite: button_accept
-  disabledSprite: button_accept
+  disabledSprite: button_accept_inactive
 --- !u!65 &1723060813
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -3228,7 +3233,7 @@ Transform:
   - {fileID: 859355908}
   - {fileID: 2130092391}
   m_Father: {fileID: 0}
-  m_RootOrder: 8
+  m_RootOrder: 7
 --- !u!1 &1758125822
 GameObject:
   m_ObjectHideFlags: 0
@@ -3510,7 +3515,7 @@ MonoBehaviour:
   normalSprite: button_accept
   hoverSprite: button_accept
   pressedSprite: button_accept
-  disabledSprite: button_accept
+  disabledSprite: button_accept_inactive
 --- !u!65 &1894388277
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -3840,7 +3845,7 @@ MonoBehaviour:
   normalSprite: button_accept
   hoverSprite: button_accept
   pressedSprite: button_accept
-  disabledSprite: button_accept
+  disabledSprite: button_accept_inactive
 --- !u!65 &2052272943
 BoxCollider:
   m_ObjectHideFlags: 0

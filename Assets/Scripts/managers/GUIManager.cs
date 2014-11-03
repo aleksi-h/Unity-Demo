@@ -59,6 +59,7 @@ public class GUIManager : Singleton<GUIManager> {
         ShowDefaultMenu();
     }
 
+
     //BUY MENU
     public GameObject buyMenu;
     public GameObject structureIcon;
@@ -87,35 +88,36 @@ public class GUIManager : Singleton<GUIManager> {
             structureToBuild = BuildingManager.Instance.hut;
         }
 
+        InvokeRepeating("SetBuyMenuContent", 0, 0.5f);
+        NGUITools.SetActive(buyMenu, true);
+    }
+
+    private void SetBuyMenuContent() {
         if (structureToBuild != null) {
             Resource cost = structureToBuild.GetComponent<BaseStructure>().cost;
             Resource costInCurrency = Utils.ConvertResourcesToCurrency(cost);
             priceLabel1.GetComponent<UILabel>().text = cost.wood + "W\n" + cost.food + "F";
             priceLabel2.GetComponent<UILabel>().text = costInCurrency.currency + "Curr";
-            if (!BuildingManager.Instance.CanAffordStructure(structureToBuild)) {
-                buyButton1.GetComponent<UIImageButton>().isEnabled = false;
-                buyButton2.GetComponent<UIImageButton>().isEnabled = false;
-            }
-            else {
-                if (!ResourceManager.Instance.CanAffordResources(cost)) {
-                    buyButton1.GetComponent<UIImageButton>().isEnabled = true;
-                }
-                if (!ResourceManager.Instance.CanAffordResources(costInCurrency)) {
-                    buyButton2.GetComponent<UIImageButton>().isEnabled = true;
-                }
-            }
+
+            bool canAfford = BuildingManager.Instance.CanAffordStructure(structureToBuild, cost);
+            buyButton1.GetComponent<UIImageButton>().isEnabled = canAfford;
+
+            canAfford = BuildingManager.Instance.CanAffordStructure(structureToBuild, costInCurrency);
+            buyButton2.GetComponent<UIImageButton>().isEnabled = canAfford;
         }
-        NGUITools.SetActive(buyMenu, true);
     }
+
     private void onClickBuy1(GameObject button) {
         Resource cost = structureToBuild.GetComponent<BaseStructure>().cost;
         BuildingManager.instance.BuildStructure(structureToBuild, cost);
     }
+
     private void onClickBuy2(GameObject button) {
         Resource cost = structureToBuild.GetComponent<BaseStructure>().cost;
         Resource costInCurrency = Utils.ConvertResourcesToCurrency(cost);
         BuildingManager.instance.BuildStructure(structureToBuild, costInCurrency);
     }
+
 
     //MOVEMENT MENU
     public GameObject confirmPlacementMenu;
@@ -139,12 +141,24 @@ public class GUIManager : Singleton<GUIManager> {
     public GameObject contextMenuGrid;
     public GameObject upgradeButtonPrefab;
     public GameObject removeButtonPrefab;
+    public GameObject addworkerButtonPrefab;
+    public GameObject removeworkerButtonPrefab;
 
     private void OnClickUpgrade(GameObject go) {
         BuildingManager.Instance.UpgradeStructure(selectedStructure);
+        ShowDefaultMenu();
     }
     private void OnClickRemove(GameObject go) {
         BuildingManager.Instance.DeleteStructure(selectedStructure);
+        ShowDefaultMenu();
+    }
+    private void OnClickAddworker(GameObject go) {
+        selectedStructure.GetInterface<IEmployer>().AddWorker();
+        ShowContextMenu();
+    }
+    private void OnClickRemoveworker(GameObject go) {
+        selectedStructure.GetInterface<IEmployer>().FreeWorker();
+        ShowContextMenu();
     }
     public void ShowContextMenu() {
         HideAllGUIElements();
@@ -153,17 +167,54 @@ public class GUIManager : Singleton<GUIManager> {
         FollowGameObjectNGUI followScript = contextMenu.GetComponent<FollowGameObjectNGUI>();
         followScript.setOffset(offset);
         followScript.SetTarget(selectedStructure);
-
         NGUITools.SetActive(contextMenu, true);
+
         if (selectedStructure.ImplementsInterface<IUpgradeable>()) {
-            GameObject btn = NGUITools.AddChild(contextMenuGrid, upgradeButtonPrefab);
-            UIEventListener.Get(btn).onClick += OnClickUpgrade;//TODO ref needs to be removed somewhere?
+            upgradeButton = NGUITools.AddChild(contextMenuGrid, upgradeButtonPrefab);
+            UIEventListener.Get(upgradeButton).onClick += OnClickUpgrade;//TODO ref needs to be removed somewhere?
         }
-        if (selectedStructure.GetInterface<IRemovable>() != null) {
-            GameObject btn = NGUITools.AddChild(contextMenuGrid, removeButtonPrefab);
-            UIEventListener.Get(btn).onClick += OnClickRemove;
+
+        if (selectedStructure.ImplementsInterface<IEmployer>()) {
+            addworkerButton = NGUITools.AddChild(contextMenuGrid, addworkerButtonPrefab);
+            removeworkerButton = NGUITools.AddChild(contextMenuGrid, removeworkerButtonPrefab);
+            UIEventListener.Get(addworkerButton).onClick += OnClickAddworker;
+            UIEventListener.Get(removeworkerButton).onClick += OnClickRemoveworker;
         }
+
+        if (selectedStructure.ImplementsInterface<IRemovable>()) {
+            removeButton = NGUITools.AddChild(contextMenuGrid, removeButtonPrefab);
+            UIEventListener.Get(removeButton).onClick += OnClickRemove;}
+
+        SetContextMenuContent();
+        InvokeRepeating("SetContextMenuContent",0,0.5f);
         contextMenuGrid.GetComponent<UIGrid>().Reposition();
+    }
+
+    private GameObject upgradeButton;
+    private GameObject removeButton;
+    private GameObject addworkerButton;
+    private GameObject removeworkerButton;
+
+    private void SetContextMenuContent() {
+        IUpgradeable upgradeable = selectedStructure.GetInterface<IUpgradeable>();
+        if (upgradeable != null) {
+            bool canUpgrade = BuildingManager.Instance.CanUpgradeStructure(upgradeable);
+            upgradeButton.GetComponent<UIImageButton>().isEnabled = canUpgrade;
+        }
+
+        IEmployer employer = selectedStructure.GetInterface<IEmployer>();
+        if (employer != null) {
+            bool canAddWorkers = (ResourceManager.Instance.HasFreeWorkers(1) && employer.MaxWorkerCount > employer.Workers.Count);
+            addworkerButton.GetComponent<UIImageButton>().isEnabled = canAddWorkers;
+
+            bool canRemoveWorkers = (employer.MinWorkerCount < employer.Workers.Count);
+            removeworkerButton.GetComponent<UIImageButton>().isEnabled = canRemoveWorkers;
+        }
+
+        if (selectedStructure.ImplementsInterface<IRemovable>()) {
+            bool canRemoveBuilding = BuildingManager.Instance.IsBuildingRemovable(selectedStructure);
+            removeButton.GetComponent<UIImageButton>().isEnabled = canRemoveBuilding;
+        }
     }
 
 
@@ -203,6 +254,9 @@ public class GUIManager : Singleton<GUIManager> {
     }
 
     private void HideAllGUIElements() {
+        //stop updating menus
+        CancelInvoke();
+
         //stop following a target when hidden
         contextMenu.GetComponent<FollowGameObjectNGUI>().SetTarget(null);
         confirmPlacementMenu.GetComponent<FollowGameObjectNGUI>().SetTarget(null);

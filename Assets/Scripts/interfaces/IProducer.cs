@@ -6,7 +6,7 @@ public interface IProducer {
         get;
     }
 
-    Resource ProducedPerInterval {
+    Resource BaseProductionRate {
         get;
     }
 

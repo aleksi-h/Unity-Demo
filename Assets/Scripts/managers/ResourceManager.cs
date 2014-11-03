@@ -44,7 +44,7 @@ public class ResourceManager : Singleton<ResourceManager> {
         return worker;
     }
 
-    public void ReturnWorker(GameObject worker) {
+    public void ReleaseWorker(GameObject worker) {
         worker.GetComponent<Worker>().Free();
         freeWorkers.Add(worker);
         updateGUITexts();

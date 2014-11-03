@@ -10,7 +10,7 @@ public class StatueScript : UpgradableStructure, IProducer {
     }
 
     public Resource producedPerInterval;
-    public Resource ProducedPerInterval {
+    public Resource BaseProductionRate {
         get { return producedPerInterval; }
     }
 

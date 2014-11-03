@@ -12,6 +12,12 @@ public interface IEmployer {
     List<GameObject> Workers {
         get;
     }
+    Resource ProductionBoostPerWorker {
+        get;
+    }
+    Resource ProductionBoost {
+        get;
+    }
 
     void AddWorker();
     void FreeWorker();

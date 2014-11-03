@@ -19,20 +19,25 @@ public class BuildingManager : Singleton<BuildingManager> {
         obj.GetComponent<BaseStructure>().Activate();
     }
 
-    public bool CanAffordStructure(GameObject prefab) {
-        bool canAffordStructure = true;
-        Resource cost = prefab.GetComponent<BaseStructure>().cost;
-        Resource costInCurrency = Utils.ConvertResourcesToCurrency(cost);
-        if (!ResourceManager.Instance.CanAffordResources(cost) && !ResourceManager.Instance.CanAffordResources(costInCurrency)) {
-            canAffordStructure = false;
-        }
+    public bool CanAffordStructure(GameObject prefab, Resource cost) {
+        if (!ResourceManager.Instance.CanAffordResources(cost)) { return false; }
         if (prefab.ImplementsInterface<IEmployer>()) {
             int minWorkerCount = prefab.GetInterface<IEmployer>().MinWorkerCount;
             if (!ResourceManager.Instance.HasFreeWorkers(minWorkerCount)) {
-                canAffordStructure = false;
+                return false;
             }
         }
-        return canAffordStructure;
+        return true;
+    }
+
+    public bool CanUpgradeStructure(IUpgradeable upgradeable) {
+        if (!upgradeable.UpgradeAllowed()) { return false; }
+        if (upgradeable.NextLevelPrefab == null) { return false; }
+
+        Resource upgradeCost = upgradeable.NextLevelPrefab.GetComponent<BaseStructure>().cost;
+        if (!ResourceManager.Instance.CanAffordResources(upgradeCost)) { return false; }
+
+        return true;
     }
 
     public void BuildStructure(GameObject prefab, Resource cost) {
@@ -46,26 +51,32 @@ public class BuildingManager : Singleton<BuildingManager> {
         GUIManager.Instance.ShowPlacementGUI(newStructure, selectedType);
     }
 
+    public bool IsBuildingRemovable(GameObject structure) {
+        if (!Grid.Instance.IsBuildingMoveable(structure.transform.position)) {
+            return false;
+        }
+        if (!structure.GetInterface<IRemovable>().RemovalAllowed()) {
+            return false;
+        }
+        return true;
+    }
+
     public void DeleteStructure(GameObject structure) {
-        if (Grid.Instance.IsBuildingMoveable(structure.transform.position)) {
+        //if (Grid.Instance.IsBuildingMoveable(structure.transform.position)) {
             IRemovable removable = structure.GetInterface<IRemovable>();
-            if (removable != null && removable.RemovalAllowed()) {
+            //if (removable != null && removable.RemovalAllowed()) {
                 removable.Remove();
                 Grid.Instance.RemoveFromNode(structure.transform.position);
-                GUIManager.Instance.ShowDefaultMenu();
-            }
-        }
+                //GUIManager.Instance.ShowDefaultMenu();
+          //  }
+        //}
     }
 
     public void UpgradeStructure(GameObject structure) {
         IUpgradeable upgradeable = structure.GetInterface<IUpgradeable>();
-        if (upgradeable != null && upgradeable.UpgradeAllowed() && upgradeable.NextLevelPrefab != null) {
-            Resource upgradeCost = upgradeable.NextLevelPrefab.GetComponent<BaseStructure>().cost;
-            if (ResourceManager.Instance.CanAffordResources(upgradeCost)) {
-                ResourceManager.Instance.PayResources(upgradeCost);
-                upgradeable.Upgrade();
-                GUIManager.Instance.ShowDefaultMenu();
-            }
-        }
+        Resource upgradeCost = upgradeable.NextLevelPrefab.GetComponent<BaseStructure>().cost;
+        ResourceManager.Instance.PayResources(upgradeCost);
+        upgradeable.Upgrade();
+        //GUIManager.Instance.ShowDefaultMenu();
     }
 }

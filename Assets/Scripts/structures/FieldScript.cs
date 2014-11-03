@@ -10,7 +10,7 @@ public class FieldScript : UpgradableStructure, IProducer, IRemovable {
     }
 
     public Resource producedPerInterval;
-    public Resource ProducedPerInterval {
+    public Resource BaseProductionRate {
         get { return producedPerInterval; }
     }
 
