@@ -5,15 +5,14 @@ public abstract class BaseStructure : MonoBehaviour, IDamageable {
     public Resource cost;
     public float buildTime;
 
-    protected delegate void LongProcess();
-    protected LongProcess longProcess;
-    protected float processDuration;
+    protected Node node;
     protected const float processUpdateInterval = 1.0f;
-    protected GameObject timerDisplay;
+    protected delegate void DelayedOperation();
+    protected DelayedOperation delayedOperation;
+    protected float processDuration;
 
     protected Transform myTransform;
     protected bool structureActive;
-    protected bool onTapRegistered;
     protected int maxHealth;
     protected int level;
     protected int health;
@@ -22,7 +21,6 @@ public abstract class BaseStructure : MonoBehaviour, IDamageable {
         get { return type; }
     }
 
-    private LayerMask groundLayerMask = 1 << 11;
     private Vector3 positionBeforeMove;
 
     #region IDamageable
@@ -30,31 +28,12 @@ public abstract class BaseStructure : MonoBehaviour, IDamageable {
     #endregion
 
     public void Build() {
-        Grid.Instance.BuildToNode(myTransform.position, type);
-        StartLongProcess(BuildProcess, buildTime);
+        Grid.Instance.BuildToNode(myTransform.position, gameObject);
+        StartDelayedOperation(BuildProcess, buildTime);
     }
 
-    //start receiving onTap events
-    public void Move() {
-        InputManager.OnTap += OnTap;
-        onTapRegistered = true;
-        positionBeforeMove = myTransform.position;
-    }
-
-    //stop receiving onTap events and go back to previous position
-    public void CancelMove() {
-        InputManager.OnTap -= OnTap;
-        onTapRegistered = false;
-        if (!myTransform.position.Equals(positionBeforeMove)) {
-            Grid.Instance.RemoveFromNode(myTransform.position);
-            Grid.Instance.BuildToNode(positionBeforeMove, type);
-            myTransform.position = positionBeforeMove;
-        }
-    }
-
-    public void FinishMove() {
-        InputManager.OnTap -= OnTap;
-        onTapRegistered = false;
+    public void AttachToNode(Node node) {
+        this.node = node;
     }
 
     protected virtual void Awake() {
@@ -72,46 +51,32 @@ public abstract class BaseStructure : MonoBehaviour, IDamageable {
     }
 
     protected virtual void OnDestroy() {
-        if (onTapRegistered) {
-            InputManager.OnTap -= OnTap;
-        }
     }
 
-    protected virtual void StartLongProcess(LongProcess process, float duration) {
-        longProcess = process;
+    protected GameObject timerDisplay;
+    protected virtual void StartDelayedOperation(DelayedOperation process, float duration) {
+        delayedOperation = process;
         processDuration = duration;
-        timerDisplay = GUIManager.Instance.AddTimerDisplay(gameObject, "ready in " + processDuration);
-        InvokeRepeating("UpdateLongProcess", 1.0f, processUpdateInterval);
+        timerDisplay = GUIManager.Instance.GetTimerDisplay(gameObject);
+        updateDisplayText();
+        InvokeRepeating("UpdateDelayedOperation", 1.0f, processUpdateInterval);
     }
 
-    protected virtual void UpdateLongProcess() {
+    protected virtual void UpdateDelayedOperation() {
         processDuration -= processUpdateInterval;
         if (processDuration <= 0) {
-            CancelInvoke("UpdateLongProcess");
-            longProcess();
+            CancelInvoke("UpdateDelayedOperation");
+            delayedOperation();
         }
-        else {
-            GUIManager.Instance.UpdateTimerDisplay(timerDisplay, "ready in " + processDuration);
-        }
+        else { updateDisplayText(); }
+    }
 
+    protected void updateDisplayText() {
+        timerDisplay.guiText.text = "Ready in " + processDuration;
     }
 
     private void BuildProcess() {
-        GUIManager.Instance.RemoveTimerDisplay(timerDisplay);
+        Destroy(timerDisplay);
         Activate();
-    }
-
-    //move to selected node
-    private void OnTap(Vector3 tapPos) {
-        Ray ray = Camera.main.ScreenPointToRay(tapPos);
-        RaycastHit hit;
-        if (Physics.Raycast(ray, out hit, 1100, groundLayerMask)) {
-            Vector3 newPos = Grid.Instance.GetNearestValidNode(myTransform.position, hit.point, type);
-            if (!myTransform.position.Equals(newPos)) {
-                Grid.Instance.RemoveFromNode(myTransform.position);
-                Grid.Instance.BuildToNode(newPos, type);
-                myTransform.position = newPos;
-            }
-        }
     }
 }

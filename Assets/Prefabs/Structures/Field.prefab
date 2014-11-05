@@ -103,7 +103,7 @@ MonoBehaviour:
   buildTime: 5
   nextLevelPrefab: {fileID: 100000, guid: af01058d48d70744b8802692d60940a2, type: 2}
   productionInterval: 1
-  producedPerInterval:
+  baseProductionRate:
     wood: 0
     food: 10
     currency: 0

@@ -9,18 +9,16 @@ public class GUIManager : Singleton<GUIManager> {
 
     private LayerMask structureLayerMask = 1 << 10;
     private GameObject selectedStructure;
-    private List<GameObject> timerDisplays;
 
     public override void Awake() {
         base.Awake();
-        timerDisplays = new List<GameObject>(1);
     }
 
     public void Start() {
         HideAllGUIElements();
         ShowDefaultMenu();
         InputManager.OnTap += OnTap;
-        InputManager.OnLongTap += OnLongTap;
+        //InputManager.OnLongTap += OnLongTap;
         UIEventListener.Get(buildButton).onClick += ShowBuildMenu;
         UIEventListener.Get(closeButton).onClick += OnClickClose;
         UIEventListener.Get(acceptButton).onClick += OnClickConfirmMovement;
@@ -58,6 +56,11 @@ public class GUIManager : Singleton<GUIManager> {
     private void OnClickClose(GameObject button) {
         ShowDefaultMenu();
     }
+
+
+    //SETTINGS MENU
+    public GameObject settingsButton;
+
 
 
     //BUY MENU
@@ -125,13 +128,12 @@ public class GUIManager : Singleton<GUIManager> {
     public GameObject cancelButton;
 
     private void OnClickConfirmMovement(GameObject button) {
-        Debug.Log(button);
-        selectedStructure.GetComponent<BaseStructure>().FinishMove();
+        Grid.Instance.FinishMove();
         InputManager.OnTap += OnTap;
         ShowDefaultMenu();
     }
     private void OnClickCancelMovement(GameObject button) {
-        selectedStructure.GetComponent<BaseStructure>().CancelMove();
+        Grid.Instance.CancelMove();
         InputManager.OnTap += OnTap;
         ShowDefaultMenu();
     }
@@ -149,7 +151,7 @@ public class GUIManager : Singleton<GUIManager> {
         ShowDefaultMenu();
     }
     private void OnClickRemove(GameObject go) {
-        BuildingManager.Instance.DeleteStructure(selectedStructure);
+        BuildingManager.Instance.RemoveStructure(selectedStructure);
         ShowDefaultMenu();
     }
     private void OnClickAddworker(GameObject go) {
@@ -212,33 +214,23 @@ public class GUIManager : Singleton<GUIManager> {
         }
 
         if (selectedStructure.ImplementsInterface<IRemovable>()) {
-            bool canRemoveBuilding = BuildingManager.Instance.IsBuildingRemovable(selectedStructure);
+            bool canRemoveBuilding = BuildingManager.Instance.CanRemoveStructure(selectedStructure);
             removeButton.GetComponent<UIImageButton>().isEnabled = canRemoveBuilding;
         }
     }
 
 
-
-
-    public GameObject AddTimerDisplay(GameObject caller, string text) {
+    public GameObject GetTimerDisplay(GameObject caller) {
         GameObject display = (GameObject)Instantiate(timerDisplay, caller.transform.position, Quaternion.identity);
         display.transform.parent = transform;
-        display.guiText.text = text;
         display.GetComponent<FollowGameObject>().FollowObject(caller);
-        timerDisplays.Add(display);
         return display;
-    }
-    public void UpdateTimerDisplay(GameObject display, string text) {
-        display.guiText.text = text;
-    }
-    public void RemoveTimerDisplay(GameObject display) {
-        timerDisplays.Remove(display);
-        Destroy(display);
     }
 
     public void ShowDefaultMenu() {
         HideAllGUIElements();
         NGUITools.SetActive(buildButton, true);
+        NGUITools.SetActive(settingsButton, true);
     }
 
     public void ShowPlacementGUI(GameObject structure, StructureType type) {
@@ -251,6 +243,15 @@ public class GUIManager : Singleton<GUIManager> {
         followScript.SetTarget(selectedStructure);
         NGUITools.SetActive(confirmPlacementMenu, true);
         Grid.Instance.HighLightValidNodes(type);
+    }
+
+    public void StructureUpgraded(GameObject oldGo, GameObject newGo) {
+        if (oldGo == selectedStructure) {
+            selectedStructure = newGo;
+        }
+        if (NGUITools.GetActive(confirmPlacementMenu)) {
+            confirmPlacementMenu.GetComponent<FollowGameObjectNGUI>().SetTarget(selectedStructure);
+        }
     }
 
     private void HideAllGUIElements() {
@@ -270,9 +271,11 @@ public class GUIManager : Singleton<GUIManager> {
         }
 
         Grid.Instance.HideHighlight();
+        //hide buttons
         NGUITools.SetActive(buildButton, false);
+        NGUITools.SetActive(settingsButton, false);
 
-        //hide all menus
+        //hide menus
         NGUITools.SetActive(buyMenu, false);
         NGUITools.SetActive(confirmPlacementMenu, false);
         NGUITools.SetActive(buildMenu, false);
@@ -287,22 +290,6 @@ public class GUIManager : Singleton<GUIManager> {
             selectedStructure = hit.collider.gameObject;
             ShowContextMenu();
         }
-        else {
-            ShowDefaultMenu();
-        }
-    }
-
-    private void OnLongTap(Vector3 tapPos) {
-        Debug.Log("OnLongTap");
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        RaycastHit hit;
-        if (Physics.Raycast(ray, out hit, 1100, structureLayerMask)) {
-            selectedStructure = hit.collider.gameObject;
-            if (Grid.Instance.IsBuildingMoveable(selectedStructure.transform.position)) {
-                BaseStructure structureBase = selectedStructure.GetComponent<BaseStructure>();
-                structureBase.Move();
-                ShowPlacementGUI(selectedStructure, structureBase.Type);
-            }
-        }
+        else { ShowDefaultMenu(); }
     }
 }

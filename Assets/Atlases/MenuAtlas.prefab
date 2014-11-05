@@ -44,13 +44,13 @@ MonoBehaviour:
   - name: button_remove
     outer:
       serializedVersion: 2
-      x: 65
+      x: 0
       y: 127
       width: 64
       height: 64
     inner:
       serializedVersion: 2
-      x: 65
+      x: 0
       y: 127
       width: 64
       height: 64
@@ -62,13 +62,13 @@ MonoBehaviour:
   - name: button_upgrade
     outer:
       serializedVersion: 2
-      x: 65
+      x: 0
       y: 62
       width: 64
       height: 64
     inner:
       serializedVersion: 2
-      x: 65
+      x: 0
       y: 62
       width: 64
       height: 64
@@ -80,13 +80,13 @@ MonoBehaviour:
   - name: button_accept
     outer:
       serializedVersion: 2
-      x: 130
+      x: 65
       y: 192
       width: 64
       height: 64
     inner:
       serializedVersion: 2
-      x: 130
+      x: 65
       y: 192
       width: 64
       height: 64
@@ -98,13 +98,13 @@ MonoBehaviour:
   - name: icon_sawmill
     outer:
       serializedVersion: 2
-      x: 130
+      x: 65
       y: 127
       width: 64
       height: 64
     inner:
       serializedVersion: 2
-      x: 130
+      x: 65
       y: 127
       width: 64
       height: 64
@@ -116,13 +116,13 @@ MonoBehaviour:
   - name: build_menu_scroll_area_bg
     outer:
       serializedVersion: 2
-      x: 130
+      x: 65
       y: 62
       width: 64
       height: 64
     inner:
       serializedVersion: 2
-      x: 130
+      x: 65
       y: 62
       width: 64
       height: 64
@@ -134,13 +134,13 @@ MonoBehaviour:
   - name: build_menu_bg
     outer:
       serializedVersion: 2
-      x: 195
+      x: 130
       y: 192
       width: 64
       height: 64
     inner:
       serializedVersion: 2
-      x: 195
+      x: 130
       y: 192
       width: 64
       height: 64
@@ -152,13 +152,13 @@ MonoBehaviour:
   - name: icon_field
     outer:
       serializedVersion: 2
-      x: 195
+      x: 130
       y: 127
       width: 64
       height: 64
     inner:
       serializedVersion: 2
-      x: 195
+      x: 130
       y: 127
       width: 64
       height: 64
@@ -170,13 +170,13 @@ MonoBehaviour:
   - name: icon_storage
     outer:
       serializedVersion: 2
-      x: 195
+      x: 130
       y: 62
       width: 64
       height: 64
     inner:
       serializedVersion: 2
-      x: 195
+      x: 130
       y: 62
       width: 64
       height: 64
@@ -188,13 +188,13 @@ MonoBehaviour:
   - name: icon_hut
     outer:
       serializedVersion: 2
-      x: 260
+      x: 195
       y: 192
       width: 64
       height: 64
     inner:
       serializedVersion: 2
-      x: 260
+      x: 195
       y: 192
       width: 64
       height: 64
@@ -224,14 +224,14 @@ MonoBehaviour:
   - name: button_addworker
     outer:
       serializedVersion: 2
-      x: 325
-      y: 192
+      x: 195
+      y: 127
       width: 64
       height: 64
     inner:
       serializedVersion: 2
-      x: 325
-      y: 192
+      x: 195
+      y: 127
       width: 64
       height: 64
     rotated: 0
@@ -242,14 +242,14 @@ MonoBehaviour:
   - name: button_removeworker
     outer:
       serializedVersion: 2
-      x: 390
-      y: 192
+      x: 195
+      y: 62
       width: 64
       height: 64
     inner:
       serializedVersion: 2
-      x: 390
-      y: 192
+      x: 195
+      y: 62
       width: 64
       height: 64
     rotated: 0
@@ -261,6 +261,60 @@ MonoBehaviour:
     outer:
       serializedVersion: 2
       x: 260
+      y: 192
+      width: 64
+      height: 64
+    inner:
+      serializedVersion: 2
+      x: 260
+      y: 192
+      width: 64
+      height: 64
+    rotated: 0
+    paddingLeft: 0
+    paddingRight: 0
+    paddingTop: 0
+    paddingBottom: 0
+  - name: button_remove_inactive
+    outer:
+      serializedVersion: 2
+      x: 325
+      y: 192
+      width: 64
+      height: 64
+    inner:
+      serializedVersion: 2
+      x: 325
+      y: 192
+      width: 64
+      height: 64
+    rotated: 0
+    paddingLeft: 0
+    paddingRight: 0
+    paddingTop: 0
+    paddingBottom: 0
+  - name: button_removeworker_inactive
+    outer:
+      serializedVersion: 2
+      x: 390
+      y: 192
+      width: 64
+      height: 64
+    inner:
+      serializedVersion: 2
+      x: 390
+      y: 192
+      width: 64
+      height: 64
+    rotated: 0
+    paddingLeft: 0
+    paddingRight: 0
+    paddingTop: 0
+    paddingBottom: 0
+  - name: button_accept_inactive
+    outer:
+      serializedVersion: 2
+      x: 260
       y: 127
       width: 64
       height: 64
@@ -275,70 +329,34 @@ MonoBehaviour:
     paddingRight: 0
     paddingTop: 0
     paddingBottom: 0
-  - name: button_remove_inactive
-    outer:
-      serializedVersion: 2
-      x: 0
-      y: 192
-      width: 64
-      height: 64
-    inner:
-      serializedVersion: 2
-      x: 0
-      y: 192
-      width: 64
-      height: 64
-    rotated: 0
-    paddingLeft: 0
-    paddingRight: 0
-    paddingTop: 0
-    paddingBottom: 0
-  - name: button_removeworker_inactive
-    outer:
-      serializedVersion: 2
-      x: 0
-      y: 127
-      width: 64
-      height: 64
-    inner:
-      serializedVersion: 2
-      x: 0
-      y: 127
-      width: 64
-      height: 64
-    rotated: 0
-    paddingLeft: 0
-    paddingRight: 0
-    paddingTop: 0
-    paddingBottom: 0
-  - name: button_accept_inactive
-    outer:
-      serializedVersion: 2
-      x: 0
-      y: 62
-      width: 64
-      height: 64
-    inner:
-      serializedVersion: 2
-      x: 0
-      y: 62
-      width: 64
-      height: 64
-    rotated: 0
-    paddingLeft: 0
-    paddingRight: 0
-    paddingTop: 0
-    paddingBottom: 0
   - name: button_upgrade_inactive
     outer:
       serializedVersion: 2
-      x: 65
+      x: 260
+      y: 62
+      width: 64
+      height: 64
+    inner:
+      serializedVersion: 2
+      x: 260
+      y: 62
+      width: 64
+      height: 64
+    rotated: 0
+    paddingLeft: 0
+    paddingRight: 0
+    paddingTop: 0
+    paddingBottom: 0
+  - name: icon_settings_menu
+    outer:
+      serializedVersion: 2
+      x: 0
       y: 192
       width: 64
       height: 64
     inner:
       serializedVersion: 2
-      x: 65
+      x: 0
       y: 192
       width: 64
       height: 64

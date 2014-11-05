@@ -17,14 +17,12 @@ public class ResourceManager : Singleton<ResourceManager> {
     public int initialWorkerCount;
     private Resource resourceCount;
     private Resource resourceCapacity;
-    private int workerCount;
     private List<GameObject> freeWorkers;
 
     public override void Awake() {
         base.Awake();
         resourceCapacity = initialResourceCapacity;
         resourceCount = initialResourceCount;
-        workerCount = initialWorkerCount;
         freeWorkers = new List<GameObject>(initialWorkerCount);
         updateGUITexts();
     }

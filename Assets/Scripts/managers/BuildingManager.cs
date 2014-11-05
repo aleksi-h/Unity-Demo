@@ -8,14 +8,9 @@ public class BuildingManager : Singleton<BuildingManager> {
     public GameObject field;
     public GameObject statue;
 
-    private bool moving;
-    private bool newStructure;
-    private int structureIndex;
-    private StructureType selectedType;
-
     void Start() {
         GameObject obj = (GameObject)Instantiate(statue, new Vector3(-10, 0, 0), Quaternion.identity);
-        Grid.Instance.BuildToNode(obj.transform.position, StructureType.Special);
+        Grid.Instance.BuildToNode(obj.transform.position, obj);
         obj.GetComponent<BaseStructure>().Activate();
     }
 
@@ -30,6 +25,36 @@ public class BuildingManager : Singleton<BuildingManager> {
         return true;
     }
 
+
+    public void BuildStructure(GameObject prefab, Resource cost) {
+        ResourceManager.Instance.PayResources(cost);
+        Vector3 pos = new Vector3(0, 0, 0);
+        GameObject newStructure = (GameObject)Instantiate(prefab, pos, Quaternion.identity);
+        BaseStructure newStructureBase = newStructure.GetComponent<BaseStructure>();
+        newStructureBase.Build();
+        Grid.Instance.startMove(newStructure);
+        //newStructureBase.Move();
+        GUIManager.Instance.ShowPlacementGUI(newStructure, newStructureBase.Type);
+    }
+
+
+    public bool CanRemoveStructure(GameObject structure) {
+        if (!Grid.Instance.IsNodeRemoveable(structure.transform.position)) {
+            return false;
+        }
+        if (!structure.GetInterface<IRemovable>().RemovalAllowed()) {
+            return false;
+        }
+        return true;
+    }
+
+    public void RemoveStructure(GameObject structure) {
+        IRemovable removable = structure.GetInterface<IRemovable>();
+        removable.Remove();
+        Grid.Instance.RemoveFromNode(structure.transform.position);
+    }
+
+
     public bool CanUpgradeStructure(IUpgradeable upgradeable) {
         if (!upgradeable.UpgradeAllowed()) { return false; }
         if (upgradeable.NextLevelPrefab == null) { return false; }
@@ -40,43 +65,10 @@ public class BuildingManager : Singleton<BuildingManager> {
         return true;
     }
 
-    public void BuildStructure(GameObject prefab, Resource cost) {
-        ResourceManager.Instance.PayResources(cost);
-        Vector3 pos = new Vector3(0, 0, 0);
-        GameObject newStructure = (GameObject)Instantiate(prefab, pos, Quaternion.identity);
-        BaseStructure newStructureBase = newStructure.GetComponent<BaseStructure>();
-        selectedType = newStructureBase.Type;
-        newStructureBase.Build();
-        newStructureBase.Move();
-        GUIManager.Instance.ShowPlacementGUI(newStructure, selectedType);
-    }
-
-    public bool IsBuildingRemovable(GameObject structure) {
-        if (!Grid.Instance.IsBuildingMoveable(structure.transform.position)) {
-            return false;
-        }
-        if (!structure.GetInterface<IRemovable>().RemovalAllowed()) {
-            return false;
-        }
-        return true;
-    }
-
-    public void DeleteStructure(GameObject structure) {
-        //if (Grid.Instance.IsBuildingMoveable(structure.transform.position)) {
-            IRemovable removable = structure.GetInterface<IRemovable>();
-            //if (removable != null && removable.RemovalAllowed()) {
-                removable.Remove();
-                Grid.Instance.RemoveFromNode(structure.transform.position);
-                //GUIManager.Instance.ShowDefaultMenu();
-          //  }
-        //}
-    }
-
     public void UpgradeStructure(GameObject structure) {
         IUpgradeable upgradeable = structure.GetInterface<IUpgradeable>();
         Resource upgradeCost = upgradeable.NextLevelPrefab.GetComponent<BaseStructure>().cost;
         ResourceManager.Instance.PayResources(upgradeCost);
         upgradeable.Upgrade();
-        //GUIManager.Instance.ShowDefaultMenu();
     }
 }

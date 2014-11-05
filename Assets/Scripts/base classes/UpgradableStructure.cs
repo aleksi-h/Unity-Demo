@@ -17,20 +17,19 @@ public abstract class UpgradableStructure : BaseStructure, IUpgradeable {
     public virtual void Upgrade() {
         structureActive = false;
         float duration = nextLevelPrefab.GetComponent<BaseStructure>().buildTime;
-        StartLongProcess(UpgradeProcess, duration);
+        StartDelayedOperation(UpgradeProcess, duration);
     }
     #endregion
 
     protected virtual void UpgradeProcess() {
-        GUIManager.Instance.RemoveTimerDisplay(timerDisplay);
+        Destroy(timerDisplay);
 
         //"upgraded".Start() will be called 1 frame after this, so things that need to be done before that, like releasing workers, can be done in FinishUpgrade()
         GameObject upgraded = (GameObject)Instantiate(nextLevelPrefab, myTransform.position, Quaternion.identity);
         GUIManager.Instance.UpgradeFinished(gameObject, upgraded);
         upgraded.GetComponent<BaseStructure>().Activate();
-        if (onTapRegistered) {
-            upgraded.GetComponent<BaseStructure>().Move();
-        }
+        node.AttachStructure(upgraded);
+        GUIManager.Instance.StructureUpgraded(gameObject, upgraded);
         FinishUpgrade();
     }
 

@@ -4,13 +4,12 @@ using System.Collections.Generic;
 
 /*
  * This singleton represents a dynamic 3D Grid. It's instantiated as a flat 2D grid, which then expands upward as buildings are added.
- * 
- * NOTE: If the List<Node> implementation turns out to be too slow because of all the iteration, 
- * it can be replaced by a simple Node[ , , ] array, 
- * where indices are accessed by [posX/interval, posY/interval, posZ/interval]
+ * The Grid is implemented using a dictionary, as a compromise between memory consumption and speed.
+ * (Node[ , , ] would be faster, but it would contain loads of empty objects)
  * */
 public class Grid : Singleton<Grid> {
     public Material material;
+    public GameObject nodePrefab;
 
     //width & depth in nodes
     public int gridLengthX;
@@ -18,7 +17,10 @@ public class Grid : Singleton<Grid> {
 
     public int nodeInterval;
 
-    private List<Node> nodes;
+    //private List<Node> nodes;
+    private Dictionary<Vector3, Node> nodes;
+    private LayerMask structureLayerMask = 1 << 10;
+    private LayerMask groundLayerMask = 1 << 11;
 
     private int borderXLower;
     private int borderXUpper;
@@ -42,12 +44,13 @@ public class Grid : Singleton<Grid> {
         if (gridLengthX % 2 == 0) { borderXUpper -= 1 * nodeInterval; }
         if (gridLengthZ % 2 == 0) { borderZUpper -= 1 * nodeInterval; }
 
-        //initialize the grid by creating the first layer of nodes
-        nodes = new List<Node>();
+        //initialize the grid by creating 1 layer of nodes
+        nodes = new Dictionary<Vector3, Node>();
         for (int i = borderXLower; i <= borderXUpper; i += nodeInterval) {
             for (int j = borderZLower; j <= borderZUpper; j += nodeInterval) {
-                Node node = new Node(new Vector3(i, 0, j), false);
-                nodes.Add(node);
+                Vector3 pos = new Vector3(i, 0, j);
+                Node node = CreateNode(pos);
+                nodes.Add(pos, node);
             }
         }
 
@@ -60,87 +63,188 @@ public class Grid : Singleton<Grid> {
         stackOrder.Add(StructureType.Special, new List<StructureType>());
     }
 
+    public void Start() {
+        InputManager.OnLongTap += OnLongTap;
+    }
+
+    private Node curStackRoot;
+    private bool registeredToTapEvent;
+    private Vector3 rootPosBeforeMove;
+
+    private void OnLongTap(Vector3 tapPos) {
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+        if (Physics.Raycast(ray, out hit, 1100, structureLayerMask)) {
+            Vector3 hitPos = hit.collider.gameObject.transform.position;
+            curStackRoot = getNodeByPosition(hitPos);
+            BaseStructure structureBase = curStackRoot.structure.GetComponent<BaseStructure>();
+            if (!registeredToTapEvent) {
+                InputManager.OnTap += OnTap;
+                registeredToTapEvent = true;
+                rootPosBeforeMove = curStackRoot.transform.position;
+                GUIManager.Instance.ShowPlacementGUI(curStackRoot.structure, structureBase.Type);
+            }
+        }
+    }
+    private void OnTap(Vector3 tapPos) {
+        Ray ray = Camera.main.ScreenPointToRay(tapPos);
+        RaycastHit hit;
+        if (Physics.Raycast(ray, out hit, 1100, groundLayerMask)) {
+            Vector3 newPos = GetNearestValidNode(curStackRoot, hit.point);//take node as arg
+            if (!curStackRoot.transform.position.Equals(newPos)) {
+                MoveStack(curStackRoot.transform.position, newPos);
+            }
+        }
+    }
+    public void startMove(GameObject obj) {
+        curStackRoot = getNodeByPosition(obj.transform.position);
+        if (!registeredToTapEvent) {
+            InputManager.OnTap += OnTap;
+            registeredToTapEvent = true;
+        }
+    }
+    public void FinishMove() {
+        if (registeredToTapEvent) { InputManager.OnTap -= OnTap; }
+        registeredToTapEvent = false;
+    }
+    public void CancelMove() {
+        if (registeredToTapEvent) { InputManager.OnTap -= OnTap; }
+        registeredToTapEvent = false;
+        if (!curStackRoot.transform.position.Equals(rootPosBeforeMove)) {
+            MoveStack(curStackRoot.transform.position, rootPosBeforeMove);
+        }
+    }
+
+    private Node CreateNode(Vector3 pos) {
+        GameObject obj = (GameObject)Instantiate(nodePrefab, pos, Quaternion.identity);
+        return obj.GetComponent<Node>();
+    }
+
     //draws a highlight-square around nodes that are valid build positions for the specified structure type
     public void HighLightValidNodes(StructureType type) {
-        foreach (Node node in nodes) {
-            if (node.occupied) { continue; }
-            if (node.nextNodeDown != null && !IsNodeCompatible(node.nextNodeDown, type)) { continue; }
-
-            node.HighLight();
+        Dictionary<Vector3, Node>.ValueCollection valueColl = nodes.Values;
+        foreach (Node n in valueColl) {
+            if (n.isOccupied) { continue; }
+            if (n.nextNodeDown != null && !IsNodeCompatible(n.nextNodeDown, type)) { continue; }
+            n.HighLight();
         }
     }
 
     public void HideHighlight() {
-        foreach (Node node in nodes) {
-            node.HideHighLight();
+        Dictionary<Vector3, Node>.ValueCollection valueColl = nodes.Values;
+        foreach (Node n in valueColl) {
+            n.HideHighLight();
         }
     }
 
     //returns the newPos rounded to nearest valid node location. 
     //if the nearest location is invalid for this structure type, returns currentPos
-    public Vector3 GetNearestValidNode(Vector3 currentPos, Vector3 newPos, StructureType type) {
+    public Vector3 GetNearestValidNode(Node curNode, Vector3 newPos) {
+        Vector3 currentPos = curNode.transform.position;
         //round the position to nearest node position
         int nearestX = (int)Mathf.Round(newPos.x / nodeInterval) * nodeInterval;
         int nearestZ = (int)Mathf.Round(newPos.z / nodeInterval) * nodeInterval;
         int y = 0; //only considering ground level positions here
 
-        //cehck if the position is outside grid boundaries
+        //cehck if the position is outside grid boundaries and apply corrections
         if (nearestX < borderXLower) { nearestX = borderXLower; }
         if (nearestX > borderXUpper) { nearestX = borderXUpper; }
         if (nearestZ < borderZLower) { nearestZ = borderZLower; }
         if (nearestZ > borderZUpper) { nearestZ = borderZUpper; }
 
         Vector3 newPosition = new Vector3(nearestX, y, nearestZ);
-
         if (!IsNodeOccupied(newPosition)) { return newPosition; }
-        else {
-            Node topNode = GetTopmostStructure(newPosition);
-            if (IsNodeCompatible(topNode, type)) {
-                return GetTopmostStructure(newPosition).nextNodeUp.position;
-            }
-            else { return currentPos; }
+
+        Node highestBuiltNode = GetTopmostStructure(newPosition);
+        Debug.Log("stack " + newPosition + " top structure " + highestBuiltNode.transform.position);
+        if (IsNodeCompatible(highestBuiltNode, curNode.structure.GetComponent<BaseStructure>().Type)) {
+            return highestBuiltNode.nextNodeUp.transform.position;
         }
+        else { return currentPos; }
     }
 
     //adds a building to the node
-    public void BuildToNode(Vector3 pos, StructureType type) {
+    public void BuildToNode(Vector3 pos, GameObject structure) {
         Node node = getNodeByPosition(pos);
-        if (node != null) {
-            node.occupied = true;
-            node.structureType = type;
-        }
-        if (node.nextNodeDown != null) {
-            node.nextNodeDown.nextNodeUp = node;
-        }
+        if (node == null) { return; }
+
+        node.isOccupied = true;
+        //node.structure = structure;
+        node.AttachStructure(structure);
+        node.structureType = structure.GetComponent<BaseStructure>().Type;
+        if (node.nextNodeDown != null) { node.nextNodeDown.nextNodeUp = node; }
 
         //add a free node on top of the building
-        Node newNode = new Node(new Vector3(pos.x, pos.y + nodeInterval, pos.z), false);
+        Vector3 newPos = new Vector3(pos.x, pos.y + nodeInterval, pos.z);
+        Node newNode = CreateNode(newPos);
         newNode.nextNodeDown = node;
         node.nextNodeUp = newNode;
-        AddNode(newNode);
+        nodes.Add(newPos, newNode);
     }
 
     //removes building from the node at "pos"
     public void RemoveFromNode(Vector3 pos) {
         Node node = getNodeByPosition(pos);
         if (node != null) {
-            node.occupied = false;
+            node.isOccupied = false;
+            node.DetachStructure();
             RemoveNode(node.nextNodeUp);
         }
     }
 
+    public void MoveStack(Vector3 oldRootPos, Vector3 newRootPos) {//pysyykö node tallessa muualla kuin dictionaryssä?
+        Node oldPosRootNode = getNodeByPosition(oldRootPos);
+        if (oldPosRootNode != null && oldPosRootNode.isOccupied) {
+
+            //vaihda nodejen paikkaa
+            Node newPosRootNode = getNodeByPosition(newRootPos);
+            newPosRootNode.MoveToNewPos(oldRootPos);//yhdistä node alempaan
+            oldPosRootNode.MoveToNewPos(newRootPos);//yhdistä alempaan
+
+            //yhdistä nodet uusiin stäckeihin
+            if (oldPosRootNode.nextNodeDown != null) { oldPosRootNode.nextNodeDown.nextNodeUp = newPosRootNode; }
+            if (newPosRootNode.nextNodeDown != null) { newPosRootNode.nextNodeDown.nextNodeUp = oldPosRootNode; }
+            Node temp = newPosRootNode.nextNodeDown;
+            newPosRootNode.nextNodeDown = oldPosRootNode.nextNodeDown;
+            oldPosRootNode.nextNodeDown = temp;
+
+            //päivitä dictionary refs
+            nodes.Remove(oldRootPos);
+            nodes.Remove(newRootPos);
+            nodes.Add(newRootPos, oldPosRootNode);
+            nodes.Add(oldRootPos, newPosRootNode);
+
+            //siirrä loppupino
+            int stackHeight = 1;
+            Node nextUp = oldPosRootNode;
+            while (nextUp.isOccupied) {
+                nextUp = nextUp.nextNodeUp;
+                Vector3 newPos = AddHeight(newRootPos, stackHeight);
+                Debug.Log("moving node from: " + nextUp.transform.position + " to: " + newPos);
+                nodes.Remove(nextUp.transform.position);
+                nextUp.MoveToNewPos(newPos);
+                nodes.Add(newPos, nextUp);
+                stackHeight++;
+            }
+        }
+    }
+
+    private Vector3 AddHeight(Vector3 pos, int amount) {
+        return new Vector3(pos.x, pos.y + (amount * nodeInterval), pos.z);
+    }
+
     //only the topmost building is movable/removable
-    public bool IsBuildingMoveable(Vector3 pos) {
+    public bool IsNodeRemoveable(Vector3 pos) {
         Node node = getNodeByPosition(pos);
         if (node.nextNodeUp == null) { return false; }
-        if (node.nextNodeUp.occupied) { return false; }
+        if (node.nextNodeUp.isOccupied) { return false; }
         return true;
     }
 
     private bool IsNodeOccupied(Vector3 pos) {
         Node node = getNodeByPosition(pos);
         if (node != null) {
-            return node.occupied;
+            return node.isOccupied;
         }
         Debug.LogError("Node not found");
         return false;
@@ -160,29 +264,22 @@ public class Grid : Singleton<Grid> {
     //returns the highest occupied node
     private Node GetTopmostStructure(Vector3 pos) {
         Node node = getNodeByPosition(pos);
-        while (node.nextNodeUp.occupied) {
+        while (node.nextNodeUp.isOccupied) {
             node = node.nextNodeUp;
         }
         return node;
     }
 
     private Node getNodeByPosition(Vector3 pos) {
-        foreach (Node node in nodes) {
-            if (pos.Equals(node.position)) {
-                return node;
-            }
-        }
-        return null;
-    }
-
-    private void AddNode(Node node) {
-        nodes.Add(node);
+        Node node = null;
+        nodes.TryGetValue(pos, out node);
+        return node;
     }
 
     private void RemoveNode(Node node) {
         if (node != null) {
             node.Destroy();
-            nodes.Remove(node);
+            nodes.Remove(node.transform.position);
         }
     }
 }

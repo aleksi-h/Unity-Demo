@@ -9,13 +9,13 @@ public class StatueScript : UpgradableStructure, IProducer {
         get { return productionInterval; }
     }
 
-    public Resource producedPerInterval;
+    public Resource baseProductionRate;
     public Resource BaseProductionRate {
-        get { return producedPerInterval; }
+        get { return baseProductionRate; }
     }
 
     public void ProduceResources() {
-        ResourceManager.Instance.AddResources(producedPerInterval);
+        ResourceManager.Instance.AddResources(baseProductionRate);
     }
     #endregion
 
