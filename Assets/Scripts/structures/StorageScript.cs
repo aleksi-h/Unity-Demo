@@ -8,11 +8,12 @@ public class StorageScript : BaseStructure, IRemovable
     #region IRemovable
     public void Remove() {
         ResourceManager.Instance.DecreaseResourceCapacity(capacity);
+        gridComponent.DetachFromGrid();
         Destroy(this.gameObject);
     }
 
     public bool RemovalAllowed() {
-        return structureActive;
+        return structureActive && gridComponent.canBeRemoved();
     }
     #endregion
 
@@ -22,7 +23,6 @@ public class StorageScript : BaseStructure, IRemovable
         level = 1;
         maxHealth = 1000;
         health = maxHealth;
-        type = StructureType.Storage;
     }
 
     protected override void Update()

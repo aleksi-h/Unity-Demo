@@ -1,25 +1,28 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Node:MonoBehaviour {
+public class Node : MonoBehaviour {
     public bool isOccupied;
-    public GameObject structure;
-    public StructureType structureType;
-    public Node nextNodeUp;
-    public Node nextNodeDown;
+    public GridComponent component;
+    public Node upperNode;
+    public Node lowerNode;
     private Transform myTransform;
     private MeshRenderer meshRenderer;
 
-    public void Awake(){
+    public void Awake() {//TODO tallenna transform.position arvo muuttujaan
         myTransform = transform;
-        myTransform.parent = Grid.Instance.transform;
         meshRenderer = GetComponent<MeshRenderer>();
     }
 
     public void Destroy() {
+        if (component != null) { component.SetNode(null); }
         Destroy(gameObject);
-        //UnityEngine.GameObject.DestroyImmediate(renderer.material);
-        //UnityEngine.GameObject.Destroy(highlight);
+    }
+
+    public Node GetTopOfStack() {
+        Node node = this;
+        while (node.upperNode.isOccupied) { node = node.upperNode; }
+        return node;
     }
 
     public void HighLight() {
@@ -32,20 +35,32 @@ public class Node:MonoBehaviour {
 
     public void MoveToNewPos(Vector3 newPos) {
         myTransform.position = newPos;
-        if (structure != null) { structure.transform.position = newPos; }
+        if (component != null) { component.transform.position = newPos; }
     }
 
-    public void AttachStructure(GameObject structure) {
-        this.structure = structure;
-        structure.GetComponent<BaseStructure>().AttachToNode(this);
+    public void MoveUp(float amount) {
+        Vector3 newPos = new Vector3(myTransform.position.x, myTransform.position.y + amount, myTransform.position.z);
+        myTransform.position = newPos;
+        if (component != null) { component.transform.position = newPos; }
     }
 
-    public void DetachStructure() {
-        structure.GetComponent<BaseStructure>().AttachToNode(null);
-        structure = null;
+    public void AttachComponent(GridComponent component) {
+        this.component = component;
+        component.SetNode(this);
+        isOccupied = true;
     }
 
-    public void SetStructure(GameObject newStructure) {
-        structure = newStructure;
+    public void DetachComponent() {
+        component.SetNode(null);
+        component = null;
+        isOccupied = false;
+    }
+
+    public void setLowerNode(Node node) {
+        lowerNode = node;
+    }
+
+    public void setUpperNode(Node node) {
+        upperNode = node;
     }
 }

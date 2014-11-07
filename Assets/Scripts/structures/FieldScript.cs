@@ -21,11 +21,12 @@ public class FieldScript : UpgradableStructure, IProducer, IRemovable {
 
     #region IRemovable
     public void Remove() {
+        gridComponent.DetachFromGrid();
         Destroy(this.gameObject);
     }
 
     public bool RemovalAllowed() {
-        return structureActive;
+        return structureActive&&gridComponent.canBeRemoved();
     }
     #endregion
 
@@ -34,7 +35,6 @@ public class FieldScript : UpgradableStructure, IProducer, IRemovable {
         level = 1;
         maxHealth = 1000;
         health = maxHealth;
-        type = StructureType.Field;
     }
 
     public override void Upgrade() {

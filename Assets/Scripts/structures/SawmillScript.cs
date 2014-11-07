@@ -27,11 +27,12 @@ public class SawmillScript : UpgradableStructure, IProducer, IEmployer, IRemovab
             ResourceManager.Instance.ReleaseWorker(workers[0]);
             workers.RemoveAt(0);
         }
+        gridComponent.DetachFromGrid();
         Destroy(this.gameObject);
     }
 
     public bool RemovalAllowed() {
-        return structureActive;
+        return structureActive && gridComponent.canBeRemoved();
     }
     #endregion
 
@@ -86,7 +87,6 @@ public class SawmillScript : UpgradableStructure, IProducer, IEmployer, IRemovab
         level = 1;
         maxHealth = 1000;
         health = maxHealth;
-        type = StructureType.Sawmill;
         workers = new List<GameObject>(minWorkerCount);
     }
 

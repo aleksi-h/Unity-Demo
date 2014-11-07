@@ -12,32 +12,20 @@ public abstract class BaseStructure : MonoBehaviour, IDamageable {
     protected float processDuration;
 
     protected Transform myTransform;
+    protected GridComponent gridComponent;
     protected bool structureActive;
     protected int maxHealth;
     protected int level;
     protected int health;
-    protected StructureType type;
-    public StructureType Type {
-        get { return type; }
-    }
-
-    private Vector3 positionBeforeMove;
 
     #region IDamageable
     public abstract void Damage(int amount);
     #endregion
 
-    public void Build() {
-        Grid.Instance.BuildToNode(myTransform.position, gameObject);
-        StartDelayedOperation(BuildProcess, buildTime);
-    }
-
-    public void AttachToNode(Node node) {
-        this.node = node;
-    }
-
     protected virtual void Awake() {
         myTransform = transform;
+        gridComponent = GetComponent<GridComponent>();
+        if (gridComponent == null) { Debug.LogError("Structure requires GridComponent script"); }
     }
 
     protected virtual void Start() {
@@ -51,6 +39,16 @@ public abstract class BaseStructure : MonoBehaviour, IDamageable {
     }
 
     protected virtual void OnDestroy() {
+    }
+
+    public void Build() {
+        gridComponent.AttachToGrid();
+        StartDelayedOperation(BuildProcess, buildTime);
+        gridComponent.Move();
+    }
+
+    public GridComponent getGridComponent() {
+        return gridComponent;
     }
 
     protected GameObject timerDisplay;

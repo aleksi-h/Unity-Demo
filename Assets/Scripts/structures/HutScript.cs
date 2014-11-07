@@ -9,7 +9,6 @@ public class HutScript : BaseStructure {
         level = 1;
         maxHealth = 1000;
         health = maxHealth;
-        type = StructureType.Hut;
     }
 
     protected override void Update() {

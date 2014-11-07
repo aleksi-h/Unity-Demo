@@ -24,7 +24,6 @@ public class StatueScript : UpgradableStructure, IProducer {
         level = 1;
         maxHealth = 1000;
         health = maxHealth;
-        type = StructureType.Special;
     }
 
     public override void Upgrade() {

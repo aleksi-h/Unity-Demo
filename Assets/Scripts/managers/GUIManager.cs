@@ -18,7 +18,7 @@ public class GUIManager : Singleton<GUIManager> {
         HideAllGUIElements();
         ShowDefaultMenu();
         InputManager.OnTap += OnTap;
-        //InputManager.OnLongTap += OnLongTap;
+        InputManager.OnLongTap += OnLongTap;
         UIEventListener.Get(buildButton).onClick += ShowBuildMenu;
         UIEventListener.Get(closeButton).onClick += OnClickClose;
         UIEventListener.Get(acceptButton).onClick += OnClickConfirmMovement;
@@ -98,7 +98,7 @@ public class GUIManager : Singleton<GUIManager> {
     private void SetBuyMenuContent() {
         if (structureToBuild != null) {
             Resource cost = structureToBuild.GetComponent<BaseStructure>().cost;
-            Resource costInCurrency = Utils.ConvertResourcesToCurrency(cost);
+            Resource costInCurrency = Resource.ConvertResourcesToCurrency(cost);
             priceLabel1.GetComponent<UILabel>().text = cost.wood + "W\n" + cost.food + "F";
             priceLabel2.GetComponent<UILabel>().text = costInCurrency.currency + "Curr";
 
@@ -117,7 +117,7 @@ public class GUIManager : Singleton<GUIManager> {
 
     private void onClickBuy2(GameObject button) {
         Resource cost = structureToBuild.GetComponent<BaseStructure>().cost;
-        Resource costInCurrency = Utils.ConvertResourcesToCurrency(cost);
+        Resource costInCurrency = Resource.ConvertResourcesToCurrency(cost);
         BuildingManager.instance.BuildStructure(structureToBuild, costInCurrency);
     }
 
@@ -128,12 +128,12 @@ public class GUIManager : Singleton<GUIManager> {
     public GameObject cancelButton;
 
     private void OnClickConfirmMovement(GameObject button) {
-        Grid.Instance.FinishMove();
+        selectedStructure.GetComponent<GridComponent>().FinishMove();
         InputManager.OnTap += OnTap;
         ShowDefaultMenu();
     }
     private void OnClickCancelMovement(GameObject button) {
-        Grid.Instance.CancelMove();
+        selectedStructure.GetComponent<GridComponent>().CancelMove();
         InputManager.OnTap += OnTap;
         ShowDefaultMenu();
     }
@@ -233,7 +233,7 @@ public class GUIManager : Singleton<GUIManager> {
         NGUITools.SetActive(settingsButton, true);
     }
 
-    public void ShowPlacementGUI(GameObject structure, StructureType type) {
+    public void ShowPlacementGUI(GameObject structure) {
         InputManager.OnTap -= OnTap;
         selectedStructure = structure;
         HideAllGUIElements();
@@ -242,7 +242,6 @@ public class GUIManager : Singleton<GUIManager> {
         followScript.setOffset(offset);
         followScript.SetTarget(selectedStructure);
         NGUITools.SetActive(confirmPlacementMenu, true);
-        Grid.Instance.HighLightValidNodes(type);
     }
 
     public void StructureUpgraded(GameObject oldGo, GameObject newGo) {
@@ -270,7 +269,6 @@ public class GUIManager : Singleton<GUIManager> {
             Destroy(child.gameObject);
         }
 
-        Grid.Instance.HideHighlight();
         //hide buttons
         NGUITools.SetActive(buildButton, false);
         NGUITools.SetActive(settingsButton, false);
@@ -291,5 +289,14 @@ public class GUIManager : Singleton<GUIManager> {
             ShowContextMenu();
         }
         else { ShowDefaultMenu(); }
+    }
+
+    private void OnLongTap(Vector3 tapPos) {
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+        if (Physics.Raycast(ray, out hit, 1100, structureLayerMask)) {
+            selectedStructure = hit.collider.gameObject;
+            selectedStructure.GetComponent<GridComponent>().Move();
+        }
     }
 }

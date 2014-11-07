@@ -293,7 +293,7 @@ Transform:
   m_LocalScale: {x: 4, y: 4, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 9
+  m_RootOrder: 8
 --- !u!1 &221410549
 GameObject:
   m_ObjectHideFlags: 0
@@ -1326,7 +1326,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   debug: 0
-  useMouse: 1
+  useMouse: 0
   useTouch: 1
   allowMultiTouch: 1
   useKeyboard: 1
@@ -2367,7 +2367,7 @@ Transform:
   m_Children:
   - {fileID: 736011169}
   m_Father: {fileID: 0}
-  m_RootOrder: 10
+  m_RootOrder: 9
 --- !u!114 &1202518933
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2914,6 +2914,7 @@ Transform:
   - {fileID: 591753914}
   - {fileID: 1105666117}
   - {fileID: 1893971352}
+  - {fileID: 1751810789}
   m_Father: {fileID: 0}
   m_RootOrder: 7
 --- !u!1 &1544473464
@@ -3272,7 +3273,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1751810788}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: -10, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1019805691}
@@ -3282,8 +3283,8 @@ Transform:
   - {fileID: 444047346}
   - {fileID: 859355908}
   - {fileID: 2130092391}
-  m_Father: {fileID: 0}
-  m_RootOrder: 8
+  m_Father: {fileID: 1532540074}
+  m_RootOrder: 3
 --- !u!1 &1758125822
 GameObject:
   m_ObjectHideFlags: 0

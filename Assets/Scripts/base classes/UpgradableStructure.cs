@@ -28,8 +28,11 @@ public abstract class UpgradableStructure : BaseStructure, IUpgradeable {
         GameObject upgraded = (GameObject)Instantiate(nextLevelPrefab, myTransform.position, Quaternion.identity);
         GUIManager.Instance.UpgradeFinished(gameObject, upgraded);
         upgraded.GetComponent<BaseStructure>().Activate();
-        node.AttachStructure(upgraded);
+
+        //replace all references to the gameobject before removal
+        gridComponent.Replace(upgraded.GetComponent<GridComponent>());
         GUIManager.Instance.StructureUpgraded(gameObject, upgraded);
+
         FinishUpgrade();
     }
 

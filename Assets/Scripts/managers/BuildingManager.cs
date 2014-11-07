@@ -10,7 +10,7 @@ public class BuildingManager : Singleton<BuildingManager> {
 
     void Start() {
         GameObject obj = (GameObject)Instantiate(statue, new Vector3(-10, 0, 0), Quaternion.identity);
-        Grid.Instance.BuildToNode(obj.transform.position, obj);
+        obj.GetComponent<GridComponent>().AttachToGrid();
         obj.GetComponent<BaseStructure>().Activate();
     }
 
@@ -30,28 +30,17 @@ public class BuildingManager : Singleton<BuildingManager> {
         ResourceManager.Instance.PayResources(cost);
         Vector3 pos = new Vector3(0, 0, 0);
         GameObject newStructure = (GameObject)Instantiate(prefab, pos, Quaternion.identity);
-        BaseStructure newStructureBase = newStructure.GetComponent<BaseStructure>();
-        newStructureBase.Build();
-        Grid.Instance.startMove(newStructure);
-        //newStructureBase.Move();
-        GUIManager.Instance.ShowPlacementGUI(newStructure, newStructureBase.Type);
+        newStructure.GetComponent<BaseStructure>().Build();
     }
 
 
     public bool CanRemoveStructure(GameObject structure) {
-        if (!Grid.Instance.IsNodeRemoveable(structure.transform.position)) {
-            return false;
-        }
-        if (!structure.GetInterface<IRemovable>().RemovalAllowed()) {
-            return false;
-        }
-        return true;
+        return structure.GetInterface<IRemovable>().RemovalAllowed();
     }
 
     public void RemoveStructure(GameObject structure) {
         IRemovable removable = structure.GetInterface<IRemovable>();
         removable.Remove();
-        Grid.Instance.RemoveFromNode(structure.transform.position);
     }
 
 
