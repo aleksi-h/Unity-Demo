@@ -4,6 +4,8 @@ using System.Collections;
 public abstract class BaseStructure : MonoBehaviour, IDamageable {
     public Resource cost;
     public float buildTime;
+    public Material defaultMat;
+    public Material highlightMat;
 
     protected Node node;
     protected const float processUpdateInterval = 1.0f;

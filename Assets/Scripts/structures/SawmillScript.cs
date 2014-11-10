@@ -32,7 +32,7 @@ public class SawmillScript : UpgradableStructure, IProducer, IEmployer, IRemovab
     }
 
     public bool RemovalAllowed() {
-        return structureActive && gridComponent.canBeRemoved();
+        return structureActive && gridComponent.CanBeRemoved();
     }
     #endregion
 

@@ -4022,10 +4022,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 775afdf6c31b87b4081bf74d3404aefa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  material: {fileID: 2100000, guid: 43b3a381597b74e4fbedd21fd8fafb9d, type: 2}
   nodePrefab: {fileID: 100000, guid: eaf804db74e42a04b84eabe3913d6b70, type: 2}
-  gridLengthX: 8
-  gridLengthZ: 8
+  gridLengthX: 2
+  gridLengthZ: 2
   nodeInterval: 5
 --- !u!4 &2061348815
 Transform:

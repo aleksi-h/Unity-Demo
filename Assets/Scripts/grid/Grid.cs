@@ -72,7 +72,7 @@ public class Grid : Singleton<Grid> {
         Dictionary<Vector3, Node>.ValueCollection valueColl = nodes.Values;
         foreach (Node n in valueColl) {
             if (n.isOccupied) { continue; }
-            if (n.lowerNode != null && !AreNodesStackable(n.lowerNode, node)) { continue; }
+            if (n.lowerNode != null && !IsNodeCompatible(n.lowerNode, node.component)) { continue; }
             if (n.lowerNode != null && n.lowerNode == node) { continue; } //don't highlight self
             n.HighLight();
         }
@@ -85,9 +85,21 @@ public class Grid : Singleton<Grid> {
         }
     }
 
+    public bool HasRoom(GridComponent comp) {
+        if (FindFreeNode(comp) != null) { return true; }
+        return false;
+    }
+
+    public void RequestNewPosition(Node node, Vector3 newPos) {
+        Node nearestNode = GetNearestValidNode(node, newPos);
+        if (!node.Equals(nearestNode)) {
+            MoveStack(node, nearestNode.transform.position);
+        }
+    }
+
     //returns the newPos rounded to nearest valid node location. 
     //if the nearest location is invalid for this structure type, returns currentPos
-    public Node GetNearestValidNode(Node curNode, Vector3 targetPos) {
+    private Node GetNearestValidNode(Node curNode, Vector3 targetPos) {
         //round the position to nearest node position
         int nearestX = (int)Mathf.Round(targetPos.x / nodeInterval) * nodeInterval;
         int nearestZ = (int)Mathf.Round(targetPos.z / nodeInterval) * nodeInterval;
@@ -105,20 +117,40 @@ public class Grid : Singleton<Grid> {
         if (!nearestNode.isOccupied) { return nearestNode; }
 
         Node highestOccupiedNode = nearestNode.GetTopOfStack();
-        if (AreNodesStackable(highestOccupiedNode, curNode)) {
+        if (IsNodeCompatible(highestOccupiedNode, curNode.component)) {
             return highestOccupiedNode.upperNode;
         }
         else { return curNode; }
     }
 
-    //adds a component to the grid
-    public void AttachComponent(Vector3 pos, GridComponent component) {
-        Node node = getNodeByPosition(pos);
+    //finds a random free node in the grid
+    private Node FindFreeNode(GridComponent comp) {
+        Dictionary<Vector3, Node>.ValueCollection valueColl = nodes.Values;
+
+        //at first, search bottom layer only
+        foreach (Node n in valueColl) {
+            if (n.transform.position.y == 0 && !n.isOccupied) {
+                return n;
+            }
+        }
+        //then search any layer
+        foreach (Node n in valueColl) {
+            if (n.lowerNode != null && !n.isOccupied && IsNodeCompatible(n.lowerNode, comp)) {
+                return n;
+            }
+        }
+        return null;
+    }
+
+    //adds a component to the grid, at a free node
+    public void AttachComponent(GridComponent component) {
+        Node node = FindFreeNode(component);
         node.AttachComponent(component);
+        component.transform.position = node.transform.position;
         if (node.lowerNode != null) { node.lowerNode.setUpperNode(node); }
 
         //add a free node on top of the building
-        Node newNode = CreateNode(pos);
+        Node newNode = CreateNode(node.transform.position);
         newNode.MoveUp(nodeInterval);
         newNode.lowerNode = node;
         node.upperNode = newNode;
@@ -168,11 +200,11 @@ public class Grid : Singleton<Grid> {
     }
 
     //decides whether 2 nodes can be stacked, based on the rules in "stackOrder" dictionary
-    private bool AreNodesStackable(Node lowerNode, Node upperNode) {
+    private bool IsNodeCompatible(Node node, GridComponent comp) {
         List<StructureType> compatibleStructures;
-        stackOrder.TryGetValue(lowerNode.component.type, out compatibleStructures);
+        stackOrder.TryGetValue(node.component.type, out compatibleStructures);
 
-        if (compatibleStructures.Contains(upperNode.component.type)) { return true; }
+        if (compatibleStructures.Contains(comp.type)) { return true; }
         else { return false; }
     }
 

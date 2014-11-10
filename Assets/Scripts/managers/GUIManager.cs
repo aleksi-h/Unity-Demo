@@ -102,10 +102,10 @@ public class GUIManager : Singleton<GUIManager> {
             priceLabel1.GetComponent<UILabel>().text = cost.wood + "W\n" + cost.food + "F";
             priceLabel2.GetComponent<UILabel>().text = costInCurrency.currency + "Curr";
 
-            bool canAfford = BuildingManager.Instance.CanAffordStructure(structureToBuild, cost);
+            bool canAfford = BuildingManager.Instance.CanBuildStructure(structureToBuild, cost);
             buyButton1.GetComponent<UIImageButton>().isEnabled = canAfford;
 
-            canAfford = BuildingManager.Instance.CanAffordStructure(structureToBuild, costInCurrency);
+            canAfford = BuildingManager.Instance.CanBuildStructure(structureToBuild, costInCurrency);
             buyButton2.GetComponent<UIImageButton>().isEnabled = canAfford;
         }
     }

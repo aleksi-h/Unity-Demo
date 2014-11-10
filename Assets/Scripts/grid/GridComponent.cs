@@ -11,10 +11,7 @@ public class GridComponent : MonoBehaviour {
         Ray ray = Camera.main.ScreenPointToRay(tapPos);
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit, 1100, groundLayerMask)) {
-            Node nearestNode = Grid.Instance.GetNearestValidNode(node, hit.point);
-            if (!node.Equals(nearestNode)) {
-                Grid.Instance.MoveStack(node, nearestNode.transform.position);
-            }
+            Grid.Instance.RequestNewPosition(node, hit.point);
         }
     }
 
@@ -49,7 +46,7 @@ public class GridComponent : MonoBehaviour {
 
 
     public void AttachToGrid() {
-        Grid.Instance.AttachComponent(transform.position, this);
+        Grid.Instance.AttachComponent(this);
     }
 
     public void DetachFromGrid() {
@@ -65,8 +62,12 @@ public class GridComponent : MonoBehaviour {
         node = null;
     }
 
+    public bool CanBeBuilt() {
+        return Grid.Instance.HasRoom(this);
+    }
+
     //only the topmost building is removable
-    public bool canBeRemoved() {
+    public bool CanBeRemoved() {
         //if (node.upperNode == null) { return false; }
         if (node.upperNode.isOccupied) { return false; }
         return true;

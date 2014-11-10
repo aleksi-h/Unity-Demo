@@ -26,7 +26,7 @@ public class FieldScript : UpgradableStructure, IProducer, IRemovable {
     }
 
     public bool RemovalAllowed() {
-        return structureActive&&gridComponent.canBeRemoved();
+        return structureActive&&gridComponent.CanBeRemoved();
     }
     #endregion
 
