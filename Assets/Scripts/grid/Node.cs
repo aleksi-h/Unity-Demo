@@ -21,8 +21,16 @@ public class Node : MonoBehaviour {
 
     public Node GetTopOfStack() {
         Node node = this;
-        while (node.upperNode.isOccupied) { node = node.upperNode; }
+        while (node.upperNode.isOccupied) {
+            node = node.upperNode;
+        }
         return node;
+    }
+
+    public bool IsInSameStack(Node node) {
+        if (myTransform.position.x != node.transform.position.x) { return false; }
+        if (myTransform.position.z != node.transform.position.z) { return false; }
+        return true;
     }
 
     public void HighLight() {

@@ -73,7 +73,7 @@ public class Grid : Singleton<Grid> {
         foreach (Node n in valueColl) {
             if (n.isOccupied) { continue; }
             if (n.lowerNode != null && !IsNodeCompatible(n.lowerNode, node.component)) { continue; }
-            if (n.lowerNode != null && n.lowerNode == node) { continue; } //don't highlight self
+            if (n.IsInSameStack(node)) { Debug.Log("in same stack, don't highlight"); continue; } //don't highlight in same stack
             n.HighLight();
         }
     }
@@ -126,6 +126,7 @@ public class Grid : Singleton<Grid> {
         Vector3 nearestPosition = new Vector3(nearestX, y, nearestZ);
         Node nearestNode = getNodeByPosition(nearestPosition);
         if (nearestNode == null) { return curNode; }
+        if (nearestNode.IsInSameStack(curNode)) { return curNode; }
         if (!nearestNode.isOccupied) { return nearestNode; }
 
         Node highestOccupiedNode = nearestNode.GetTopOfStack();

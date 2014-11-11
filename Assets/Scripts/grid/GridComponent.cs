@@ -13,7 +13,6 @@ public class GridComponent : MonoBehaviour {
         renderer = GetComponent<MeshRenderer>();
         defaultMat = (Material)Resources.Load("testiatlas", typeof(Material));
         highlightMat = (Material)Resources.Load("StructureHighlight", typeof(Material));
-        Debug.Log("materiaalit nulleja? " + (defaultMat == null) + " " + (highlightMat == null));
     }
 
     public void HighLight() {
