@@ -5,6 +5,24 @@ public class GridComponent : MonoBehaviour {
     public StructureType type;
     public Node node;
 
+    private MeshRenderer renderer;
+    private Material defaultMat;
+    private Material highlightMat;
+
+    public void Awake() {
+        renderer = GetComponent<MeshRenderer>();
+        defaultMat = (Material)Resources.Load("testiatlas", typeof(Material));
+        highlightMat = (Material)Resources.Load("StructureHighlight", typeof(Material));
+        Debug.Log("materiaalit nulleja? " + (defaultMat == null) + " " + (highlightMat == null));
+    }
+
+    public void HighLight() {
+        renderer.material = highlightMat;
+    }
+
+    public void HideHighLight() {
+        renderer.material = defaultMat;
+    }
 
     private LayerMask groundLayerMask = 1 << 11;
     private void OnTap(Vector3 tapPos) {
@@ -25,6 +43,7 @@ public class GridComponent : MonoBehaviour {
         }
         GUIManager.Instance.ShowPlacementGUI(gameObject);
         Grid.Instance.HighLightValidNodes(node);
+        Grid.Instance.HighlightStack(node);
     }
 
     public void CancelMove() {
@@ -35,15 +54,16 @@ public class GridComponent : MonoBehaviour {
         if (!transform.position.Equals(posBeforeMove)) {
             Grid.Instance.MoveStack(node, posBeforeMove);
         }
-        Grid.Instance.HideHighlight();
+        Grid.Instance.UnHighlightNodes();
+        Grid.Instance.UnHighlightStack(node);
     }
 
     public void FinishMove() {
         if (registeredToTapEvent) { InputManager.OnTap -= OnTap; }
         registeredToTapEvent = false;
-        Grid.Instance.HideHighlight();
+        Grid.Instance.UnHighlightNodes();
+        Grid.Instance.UnHighlightStack(node);
     }
-
 
     public void AttachToGrid() {
         Grid.Instance.AttachComponent(this);

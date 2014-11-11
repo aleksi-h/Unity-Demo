@@ -77,11 +77,23 @@ public class Grid : Singleton<Grid> {
             n.HighLight();
         }
     }
-
-    public void HideHighlight() {
+    public void UnHighlightNodes() {
         Dictionary<Vector3, Node>.ValueCollection valueColl = nodes.Values;
         foreach (Node n in valueColl) {
             n.HideHighLight();
+        }
+    }
+
+    public void HighlightStack(Node node) {
+        while (node.isOccupied) {
+            node.component.HighLight();
+            node = node.upperNode;
+        }
+    }
+    public void UnHighlightStack(Node node) {
+        while (node.isOccupied) {
+            node.component.HideHighLight();
+            node = node.upperNode;
         }
     }
 
