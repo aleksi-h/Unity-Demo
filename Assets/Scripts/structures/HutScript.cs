@@ -2,7 +2,8 @@
 using System.Collections;
 
 public class HutScript : BaseStructure {
-    private int workersAccomodated = 2;
+    [SerializeField]
+    private int workerCapacity = 2;
 
     protected override void Awake() {
         base.Awake();
@@ -17,7 +18,7 @@ public class HutScript : BaseStructure {
 
     public override void Activate() {
         base.Activate();
-        ResourceManager.Instance.AddWorkers(workersAccomodated);
+        ResourceManager.Instance.AddWorkers(workerCapacity);
     }
 
     public override void Damage(int amount) {

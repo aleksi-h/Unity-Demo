@@ -5,12 +5,14 @@ using System.Collections.Generic;
 public class SawmillScript : UpgradableStructure, IProducer, IEmployer, IRemovable {
 
     #region IProducer
-    public float productionInterval;
+    [SerializeField]
+    private float productionInterval;
     public float ProductionInterval {
         get { return productionInterval; }
     }
 
-    public Resource baseProductionRate;
+    [SerializeField]
+    private Resource baseProductionRate;
     public Resource BaseProductionRate {
         get { return baseProductionRate; }
     }
@@ -37,17 +39,20 @@ public class SawmillScript : UpgradableStructure, IProducer, IEmployer, IRemovab
     #endregion
 
     #region IEmployer
-    public int minWorkerCount;
+    [SerializeField]
+    private int minWorkerCount;
     public int MinWorkerCount {
         get { return minWorkerCount; }
     }
 
-    public int maxWorkerCount;
+    [SerializeField]
+    private int maxWorkerCount;
     public int MaxWorkerCount {
         get { return maxWorkerCount; }
     }
 
-    public Resource productionBoostPerWorker;
+    [SerializeField]
+    private Resource productionBoostPerWorker;
     public Resource ProductionBoostPerWorker {
         get { return productionBoostPerWorker; }
     }

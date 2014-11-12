@@ -4,12 +4,14 @@ using System.Collections;
 public class StatueScript : UpgradableStructure, IProducer {
 
     #region IProducer
-    public float productionInterval;
+    [SerializeField]
+    private float productionInterval;
     public float ProductionInterval {
         get { return productionInterval; }
     }
 
-    public Resource baseProductionRate;
+    [SerializeField]
+    private Resource baseProductionRate;
     public Resource BaseProductionRate {
         get { return baseProductionRate; }
     }

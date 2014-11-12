@@ -3,7 +3,8 @@ using System.Collections;
 
 public class StorageScript : BaseStructure, IRemovable
 {
-    public Resource capacity;
+    [SerializeField]
+    private Resource capacity;
 
     #region IRemovable
     public void Remove() {

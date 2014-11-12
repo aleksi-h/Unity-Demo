@@ -106,7 +106,7 @@ MonoBehaviour:
   productionInterval: 1
   baseProductionRate:
     wood: 0
-    food: 0
+    food: 10
     currency: 0
 --- !u!114 &11400002
 MonoBehaviour:
