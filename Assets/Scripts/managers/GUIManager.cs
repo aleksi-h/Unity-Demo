@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using System.IO;
 
 public class GUIManager : Singleton<GUIManager> {
     public Transform gridRoot;
@@ -29,6 +30,7 @@ public class GUIManager : Singleton<GUIManager> {
         UIEventListener.Get(hutButton).onClick += showBuyMenu;
         UIEventListener.Get(buyButton1).onClick += onClickBuy1;
         UIEventListener.Get(buyButton2).onClick += onClickBuy2;
+        UIEventListener.Get(settingsButton).onClick += OnClickSettings;
     }
 
     //avoid null reference when changing prefab after upgrade
@@ -60,7 +62,9 @@ public class GUIManager : Singleton<GUIManager> {
 
     //SETTINGS MENU
     public GameObject settingsButton;
-
+    private void OnClickSettings(GameObject button) {
+        SaveLoad.PurgeSaveAndQuit();
+    }
 
 
     //BUY MENU
@@ -76,19 +80,19 @@ public class GUIManager : Singleton<GUIManager> {
 
         if (button == sawmillButton) {
             structureIcon.GetComponent<UISprite>().spriteName = "icon_sawmill";
-            structureToBuild = BuildingManager.Instance.sawmill;
+            structureToBuild = BuildingManager.Instance.sawmill[0];
         }
         else if (button == fieldButton) {
             structureIcon.GetComponent<UISprite>().spriteName = "icon_field";
-            structureToBuild = BuildingManager.Instance.field;
+            structureToBuild = BuildingManager.Instance.field[0];
         }
         else if (button == storageButton) {
             structureIcon.GetComponent<UISprite>().spriteName = "icon_storage";
-            structureToBuild = BuildingManager.Instance.storage;
+            structureToBuild = BuildingManager.Instance.storage[0];
         }
         else if (button == hutButton) {
             structureIcon.GetComponent<UISprite>().spriteName = "icon_hut";
-            structureToBuild = BuildingManager.Instance.hut;
+            structureToBuild = BuildingManager.Instance.hut[0];
         }
 
         InvokeRepeating("SetBuyMenuContent", 0, 0.5f);

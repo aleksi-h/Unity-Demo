@@ -15,8 +15,8 @@ GameObject:
   - 114: {fileID: 11400000}
   - 114: {fileID: 11400002}
   m_Layer: 10
-  m_Name: Field
-  m_TagString: Untagged
+  m_Name: StorageLvl1
+  m_TagString: structure
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -59,7 +59,7 @@ MeshFilter:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 100000}
-  m_Mesh: {fileID: 4300000, guid: 69fd4412465b5db4297b7056a8a8ea44, type: 3}
+  m_Mesh: {fileID: 4300002, guid: 2e3e2efb850d1d94f8ac43177d8b9a43, type: 3}
 --- !u!65 &6500000
 BoxCollider:
   m_ObjectHideFlags: 1
@@ -70,8 +70,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: .100000001, z: 1}
-  m_Center: {x: 0, y: .0500000007, z: 0}
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: .5, z: 0}
 --- !u!95 &9500000
 Animator:
   serializedVersion: 3
@@ -80,7 +80,7 @@ Animator:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 100000}
   m_Enabled: 1
-  m_Avatar: {fileID: 9000000, guid: 69fd4412465b5db4297b7056a8a8ea44, type: 3}
+  m_Avatar: {fileID: 9000000, guid: 2e3e2efb850d1d94f8ac43177d8b9a43, type: 3}
   m_Controller: {fileID: 0}
   m_CullingMode: 0
   m_UpdateMode: 0
@@ -94,19 +94,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 100000}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a34fdc405ecfac24f83279efc463f8e8, type: 3}
+  m_Script: {fileID: 11500000, guid: cadd619cd3524fc4292effc754ba5cdd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   cost:
-    wood: 100
-    food: 100
+    wood: 500
+    food: 0
     currency: 0
   buildTime: 5
-  nextLevelPrefab: {fileID: 100000, guid: af01058d48d70744b8802692d60940a2, type: 2}
-  productionInterval: 1
-  baseProductionRate:
-    wood: 0
-    food: 10
+  level: 1
+  capacity:
+    wood: 500
+    food: 500
     currency: 0
 --- !u!114 &11400002
 MonoBehaviour:
@@ -119,7 +118,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a8fc2f912faafe4599d25f81f7fc7f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  type: 3
+  type: 1
   node: {fileID: 0}
 --- !u!1001 &100100000
 Prefab:

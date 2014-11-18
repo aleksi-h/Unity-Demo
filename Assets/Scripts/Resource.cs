@@ -44,4 +44,8 @@ public class Resource {
         return (r1.wood <= r2.wood && r1.food <= r2.food && r1.currency <= r2.currency);
     }
     #endregion
+
+    public string ToString() {
+        return "wood: " + wood + " food: " + food + " currency: " + currency;
+    }
 }

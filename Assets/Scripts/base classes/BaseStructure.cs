@@ -4,19 +4,18 @@ using System.Collections;
 public abstract class BaseStructure : MonoBehaviour, IDamageable {
     public Resource cost;
     public float buildTime;
+    public int level;
 
-    protected Node node;
     protected const float processUpdateInterval = 1.0f;
     protected delegate void DelayedOperation();
     protected DelayedOperation delayedOperation;
     protected float processDuration;
-
     protected Transform myTransform;
     protected GridComponent gridComponent;
     protected bool structureActive;
     protected int maxHealth;
-    protected int level;
     protected int health;
+    protected bool isNew;
 
     #region IDamageable
     public abstract void Damage(int amount);
@@ -26,6 +25,9 @@ public abstract class BaseStructure : MonoBehaviour, IDamageable {
         myTransform = transform;
         gridComponent = GetComponent<GridComponent>();
         if (gridComponent == null) { Debug.LogError("Structure requires GridComponent script"); }
+    }
+
+    protected virtual void OnEnable() {
     }
 
     protected virtual void Start() {
@@ -41,14 +43,11 @@ public abstract class BaseStructure : MonoBehaviour, IDamageable {
     protected virtual void OnDestroy() {
     }
 
-    public void Build() {
+    public virtual void Build() {
         gridComponent.AttachToGrid();
         StartDelayedOperation(BuildProcess, buildTime);
         gridComponent.Move();
-    }
-
-    public GridComponent getGridComponent() {
-        return gridComponent;
+        isNew = true;
     }
 
     protected GameObject timerDisplay;
@@ -76,5 +75,6 @@ public abstract class BaseStructure : MonoBehaviour, IDamageable {
     private void BuildProcess() {
         Destroy(timerDisplay);
         Activate();
+        isNew = false;
     }
 }

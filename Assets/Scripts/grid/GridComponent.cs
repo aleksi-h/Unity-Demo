@@ -19,7 +19,7 @@ public class GridComponent : MonoBehaviour {
         renderer.material = highlightMat;
     }
 
-    public void HideHighLight() {
+    public void UnHighLight() {
         renderer.material = defaultMat;
     }
 
@@ -66,6 +66,11 @@ public class GridComponent : MonoBehaviour {
 
     public void AttachToGrid() {
         Grid.Instance.AttachComponent(this);
+    }
+
+    //reattach to grid after recreating a from savefile
+    public void ReAttachToGrid() {
+        Grid.Instance.ReAttachComponent(this);
     }
 
     public void DetachFromGrid() {

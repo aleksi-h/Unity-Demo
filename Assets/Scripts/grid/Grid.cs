@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 
 /*
  * This singleton represents a dynamic 3D Grid. It's instantiated as a flat 2D grid, which then expands upward as buildings are added.
@@ -8,12 +9,16 @@ using System.Collections.Generic;
  * (Node[ , , ] would be faster, but it would contain loads of empty objects)
  * */
 public class Grid : Singleton<Grid> {
-    public GameObject nodePrefab;
+    [SerializeField]
+    private GameObject nodePrefab;
 
     //width & depth in nodes
-    public int gridLengthX;
-    public int gridLengthZ;
-    public int nodeInterval;
+    [SerializeField]
+    private int gridLengthX;
+    [SerializeField]
+    private int gridLengthZ;
+    [SerializeField]
+    private int nodeInterval;
 
     private Dictionary<Vector3, Node> nodes;
 
@@ -26,6 +31,11 @@ public class Grid : Singleton<Grid> {
 
     public override void Awake() {
         base.Awake();
+        SaveLoad.SaveState += SaveState;
+        SaveLoad.LoadStateEarly += LoadState;
+        SaveLoad.InitGameEarly += FirstLaunch;
+
+        nodes = new Dictionary<Vector3, Node>();
 
         //calculate borders so that the center node is at the center of the grid
         int gridCenterX = (int)transform.position.x;
@@ -39,31 +49,20 @@ public class Grid : Singleton<Grid> {
         if (gridLengthX % 2 == 0) { borderXUpper -= 1 * nodeInterval; }
         if (gridLengthZ % 2 == 0) { borderZUpper -= 1 * nodeInterval; }
 
-        //initialize the grid by creating 1 layer of nodes
-        nodes = new Dictionary<Vector3, Node>();
-        for (int i = borderXLower; i <= borderXUpper; i += nodeInterval) {
-            for (int j = borderZLower; j <= borderZUpper; j += nodeInterval) {
-                Vector3 pos = new Vector3(i, 0, j);
-                Node node = CreateNode(pos);
-                node.HideHighLight();
-                nodes.Add(pos, node);
-            }
-        }
-
         //define what can be built on what
         // key/value => structure/structures that can be built on it
         stackOrder.Add(StructureType.Hut, new List<StructureType> { StructureType.Hut, StructureType.Field });
         stackOrder.Add(StructureType.Storage, new List<StructureType> { StructureType.Hut, StructureType.Field });
         stackOrder.Add(StructureType.Sawmill, new List<StructureType> { StructureType.Field });
         stackOrder.Add(StructureType.Field, new List<StructureType>());
-        stackOrder.Add(StructureType.Special, new List<StructureType>());
+        stackOrder.Add(StructureType.Statue, new List<StructureType>());
     }
 
     private Node CreateNode(Vector3 pos) {
         GameObject obj = (GameObject)Instantiate(nodePrefab, pos, Quaternion.identity);
         obj.transform.parent = transform;
         Node node = obj.GetComponent<Node>();
-        node.HideHighLight();
+        //node.UnHighLight();
         return node;
     }
 
@@ -80,7 +79,7 @@ public class Grid : Singleton<Grid> {
     public void UnHighlightNodes() {
         Dictionary<Vector3, Node>.ValueCollection valueColl = nodes.Values;
         foreach (Node n in valueColl) {
-            n.HideHighLight();
+            n.UnHighLight();
         }
     }
 
@@ -92,7 +91,7 @@ public class Grid : Singleton<Grid> {
     }
     public void UnHighlightStack(Node node) {
         while (node.isOccupied) {
-            node.component.HideHighLight();
+            node.component.UnHighLight();
             node = node.upperNode;
         }
     }
@@ -153,6 +152,12 @@ public class Grid : Singleton<Grid> {
             }
         }
         return null;
+    }
+
+    //re-adds a component to the grid when a savegame has been loaded
+    public void ReAttachComponent(GridComponent component) {
+        Node node = getNodeByPosition(component.transform.position);
+        node.AttachComponent(component);
     }
 
     //adds a component to the grid, at a free node
@@ -231,6 +236,73 @@ public class Grid : Singleton<Grid> {
         if (node != null) {
             node.Destroy();
             nodes.Remove(node.transform.position);
+        }
+    }
+
+    private void FirstLaunch() {
+        //initialize the grid by creating 1 layer of nodes
+        for (int i = borderXLower; i <= borderXUpper; i += nodeInterval) {
+            for (int j = borderZLower; j <= borderZUpper; j += nodeInterval) {
+                Vector3 pos = new Vector3(i, 0, j);
+                Node node = CreateNode(pos);
+                node.UnHighLight();
+                nodes.Add(pos, node);
+            }
+        }
+    }
+
+    //brute force. could be improved.
+    private void RebuildNodeReferences() {
+        Dictionary<Vector3, Node>.ValueCollection valueColl = nodes.Values;
+        foreach (Node node in valueColl) {
+            if (node.upperNode == null) {
+                Vector3 upperPos = new Vector3(node.transform.position.x, node.transform.position.y + nodeInterval, node.transform.position.z);
+                node.setUpperNode(getNodeByPosition(upperPos));
+            }
+            if (node.lowerNode == null) {
+                Vector3 lowerPos = new Vector3(node.transform.position.x, node.transform.position.y - nodeInterval, node.transform.position.z);
+                node.setLowerNode(getNodeByPosition(lowerPos));
+            }
+        }
+    }
+
+
+
+
+    private void SaveState(SaveLoad.State gamestate) {
+        GridState myState = new GridState();
+        Dictionary<Vector3, Node>.KeyCollection keyColl = nodes.Keys;
+        foreach (Vector3 pos in keyColl) {
+            myState.nodes.Add(new GridState.NodeRepresentation(pos));
+        }
+        gamestate.gridState = myState;
+    }
+
+    private void LoadState(SaveLoad.State gamestate) {
+        foreach (GridState.NodeRepresentation n in gamestate.gridState.nodes) {
+            Node node = CreateNode(n.GetPos());
+            nodes.Add(n.GetPos(), node);
+        }
+        RebuildNodeReferences();
+    }
+
+    [System.Serializable]
+    public class GridState {
+        public List<NodeRepresentation> nodes;
+        public GridState() {
+            nodes = new List<NodeRepresentation>();
+        }
+
+        [System.Serializable]
+        public class NodeRepresentation {
+            public float[] pos;
+
+            public NodeRepresentation(Vector3 pos) {
+                this.pos = new float[] { pos.x, pos.y, pos.z };
+            }
+            public Vector3 GetPos() {
+                return new Vector3(pos[0], pos[1], pos[2]);
+            }
         }
     }
 }

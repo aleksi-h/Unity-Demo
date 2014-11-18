@@ -21,7 +21,6 @@ public class StorageScript : BaseStructure, IRemovable
     protected override void Awake()
     {
         base.Awake();
-        level = 1;
         maxHealth = 1000;
         health = maxHealth;
     }
@@ -39,7 +38,7 @@ public class StorageScript : BaseStructure, IRemovable
     public override void Activate()
     {
         base.Activate();
-        ResourceManager.Instance.IncreaseResourceCapacity(capacity);
+        if (isNew) { ResourceManager.Instance.IncreaseResourceCapacity(capacity); }
     }
 
     public override void Damage(int amount)

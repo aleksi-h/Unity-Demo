@@ -16,7 +16,7 @@ GameObject:
   - 114: {fileID: 11400002}
   m_Layer: 10
   m_Name: SawmillLvl1
-  m_TagString: Untagged
+  m_TagString: structure
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -102,6 +102,7 @@ MonoBehaviour:
     food: 0
     currency: 0
   buildTime: 5
+  level: 1
   nextLevelPrefab: {fileID: 100000, guid: 26397bfe647cb904bb4cb9ecf08869a1, type: 2}
   productionInterval: 1
   baseProductionRate:

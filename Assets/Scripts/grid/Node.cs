@@ -12,6 +12,7 @@ public class Node : MonoBehaviour {
     public void Awake() {//TODO tallenna transform.position arvo muuttujaan
         myTransform = transform;
         meshRenderer = GetComponent<MeshRenderer>();
+        UnHighLight();
     }
 
     public void Destroy() {
@@ -37,7 +38,7 @@ public class Node : MonoBehaviour {
         meshRenderer.enabled = true;
     }
 
-    public void HideHighLight() {
+    public void UnHighLight() {
         meshRenderer.enabled = false;
     }
 

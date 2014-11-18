@@ -7,7 +7,6 @@ public class HutScript : BaseStructure {
 
     protected override void Awake() {
         base.Awake();
-        level = 1;
         maxHealth = 1000;
         health = maxHealth;
     }
@@ -18,7 +17,11 @@ public class HutScript : BaseStructure {
 
     public override void Activate() {
         base.Activate();
-        ResourceManager.Instance.AddWorkers(workerCapacity);
+        if (isNew) { ResourceManager.Instance.AddWorkers(workerCapacity); }
+    }
+
+    public override void Build() {
+        base.Build();
     }
 
     public override void Damage(int amount) {

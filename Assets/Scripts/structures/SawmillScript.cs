@@ -22,7 +22,6 @@ public class SawmillScript : UpgradableStructure, IProducer, IEmployer, IRemovab
     }
     #endregion
 
-    // TODO move grid reference here
     #region IRemovable
     public void Remove() {
         while (workers.Count > 0) {
@@ -67,11 +66,22 @@ public class SawmillScript : UpgradableStructure, IProducer, IEmployer, IRemovab
         get { return workers; }
     }
 
+    public void LoadWorkers(int count) {
+        for (int i = 0; i < count; i++) {
+            workers.Add(ResourceManager.Instance.CreateWorker(gameObject));
+        }
+        int boost = workers.Count - minWorkerCount;
+        if (boost >= 0) {
+            productionBoost = new Resource(boost * productionBoostPerWorker.wood,
+                boost * productionBoostPerWorker.food, boost * productionBoostPerWorker.currency);
+        }
+    }
+
     public void AddWorker() {
         workers.Add(ResourceManager.Instance.RequestWorker(gameObject));
         int boost = workers.Count - minWorkerCount;
         if (boost >= 0) {
-            productionBoost = new Resource(boost * productionBoostPerWorker.wood, 
+            productionBoost = new Resource(boost * productionBoostPerWorker.wood,
                 boost * productionBoostPerWorker.food, boost * productionBoostPerWorker.currency);
         }
     }
@@ -89,7 +99,6 @@ public class SawmillScript : UpgradableStructure, IProducer, IEmployer, IRemovab
 
     protected override void Awake() {
         base.Awake();
-        level = 1;
         maxHealth = 1000;
         health = maxHealth;
         workers = new List<GameObject>(minWorkerCount);
@@ -97,14 +106,18 @@ public class SawmillScript : UpgradableStructure, IProducer, IEmployer, IRemovab
 
     protected override void Start() {
         base.Start();
-        for (int i = 0; i < minWorkerCount; i++) {
-            AddWorker();
-        }
     }
 
     public override void Upgrade() {
         base.Upgrade();
         CancelInvoke("ProduceResources");
+    }
+
+    public override void Build() {
+        base.Build();
+        for (int i = 0; i < minWorkerCount; i++) {
+            AddWorker();
+        }
     }
 
     protected override void FinishUpgrade() {

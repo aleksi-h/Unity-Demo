@@ -23,7 +23,6 @@ public class StatueScript : UpgradableStructure, IProducer {
 
     protected override void Awake() {
         base.Awake();
-        level = 1;
         maxHealth = 1000;
         health = maxHealth;
     }

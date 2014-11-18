@@ -18,19 +18,29 @@ public class ResourceManager : Singleton<ResourceManager> {
     private Resource resourceCount;
     private Resource resourceCapacity;
     private List<GameObject> freeWorkers;
+    private RMState state;
 
     public override void Awake() {
         base.Awake();
-        resourceCapacity = initialResourceCapacity;
-        resourceCount = initialResourceCount;
+        SaveLoad.SaveState += SaveState;
+        SaveLoad.LoadState += LoadState;
+        SaveLoad.InitGame += FirstLaunch;
+
+        resourceCapacity = new Resource(0, 0, 0);
+        resourceCount = new Resource(0, 0, 0);
         freeWorkers = new List<GameObject>(initialWorkerCount);
         updateGUITexts();
     }
 
     public void Start() {
-        for (int i = 0; i < initialWorkerCount; i++) {
-            freeWorkers.Add((GameObject)Instantiate(worker, new Vector3(10, 0, 0), Quaternion.identity));
-        }
+        
+    }
+
+    //create a worker directly into a building. employing buildings call this method when the game loads from savefile
+    public GameObject CreateWorker(GameObject requestingStructure) {
+       GameObject newWorker = (GameObject)Instantiate(worker, requestingStructure.transform.position, Quaternion.identity);
+        newWorker.GetComponent<Worker>().AssignToStructure(requestingStructure);
+        return newWorker;
     }
 
     public GameObject RequestWorker(GameObject requestingStructure) {
@@ -98,5 +108,39 @@ public class ResourceManager : Singleton<ResourceManager> {
         foodCountDisplay.text = "Food " + resourceCount.food.ToString();
         freeWorkerCountDisplay.text = "Workers " + freeWorkers.Count.ToString();
         currencyCountDisplay.text = "Currency " + resourceCount.currency.ToString();
+    }
+
+    private void FirstLaunch() {
+        resourceCapacity = initialResourceCapacity;
+        resourceCount = initialResourceCount;
+        for (int i = 0; i < initialWorkerCount; i++) {
+            freeWorkers.Add((GameObject)Instantiate(worker, new Vector3(10, 0, 0), Quaternion.identity));
+        }
+    }
+
+
+    private void SaveState(SaveLoad.State gamestate) {
+        RMState myState = new RMState();
+        myState.resourceCapacity = resourceCapacity;
+        myState.resourceCount = resourceCount;
+        myState.freeWorkerCount = freeWorkers.Count;
+        gamestate.resourceManagerState = myState;
+    }
+
+    private void LoadState(SaveLoad.State gamestate) {
+        resourceCapacity = gamestate.resourceManagerState.resourceCapacity;
+        resourceCount = gamestate.resourceManagerState.resourceCount;
+
+        for (int i = 0; i < gamestate.resourceManagerState.freeWorkerCount; i++) {
+            freeWorkers.Add((GameObject)Instantiate(worker, new Vector3(10, 0, 0), Quaternion.identity));
+        }
+        updateGUITexts();
+    }
+
+    [System.Serializable]
+    public class RMState {
+        public Resource resourceCount;
+        public Resource resourceCapacity;
+        public int freeWorkerCount;
     }
 }
