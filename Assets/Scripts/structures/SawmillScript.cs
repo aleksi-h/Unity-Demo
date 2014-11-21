@@ -86,6 +86,13 @@ public class SawmillScript : UpgradableStructure, IProducer, IEmployer, IRemovab
         }
     }
 
+    public void SetWorkers(List<GameObject> workers) {
+        this.workers = workers;
+        foreach (GameObject worker in workers) {
+            worker.GetComponent<Worker>().AssignToStructure(gameObject);
+        }
+    }
+
     public void FreeWorker() {
         ResourceManager.Instance.ReleaseWorker(workers[0]);
         workers.RemoveAt(0);
@@ -102,6 +109,7 @@ public class SawmillScript : UpgradableStructure, IProducer, IEmployer, IRemovab
         maxHealth = 1000;
         health = maxHealth;
         workers = new List<GameObject>(minWorkerCount);
+        productionBoost = new Resource(0, 0, 0);
     }
 
     protected override void Start() {
@@ -120,8 +128,9 @@ public class SawmillScript : UpgradableStructure, IProducer, IEmployer, IRemovab
         }
     }
 
-    protected override void FinishUpgrade() {
-        Remove();
+    protected override void FinishUpgrade(GameObject upgraded) {
+        upgraded.GetInterface<IEmployer>().SetWorkers(workers);
+        Destroy(this.gameObject);
     }
 
     public override void Activate() {

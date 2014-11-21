@@ -11,27 +11,27 @@ public class SaveLoad : MonoBehaviour {
     public static event FirstLaunch InitGameEarly;
     public static event FirstLaunch InitGame;
 
-    public delegate void SaveEvent(State gamestate);
+    public delegate void SaveEvent(GameState gamestate);
     public static event SaveEvent SaveState;
 
-    public delegate void LoadEvent(State gamestate);
+    public delegate void LoadEvent(GameState gamestate);
     public static event LoadEvent LoadStateEarly;
     public static event LoadEvent LoadState;
 
-    void Start() {
+    public void Start() {
+        Debug.Log(Application.persistentDataPath);
         Load();
     }
 
-    void Update() {
+    public void Update() {
 #if UNITY_ANDROID
         if (Input.GetKeyDown(KeyCode.Escape)) {
-            Debug.Log("Backbutton pressed, Quitting...");
             Application.Quit();
         }
 #endif
     }
 
-    void OnApplicationQuit() {
+    public void OnApplicationQuit() {
         if (purge) { return; }
         Save();
     }
@@ -46,7 +46,7 @@ public class SaveLoad : MonoBehaviour {
     }
 
     private void Save() {
-        State gameState = new State();
+        GameState gameState = new GameState();
         if (SaveState != null) { SaveState(gameState); }
 
         BinaryFormatter bf = new BinaryFormatter();
@@ -54,7 +54,7 @@ public class SaveLoad : MonoBehaviour {
         bf.Serialize(file, gameState);
         file.Close();
     }
-    //TODO delete save nappi testitarkoituksiin
+
     private void Load() {
         if (!File.Exists(Application.persistentDataPath + saveFile)) {
             if (InitGameEarly != null) { InitGameEarly(); }
@@ -64,7 +64,7 @@ public class SaveLoad : MonoBehaviour {
 
         BinaryFormatter bf = new BinaryFormatter();
         FileStream file = File.Open(Application.persistentDataPath + saveFile, FileMode.Open);
-        State gameState = (State)bf.Deserialize(file);
+        GameState gameState = (GameState)bf.Deserialize(file);
         file.Close();
 
         if (VerifySave(gameState)) {
@@ -77,7 +77,7 @@ public class SaveLoad : MonoBehaviour {
         }
     }
 
-    private bool VerifySave(State gamestate) {
+    private bool VerifySave(GameState gamestate) {
         if (gamestate.buildingManagerState == null) { return false; }
         if (gamestate.resourceManagerState == null) { return false; }
         if (gamestate.gridState == null) { return false; }
@@ -85,7 +85,7 @@ public class SaveLoad : MonoBehaviour {
     }
 
     [System.Serializable]
-    public class State {
+    public class GameState {
         public BuildingManager.BMState buildingManagerState;
         public ResourceManager.RMState resourceManagerState;
         public Grid.GridState gridState;

@@ -43,7 +43,7 @@ public class FieldScript : UpgradableStructure, IProducer, IRemovable {
         CancelInvoke("ProduceResources");
     }
 
-    protected override void FinishUpgrade() {
+    protected override void FinishUpgrade(GameObject upgraded) {
         Remove();
     }
 

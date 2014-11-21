@@ -33,13 +33,6 @@ public class GUIManager : Singleton<GUIManager> {
         UIEventListener.Get(settingsButton).onClick += OnClickSettings;
     }
 
-    //avoid null reference when changing prefab after upgrade
-    public void UpgradeFinished(GameObject oldGo, GameObject newGo) {
-        if (selectedStructure == oldGo) {
-            selectedStructure = newGo;
-        }
-    }
-
     //BUILD MENU
     public GameObject buildButton;
     public GameObject buildMenu;
@@ -248,6 +241,7 @@ public class GUIManager : Singleton<GUIManager> {
         NGUITools.SetActive(confirmPlacementMenu, true);
     }
 
+    //avoid null reference when changing prefab after upgrade
     public void StructureUpgraded(GameObject oldGo, GameObject newGo) {
         if (oldGo == selectedStructure) {
             selectedStructure = newGo;
@@ -285,7 +279,6 @@ public class GUIManager : Singleton<GUIManager> {
     }
 
     private void OnTap(Vector3 tapPos) {
-        Debug.Log("OnTap");
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit, 1100, structureLayerMask)) {

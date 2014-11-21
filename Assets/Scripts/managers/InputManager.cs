@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class InputManager : Singleton<InputManager> {
+//TODO staattisista eventeistä non-static?
+public class InputManager : MonoBehaviour {
     public GUIText DebugInfo;
     public Camera NGUICamera;
     public float dragTreshold; //minimum move distance (x+y) to be recognized as drag
@@ -32,7 +33,7 @@ public class InputManager : Singleton<InputManager> {
     private bool tapOnGui;
     private bool acceptNewGesture;
 
-    void Update() {
+    public void Update() {
 
         if (Input.touchCount == 0) { 
             touchesClear = true;
@@ -112,10 +113,10 @@ public class InputManager : Singleton<InputManager> {
                 float prevAngle = Vector2.Angle(t0PrevPos - t1PrevPos, Vector2.up);
                 float angle = Vector2.Angle(t0.position - t1.position, Vector2.up);
                 float deltaAngle = Mathf.DeltaAngle(prevAngle, angle);
-                Debug.Log("a1 " + prevAngle + "  |  a2 " + angle);
+                //Debug.Log("a1 " + prevAngle + "  |  a2 " + angle);
 
                 float ratio = Mathf.Abs(deltaAngle) / Mathf.Abs(deltaDistance);
-                Debug.Log("ratio " + ratio + "  |  " + deltaAngle + " / " + deltaDistance);
+                //Debug.Log("ratio " + ratio + "  |  " + deltaAngle + " / " + deltaDistance);
 
                 if (ratio < 0.17f) { state = State.PINCHING; }
                 else { state = State.ROTATING; }

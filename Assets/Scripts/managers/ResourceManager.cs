@@ -119,7 +119,7 @@ public class ResourceManager : Singleton<ResourceManager> {
     }
 
 
-    private void SaveState(SaveLoad.State gamestate) {
+    private void SaveState(SaveLoad.GameState gamestate) {
         RMState myState = new RMState();
         myState.resourceCapacity = resourceCapacity;
         myState.resourceCount = resourceCount;
@@ -127,7 +127,7 @@ public class ResourceManager : Singleton<ResourceManager> {
         gamestate.resourceManagerState = myState;
     }
 
-    private void LoadState(SaveLoad.State gamestate) {
+    private void LoadState(SaveLoad.GameState gamestate) {
         resourceCapacity = gamestate.resourceManagerState.resourceCapacity;
         resourceCount = gamestate.resourceManagerState.resourceCount;
 

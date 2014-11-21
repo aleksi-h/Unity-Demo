@@ -32,7 +32,7 @@ public class StatueScript : UpgradableStructure, IProducer {
         CancelInvoke("ProduceResources");
     }
 
-    protected override void FinishUpgrade() {
+    protected override void FinishUpgrade(GameObject upgraded) {
         Destroy(gameObject);
     }
 

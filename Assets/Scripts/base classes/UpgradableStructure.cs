@@ -26,16 +26,15 @@ public abstract class UpgradableStructure : BaseStructure, IUpgradeable {
 
         //"upgraded".Start() will be called 1 frame after this, so things that need to be done before that, like releasing workers, can be done in FinishUpgrade()
         GameObject upgraded = (GameObject)Instantiate(nextLevelPrefab, myTransform.position, Quaternion.identity);
-        GUIManager.Instance.UpgradeFinished(gameObject, upgraded);
         upgraded.GetComponent<BaseStructure>().Activate();
 
         //replace all references to the gameobject before removal
         gridComponent.Replace(upgraded.GetComponent<GridComponent>());
         GUIManager.Instance.StructureUpgraded(gameObject, upgraded);
 
-        FinishUpgrade();
+        FinishUpgrade(upgraded);
     }
 
-    //building specific tasks. mainly for correctly removing self
-    protected abstract void FinishUpgrade();
+    //building specific tasks.
+    protected abstract void FinishUpgrade(GameObject upgraded);
 }

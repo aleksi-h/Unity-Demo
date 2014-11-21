@@ -3,22 +3,28 @@ using System.Collections;
 
 public class CameraController : MonoBehaviour {
 
-    public float scrollSpeed;
-    public float zoomSpeed;
-    public float rotateSpeed;
-    public float additionalBorderPadding; //to restrict camera from moving too close to borders
-    public float minFOV;
-    public float maxFOV;
+    [SerializeField]
+    private float scrollSpeed;
+    [SerializeField]
+    private float zoomSpeed;
+    [SerializeField]
+    private float rotateSpeed;
+    [SerializeField]
+    private float additionalBorderPadding; //to restrict camera from moving too close to borders
+    [SerializeField]
+    private float minFOV;
+    [SerializeField]
+    private float maxFOV;
     public GUIText camPosDisplay;
 
     private Transform myTransform;
-    private float cameraPointDistance; //ground distance between camera transform and the point in ground at which the camera is pointing
+    private float cameraPointDistance; //ground distance between camera transform and the point in ground at which the camera is looking
     private GameObject cameraPointSimulator;
     private Transform cameraPoint;
-    Vector3 correctedPosition;
 
     void Awake() {
-        cameraPointSimulator = new GameObject();
+        cameraPointSimulator = new GameObject("campoint");
+        camPivotPoint = new GameObject("camtarget");
         cameraPoint = cameraPointSimulator.transform;
         myTransform = transform;
 
@@ -57,23 +63,37 @@ public class CameraController : MonoBehaviour {
         camera.fieldOfView = Mathf.Clamp(camera.fieldOfView, minFOV, maxFOV);
     }
 
+    private LayerMask groundLayerMask = 1 << 11;
+    GameObject camPivotPoint;
     private void Rotate(float amount) {
-        float originalX = myTransform.eulerAngles.x;
-        float originalZ = myTransform.eulerAngles.z;
-        myTransform.Rotate(new Vector3(-originalX, 0, -originalZ)); //set X and Z to 0 to isolate rotation to Y-axis
-        myTransform.Rotate(new Vector3(0, amount * rotateSpeed, 0)); //apply rotation to Y-axis
-        myTransform.Rotate(new Vector3(originalX, 0, originalZ)); //reapply X and Z rotations
+        Debug.Log("Rotate " + amount);
+        //float originalX = myTransform.eulerAngles.x;
+        //float originalZ = myTransform.eulerAngles.z;
+        //myTransform.Rotate(new Vector3(-originalX, 0, -originalZ)); //reset X & Y rotations to 0
+        //myTransform.Rotate(new Vector3(0, amount * rotateSpeed, 0)); //apply rotation to Y-axis
+        //myTransform.Rotate(new Vector3(originalX, 0, originalZ)); //reapply X and Z rotations
+
+        Vector3 hitPos = new Vector3();
+        RaycastHit hit;
+        if (Physics.Raycast(myTransform.position, myTransform.forward, out hit, 1000, groundLayerMask)) {
+            hitPos = hit.point;
+            camPivotPoint.transform.position = hitPos;
+            myTransform.parent = camPivotPoint.transform;
+            camPivotPoint.transform.Rotate(0, amount * rotateSpeed, 0);
+            myTransform.parent = null;
+        }
         ApplyCorrections();
     }
 
-    //apply corrections to camera position to restrict movement inside playable area
+    private Vector3 correctedPosition;
+    //restrict movement inside playable area
     private void ApplyCorrections() {
-        correctedPosition = myTransform.position;
-        if (correctedPosition.x < Constants.PLAYABLE_AREA_MIN_X) { correctedPosition.x = Constants.PLAYABLE_AREA_MIN_X; }
-        if (correctedPosition.x > Constants.PLAYABLE_AREA_MAX_X) { correctedPosition.x = Constants.PLAYABLE_AREA_MAX_X; }
-        if (correctedPosition.z < Constants.PLAYABLE_AREA_MIN_Z) { correctedPosition.z = Constants.PLAYABLE_AREA_MIN_Z; }
-        if (correctedPosition.z > Constants.PLAYABLE_AREA_MAX_Z) { correctedPosition.z = Constants.PLAYABLE_AREA_MAX_Z; }
-        myTransform.position = correctedPosition;
+        //correctedPosition = myTransform.position;
+        //if (correctedPosition.x < Constants.PLAYABLE_AREA_MIN_X) { correctedPosition.x = Constants.PLAYABLE_AREA_MIN_X; }
+        //if (correctedPosition.x > Constants.PLAYABLE_AREA_MAX_X) { correctedPosition.x = Constants.PLAYABLE_AREA_MAX_X; }
+        //if (correctedPosition.z < Constants.PLAYABLE_AREA_MIN_Z) { correctedPosition.z = Constants.PLAYABLE_AREA_MIN_Z; }
+        //if (correctedPosition.z > Constants.PLAYABLE_AREA_MAX_Z) { correctedPosition.z = Constants.PLAYABLE_AREA_MAX_Z; }
+        //myTransform.position = correctedPosition;
 
         //simulate the position at which the camera is pointing, by doing Translate on the ghost transform "cameraPoint"
         cameraPoint.position = myTransform.position;

@@ -69,7 +69,7 @@ public class BuildingManager : Singleton<BuildingManager> {
 
 
 
-    private void SaveState(SaveLoad.State gamestate) {
+    private void SaveState(SaveLoad.GameState gamestate) {
         BMState myState = new BMState();
         GameObject[] structures = GameObject.FindGameObjectsWithTag("structure");
         if (structures.Length > 0) {
@@ -88,7 +88,7 @@ public class BuildingManager : Singleton<BuildingManager> {
         gamestate.buildingManagerState = myState;
     }
 
-    private void LoadState(SaveLoad.State gamestate) {
+    private void LoadState(SaveLoad.GameState gamestate) {
         GameObject obj = null;
         foreach (BMState.StructureRepresentation s in gamestate.buildingManagerState.structures) {
             Debug.Log("loading " + s.type + " lvl " + s.level);

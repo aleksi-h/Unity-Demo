@@ -293,7 +293,7 @@ Transform:
   m_LocalScale: {x: 4, y: 4, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 9
+  m_RootOrder: 8
 --- !u!1 &221410549
 GameObject:
   m_ObjectHideFlags: 0
@@ -636,7 +636,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 12
+  m_RootOrder: 11
 --- !u!1 &591753913
 GameObject:
   m_ObjectHideFlags: 0
@@ -1977,7 +1977,7 @@ Transform:
   m_GameObject: {fileID: 1016837076}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: -.100000001, z: 0}
-  m_LocalScale: {x: 8, y: .00100000005, z: 8}
+  m_LocalScale: {x: 20, y: .00100000005, z: 20}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 7
@@ -2510,7 +2510,7 @@ Camera:
     height: 1
   near clip plane: .00999999978
   far clip plane: 1000
-  field of view: 60
+  field of view: 40
   orthographic: 0
   orthographic size: 20
   m_Depth: -1
@@ -2531,7 +2531,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1281139897}
   m_LocalRotation: {x: .382683486, y: 0, z: 0, w: .923879564}
-  m_LocalPosition: {x: 0, y: 70, z: -30}
+  m_LocalPosition: {x: 0, y: 90, z: -80}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -2551,8 +2551,8 @@ MonoBehaviour:
   zoomSpeed: .300000012
   rotateSpeed: .600000024
   additionalBorderPadding: 0
-  minFOV: 20
-  maxFOV: 75
+  minFOV: 10
+  maxFOV: 60
   camPosDisplay: {fileID: 444047347}
 --- !u!45 &1281139904
 Skybox:
@@ -2895,8 +2895,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 591753914}
-  m_Father: {fileID: 0}
-  m_RootOrder: 8
+  m_Father: {fileID: 2061348815}
+  m_RootOrder: 0
 --- !u!1 &1544473464
 GameObject:
   m_ObjectHideFlags: 0
@@ -3264,7 +3264,7 @@ Transform:
   - {fileID: 859355908}
   - {fileID: 2130092391}
   m_Father: {fileID: 0}
-  m_RootOrder: 11
+  m_RootOrder: 10
 --- !u!1 &1758125822
 GameObject:
   m_ObjectHideFlags: 0
@@ -3472,7 +3472,7 @@ Transform:
   m_LocalScale: {x: 4, y: 4, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 10
+  m_RootOrder: 9
 --- !u!114 &1893971353
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4003,8 +4003,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nodePrefab: {fileID: 100000, guid: eaf804db74e42a04b84eabe3913d6b70, type: 2}
-  gridLengthX: 4
-  gridLengthZ: 4
+  gridLengthX: 6
+  gridLengthZ: 6
   nodeInterval: 5
 --- !u!4 &2061348815
 Transform:
@@ -4015,7 +4015,8 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
+  m_Children:
+  - {fileID: 1532540074}
   m_Father: {fileID: 0}
   m_RootOrder: 6
 --- !u!1 &2130092390

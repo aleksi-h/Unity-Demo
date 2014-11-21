@@ -269,7 +269,7 @@ public class Grid : Singleton<Grid> {
 
 
 
-    private void SaveState(SaveLoad.State gamestate) {
+    private void SaveState(SaveLoad.GameState gamestate) {
         GridState myState = new GridState();
         Dictionary<Vector3, Node>.KeyCollection keyColl = nodes.Keys;
         foreach (Vector3 pos in keyColl) {
@@ -278,7 +278,7 @@ public class Grid : Singleton<Grid> {
         gamestate.gridState = myState;
     }
 
-    private void LoadState(SaveLoad.State gamestate) {
+    private void LoadState(SaveLoad.GameState gamestate) {
         foreach (GridState.NodeRepresentation n in gamestate.gridState.nodes) {
             Node node = CreateNode(n.GetPos());
             nodes.Add(n.GetPos(), node);

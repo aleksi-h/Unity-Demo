@@ -22,4 +22,5 @@ public interface IEmployer {
     void AddWorker();
     void FreeWorker();
     void LoadWorkers(int count);
+    void SetWorkers(List<GameObject> workers);
 }

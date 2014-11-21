@@ -84,6 +84,11 @@ public class GridComponent : MonoBehaviour {
     public void Replace(GridComponent sub) {
         node.AttachComponent(sub);
         node = null;
+        if (registeredToTapEvent) {
+            InputManager.OnTap -= OnTap;
+            registeredToTapEvent = false;
+            sub.Move();
+        }
     }
 
     public bool CanBeBuilt() {
@@ -92,8 +97,6 @@ public class GridComponent : MonoBehaviour {
 
     //only the topmost building is removable
     public bool CanBeRemoved() {
-        //if (node.upperNode == null) { return false; }
-        if (node.upperNode.isOccupied) { return false; }
-        return true;
+        return !node.upperNode.isOccupied;
     }
 }
