@@ -154,7 +154,7 @@ public class Grid : Singleton<Grid> {
         return null;
     }
 
-    //re-adds a component to the grid when a savegame has been loaded
+    ////re-adds a component to the grid when a savegame has been loaded
     public void ReAttachComponent(GridComponent component) {
         Node node = getNodeByPosition(component.transform.position);
         node.AttachComponent(component);

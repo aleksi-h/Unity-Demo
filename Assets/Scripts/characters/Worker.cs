@@ -6,34 +6,30 @@ public class Worker : MonoBehaviour {
     public int speed;
 
     private Transform myTransform;
-    private GameObject location;
+    private NavMeshAgent agent;
+    private GameObject destination;
     private bool hasNewDestination;
 
     public void AssignToStructure(GameObject structure) {
-        location = structure;
+        destination = structure;
         hasNewDestination = true;
     }
 
     public void Free() {
-        location = null;
+        destination = null;
         hasNewDestination = true;
+        
     }
 
     public void Awake() {
         myTransform = transform;
+        agent = GetComponent<NavMeshAgent>();
     }
 
     public void Update() {
-        if (myTransform.position.Equals(location)) {
-            hasNewDestination = false;
-        }
         if (hasNewDestination) {
-            if (location == null) {
-                myTransform.position = Vector3.MoveTowards(myTransform.position, new Vector3(10, 0, 0), speed * Time.deltaTime);
-            }
-            else {
-                myTransform.position = Vector3.MoveTowards(myTransform.position, location.transform.position, speed * Time.deltaTime);
-            }
+            if (destination == null) { agent.SetDestination(new Vector3(10, 0, 0)); }
+            else { agent.SetDestination(destination.transform.position); }
         }
     }
 }
