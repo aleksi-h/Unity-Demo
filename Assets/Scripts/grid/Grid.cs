@@ -62,7 +62,6 @@ public class Grid : Singleton<Grid> {
         GameObject obj = (GameObject)Instantiate(nodePrefab, pos, Quaternion.identity);
         obj.transform.parent = transform;
         Node node = obj.GetComponent<Node>();
-        //node.UnHighLight();
         return node;
     }
 

@@ -14,6 +14,7 @@ GameObject:
   - 65: {fileID: 6500000}
   - 114: {fileID: 11400000}
   - 114: {fileID: 11400002}
+  - 208: {fileID: 20800000}
   m_Layer: 10
   m_Name: FieldLvl1
   m_TagString: structure
@@ -122,6 +123,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 3
   node: {fileID: 0}
+--- !u!208 &20800000
+NavMeshObstacle:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100000}
+  m_Enabled: 1
+  m_Radius: .5
+  m_Height: 1
+  m_MoveThreshold: 0
+  m_Carve: 1
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1
