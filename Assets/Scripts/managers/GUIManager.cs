@@ -10,6 +10,7 @@ public class GUIManager : Singleton<GUIManager> {
 
     private LayerMask structureLayerMask = 1 << 10;
     private GameObject selectedStructure;
+    private bool idle;
 
     public override void Awake() {
         base.Awake();
@@ -167,6 +168,7 @@ public class GUIManager : Singleton<GUIManager> {
         followScript.setOffset(offset);
         followScript.SetTarget(selectedStructure);
         NGUITools.SetActive(contextMenu, true);
+        selectedStructure.GetComponent<GridComponent>().HighLight();
 
         if (selectedStructure.ImplementsInterface<IUpgradeable>()) {
             upgradeButton = NGUITools.AddChild(contextMenuGrid, upgradeButtonPrefab);
@@ -228,6 +230,7 @@ public class GUIManager : Singleton<GUIManager> {
         HideAllGUIElements();
         NGUITools.SetActive(buildButton, true);
         NGUITools.SetActive(settingsButton, true);
+        idle = true;
     }
 
     public void ShowPlacementGUI(GameObject structure) {
@@ -267,6 +270,9 @@ public class GUIManager : Singleton<GUIManager> {
             Destroy(child.gameObject);
         }
 
+        //unhighlight buildings
+        if (selectedStructure != null) { selectedStructure.GetComponent<GridComponent>().UnHighLight(); }
+
         //hide buttons
         NGUITools.SetActive(buildButton, false);
         NGUITools.SetActive(settingsButton, false);
@@ -282,8 +288,10 @@ public class GUIManager : Singleton<GUIManager> {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit, 1100, structureLayerMask)) {
+            if (!idle) { HideAllGUIElements(); }
             selectedStructure = hit.collider.gameObject;
             ShowContextMenu();
+            idle = false;
         }
         else { ShowDefaultMenu(); }
     }
@@ -291,9 +299,10 @@ public class GUIManager : Singleton<GUIManager> {
     private void OnLongTap(Vector3 tapPos) {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
-        if (Physics.Raycast(ray, out hit, 1100, structureLayerMask)) {
+        if (idle && Physics.Raycast(ray, out hit, 1100, structureLayerMask)) {
             selectedStructure = hit.collider.gameObject;
             selectedStructure.GetComponent<GridComponent>().Move();
+            idle = false;
         }
     }
 }

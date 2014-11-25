@@ -16,11 +16,11 @@ public class GridComponent : MonoBehaviour {
     }
 
     public void HighLight() {
-        renderer.material = highlightMat;
+        if (renderer.material != highlightMat) { renderer.material = highlightMat; }
     }
 
     public void UnHighLight() {
-        renderer.material = defaultMat;
+        if (renderer.material != defaultMat) { renderer.material = defaultMat; }
     }
 
     private LayerMask groundLayerMask = 1 << 11;
