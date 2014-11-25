@@ -81,7 +81,6 @@ public class BuildingManager : Singleton<BuildingManager> {
                 s.level = obj.GetComponent<BaseStructure>().level;
                 s.type = obj.GetComponent<GridComponent>().type;
                 if (obj.ImplementsInterface<IEmployer>()) { s.workerCount = obj.GetInterface<IEmployer>().Workers.Count; }
-                Debug.Log("saving: " + s.type + " lvl " + s.level);
                 myState.structures.Add(s);
             }
         }
@@ -91,7 +90,6 @@ public class BuildingManager : Singleton<BuildingManager> {
     private void LoadState(SaveLoad.GameState gamestate) {
         GameObject obj = null;
         foreach (BMState.StructureRepresentation s in gamestate.buildingManagerState.structures) {
-            Debug.Log("loading " + s.type + " lvl " + s.level);
             switch (s.type) {
                 case StructureType.Field:
                     obj = (GameObject)Instantiate(field[s.level - 1], s.GetPos(), Quaternion.identity);

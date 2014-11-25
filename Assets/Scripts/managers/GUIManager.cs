@@ -34,6 +34,20 @@ public class GUIManager : Singleton<GUIManager> {
         UIEventListener.Get(settingsButton).onClick += OnClickSettings;
     }
 
+    //RESOURCE TEXTS
+    public GameObject woodLabel;
+    public GameObject foodLabel;
+    public GameObject workerLabel;
+    public GameObject currencyLabel;
+
+    public void RefreshResourceTexts(Resource resources, int workerCount) {
+        woodLabel.GetComponent<UILabel>().text = "Wood " + resources.wood;
+        foodLabel.GetComponent<UILabel>().text = "Food " + resources.food;
+        currencyLabel.GetComponent<UILabel>().text = "Currency " + resources.currency;
+        workerLabel.GetComponent<UILabel>().text = "Workers " + workerCount;
+    }
+
+
     //BUILD MENU
     public GameObject buildButton;
     public GameObject buildMenu;
@@ -163,10 +177,6 @@ public class GUIManager : Singleton<GUIManager> {
     public void ShowContextMenu() {
         HideAllGUIElements();
 
-        Vector3 offset = new Vector3(0, 15, 0);
-        FollowGameObjectNGUI followScript = contextMenu.GetComponent<FollowGameObjectNGUI>();
-        followScript.setOffset(offset);
-        followScript.SetTarget(selectedStructure);
         NGUITools.SetActive(contextMenu, true);
         selectedStructure.GetComponent<GridComponent>().HighLight();
 
@@ -237,10 +247,6 @@ public class GUIManager : Singleton<GUIManager> {
         InputManager.OnTap -= OnTap;
         selectedStructure = structure;
         HideAllGUIElements();
-        Vector3 offset = new Vector3(0, 15, 0);
-        FollowGameObjectNGUI followScript = confirmPlacementMenu.GetComponent<FollowGameObjectNGUI>();
-        followScript.setOffset(offset);
-        followScript.SetTarget(selectedStructure);
         NGUITools.SetActive(confirmPlacementMenu, true);
     }
 
@@ -249,18 +255,11 @@ public class GUIManager : Singleton<GUIManager> {
         if (oldGo == selectedStructure) {
             selectedStructure = newGo;
         }
-        if (NGUITools.GetActive(confirmPlacementMenu)) {
-            confirmPlacementMenu.GetComponent<FollowGameObjectNGUI>().SetTarget(selectedStructure);
-        }
     }
 
     private void HideAllGUIElements() {
         //stop updating menus
         CancelInvoke();
-
-        //stop following a target when hidden
-        contextMenu.GetComponent<FollowGameObjectNGUI>().SetTarget(null);
-        confirmPlacementMenu.GetComponent<FollowGameObjectNGUI>().SetTarget(null);
 
         //clear items from context menu grid
         int menuItemCount = contextMenuGrid.transform.childCount;
