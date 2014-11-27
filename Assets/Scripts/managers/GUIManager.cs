@@ -32,6 +32,7 @@ public class GUIManager : Singleton<GUIManager> {
         UIEventListener.Get(buyButton1).onClick += onClickBuy1;
         UIEventListener.Get(buyButton2).onClick += onClickBuy2;
         UIEventListener.Get(settingsButton).onClick += OnClickSettings;
+        UIEventListener.Get(purgeButton).onClick += OnClickPurge;
     }
 
     //RESOURCE TEXTS
@@ -69,8 +70,15 @@ public class GUIManager : Singleton<GUIManager> {
 
 
     //SETTINGS MENU
+    public GameObject settingMenu;
     public GameObject settingsButton;
+    public GameObject purgeButton;
     private void OnClickSettings(GameObject button) {
+        NGUITools.SetActive(settingMenu, true);
+    }
+
+    private void OnClickPurge(GameObject button) {
+        Debug.Log("purge");
         SaveLoad.PurgeSaveAndQuit();
     }
 
@@ -281,6 +289,7 @@ public class GUIManager : Singleton<GUIManager> {
         NGUITools.SetActive(confirmPlacementMenu, false);
         NGUITools.SetActive(buildMenu, false);
         NGUITools.SetActive(contextMenu, false);
+        NGUITools.SetActive(settingMenu, false);
     }
 
     private void OnTap(Vector3 tapPos) {
