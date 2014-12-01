@@ -10,6 +10,7 @@ public class BuildingManager : Singleton<BuildingManager> {
     public GameObject[] sawmill;
     public GameObject[] field;
     public GameObject[] statue;
+    public GameObject[] outpost;
 
     void Awake() {
         SaveLoad.SaveState += SaveState;
