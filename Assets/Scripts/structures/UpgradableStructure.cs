@@ -3,6 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 
 public abstract class UpgradableStructure : BaseStructure, IUpgradeable {
+    [HideInInspector]
+    public float upgradeTimeLeft;
+    [HideInInspector]
+    public bool isUpgrading;
 
     #region IUpgradeable
     public GameObject nextLevelPrefab;
@@ -18,6 +22,12 @@ public abstract class UpgradableStructure : BaseStructure, IUpgradeable {
         structureActive = false;
         float duration = nextLevelPrefab.GetComponent<BaseStructure>().buildTime;
         StartDelayedOperation(UpgradeProcess, duration);
+        isUpgrading = true;
+    }
+
+    public virtual void ContinueUpgrade(float timeLeft) {
+        StartDelayedOperation(UpgradeProcess, timeLeft);
+        isUpgrading = true;
     }
     #endregion
 
@@ -32,6 +42,7 @@ public abstract class UpgradableStructure : BaseStructure, IUpgradeable {
         gridComponent.Replace(upgraded.GetComponent<GridComponent>());
         GUIManager.Instance.StructureUpgraded(gameObject, upgraded);
 
+        isUpgrading = false;
         FinishUpgrade(upgraded);
     }
 

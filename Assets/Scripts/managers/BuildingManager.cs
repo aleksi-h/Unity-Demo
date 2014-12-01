@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
+
 
 public class BuildingManager : Singleton<BuildingManager> {
     public GameObject[] hut;
@@ -78,7 +80,17 @@ public class BuildingManager : Singleton<BuildingManager> {
                 s.tag = obj.tag;
                 s.SetPos(obj.transform.position);
                 s.SetRot(obj.transform.eulerAngles);
-                s.level = obj.GetComponent<BaseStructure>().level;
+                BaseStructure bs = obj.GetComponent<BaseStructure>();
+                UpgradableStructure upgradable = obj.GetComponent<UpgradableStructure>();
+                s.level = bs.level;
+                if (bs.isUnderConstruction) {
+                    s.isUnderConstruction = true;
+                    s.processTimeLeft = bs.processTimeLeft;
+                }
+                else if (upgradable != null) {
+                    s.isUpgrading = upgradable.isUpgrading;
+                    s.processTimeLeft = bs.processTimeLeft;
+                }
                 s.type = obj.GetComponent<GridComponent>().type;
                 if (obj.ImplementsInterface<IEmployer>()) { s.workerCount = obj.GetInterface<IEmployer>().Workers.Count; }
                 myState.structures.Add(s);
@@ -110,11 +122,13 @@ public class BuildingManager : Singleton<BuildingManager> {
                     break;
             }
             if (obj != null) {
-                if (obj.ImplementsInterface<IEmployer>()) { obj.GetInterface<IEmployer>().LoadWorkers(s.workerCount); }
                 obj.GetComponent<GridComponent>().ReAttachToGrid();
-                obj.GetComponent<BaseStructure>().Activate();
+                if (obj.ImplementsInterface<IEmployer>()) { obj.GetInterface<IEmployer>().LoadWorkers(s.workerCount); }
+
+                if (s.isUnderConstruction) { obj.GetComponent<BaseStructure>().ContinueBuild(s.processTimeLeft); }
+                else if (s.isUpgrading) { obj.GetInterface<IUpgradeable>().ContinueUpgrade(s.processTimeLeft); }
+                else { obj.GetComponent<BaseStructure>().Activate(); }
             }
-            else { Debug.LogError("Error loading buildings from savefile. " + s.tag + " bad tag"); }
         }
     }
 
@@ -131,12 +145,18 @@ public class BuildingManager : Singleton<BuildingManager> {
             public float[] pos;
             public float[] rot;
             public int level;
+            [OptionalField(VersionAdded = 2)]
+            public bool isUnderConstruction;
+            [OptionalField(VersionAdded = 2)]
+            public float processTimeLeft;
+            [OptionalField(VersionAdded = 3)]
+            public bool isUpgrading;
             public StructureType type;
             public int workerCount;
             public StructureRepresentation() {
                 this.tag = "";
-                this.pos = new float[] { 0,0,0 };
-                this.rot = new float[] { 0,0,0};
+                this.pos = new float[] { 0, 0, 0 };
+                this.rot = new float[] { 0, 0, 0 };
             }
             public void SetPos(Vector3 pos) {
                 this.pos = new float[] { pos.x, pos.y, pos.z };

@@ -4,12 +4,15 @@ using System.Collections;
 public abstract class BaseStructure : MonoBehaviour, IDamageable {
     public Resource cost;
     public float buildTime;
+    [HideInInspector]
+    public float processTimeLeft;
+    [HideInInspector]
+    public bool isUnderConstruction;
     public int level;
 
     protected const float processUpdateInterval = 1.0f;
     protected delegate void DelayedOperation();
     protected DelayedOperation delayedOperation;
-    protected float processDuration;
     protected Transform myTransform;
     protected GridComponent gridComponent;
     protected bool structureActive;
@@ -46,22 +49,29 @@ public abstract class BaseStructure : MonoBehaviour, IDamageable {
     public virtual void Build() {
         gridComponent.AttachToGrid();
         StartDelayedOperation(BuildProcess, buildTime);
+        isUnderConstruction = true;
         gridComponent.Move();
         isNew = true;
+    }
+
+    public void ContinueBuild(float timeLeft) {
+        processTimeLeft = timeLeft;
+        StartDelayedOperation(BuildProcess, processTimeLeft);
+        isUnderConstruction = true;
     }
 
     protected GameObject timerDisplay;
     protected virtual void StartDelayedOperation(DelayedOperation process, float duration) {
         delayedOperation = process;
-        processDuration = duration;
+        processTimeLeft = duration;
         timerDisplay = GUIManager.Instance.GetTimerDisplay(gameObject);
         updateDisplayText();
         InvokeRepeating("UpdateDelayedOperation", 1.0f, processUpdateInterval);
     }
 
     protected virtual void UpdateDelayedOperation() {
-        processDuration -= processUpdateInterval;
-        if (processDuration <= 0) {
+        processTimeLeft -= processUpdateInterval;
+        if (processTimeLeft <= 0) {
             CancelInvoke("UpdateDelayedOperation");
             delayedOperation();
         }
@@ -69,12 +79,13 @@ public abstract class BaseStructure : MonoBehaviour, IDamageable {
     }
 
     protected void updateDisplayText() {
-        timerDisplay.guiText.text = "Ready in " + processDuration;
+        timerDisplay.guiText.text = "Ready in " + processTimeLeft;
     }
 
     private void BuildProcess() {
         Destroy(timerDisplay);
         Activate();
         isNew = false;
+        isUnderConstruction = false;
     }
 }
