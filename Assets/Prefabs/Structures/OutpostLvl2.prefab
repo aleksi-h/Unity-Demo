@@ -12,11 +12,11 @@ GameObject:
   - 23: {fileID: 2300000}
   - 95: {fileID: 9500000}
   - 65: {fileID: 6500000}
-  - 114: {fileID: 11400000}
   - 208: {fileID: 20800000}
+  - 114: {fileID: 11400000}
   - 114: {fileID: 11400002}
   m_Layer: 10
-  m_Name: OutpostLvl1
+  m_Name: OutpostLvl2
   m_TagString: structure
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -46,7 +46,7 @@ Renderer:
   m_LightmapIndex: 255
   m_LightmapTilingOffset: {x: 1, y: 1, z: 0, w: 0}
   m_Materials:
-  - {fileID: 2100000, guid: 4e2218ba80b22084c86e7fca72400adc, type: 2}
+  - {fileID: 2100000, guid: 62b60df86de40c94b8e76ee384936beb, type: 2}
   m_SubsetIndices: 
   m_StaticBatchRoot: {fileID: 0}
   m_UseLightProbes: 0
@@ -60,7 +60,7 @@ MeshFilter:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 100000}
-  m_Mesh: {fileID: 4300000, guid: 1fe268b122a852d4daf206a386c029e1, type: 3}
+  m_Mesh: {fileID: 4300000, guid: d6d7c19e5fd3a5f46aebd8198ecb2825, type: 3}
 --- !u!65 &6500000
 BoxCollider:
   m_ObjectHideFlags: 1
@@ -71,8 +71,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 1.20000005, z: 1}
-  m_Center: {x: 0, y: .600000024, z: 0}
+  m_Size: {x: 1, y: 1.79999995, z: 1}
+  m_Center: {x: 0, y: .899999976, z: 0}
 --- !u!95 &9500000
 Animator:
   serializedVersion: 3
@@ -81,7 +81,7 @@ Animator:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 100000}
   m_Enabled: 1
-  m_Avatar: {fileID: 9000000, guid: 1fe268b122a852d4daf206a386c029e1, type: 3}
+  m_Avatar: {fileID: 9000000, guid: d6d7c19e5fd3a5f46aebd8198ecb2825, type: 3}
   m_Controller: {fileID: 0}
   m_CullingMode: 0
   m_UpdateMode: 0
@@ -115,13 +115,13 @@ MonoBehaviour:
     wood: 0
     food: 0
     currency: 0
-  buildTime: 0
+  buildTime: 5
   processTimeLeft: 0
   isUnderConstruction: 0
-  level: 1
+  level: 2
   upgradeTimeLeft: 0
   isUpgrading: 0
-  nextLevelPrefab: {fileID: 100000, guid: 84327ba4a25faac47bbc635a380002a7, type: 2}
+  nextLevelPrefab: {fileID: 100000, guid: aa699ee29a15d154c91f70db205fc4cc, type: 2}
 --- !u!208 &20800000
 NavMeshObstacle:
   m_ObjectHideFlags: 1
@@ -130,7 +130,7 @@ NavMeshObstacle:
   m_GameObject: {fileID: 100000}
   m_Enabled: 1
   m_Radius: .5
-  m_Height: 2.4000001
+  m_Height: 3.5999999
   m_MoveThreshold: 0
   m_Carve: 0
 --- !u!1001 &100100000

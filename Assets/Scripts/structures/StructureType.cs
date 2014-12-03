@@ -1,5 +1,5 @@
 ﻿
 public enum StructureType
 {
-    Hut, Storage, Sawmill, Field, Statue
+    Hut, Storage, Sawmill, Field, Statue, Outpost
 };

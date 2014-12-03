@@ -2770,6 +2770,8 @@ MonoBehaviour:
   - {fileID: 100000, guid: 8bdaa694d49cf7b4c9d0726f5c60dae2, type: 2}
   outpost:
   - {fileID: 100000, guid: 08f1e1d168573674ca6de576cb2fef77, type: 2}
+  - {fileID: 100000, guid: 84327ba4a25faac47bbc635a380002a7, type: 2}
+  - {fileID: 100000, guid: aa699ee29a15d154c91f70db205fc4cc, type: 2}
 --- !u!4 &1272204122
 Transform:
   m_ObjectHideFlags: 0
@@ -4470,9 +4472,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nodePrefab: {fileID: 100000, guid: eaf804db74e42a04b84eabe3913d6b70, type: 2}
-  gridLengthX: 6
-  gridLengthZ: 6
   nodeInterval: 5
+  maxHeight: 1
+  width: 2
+  length: 2
 --- !u!4 &2061348815
 Transform:
   m_ObjectHideFlags: 0

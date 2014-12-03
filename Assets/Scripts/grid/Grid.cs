@@ -12,15 +12,17 @@ public class Grid : Singleton<Grid> {
     [SerializeField]
     private GameObject nodePrefab;
 
-    //width & depth in nodes
-    [SerializeField]
-    private int gridLengthX;
-    [SerializeField]
-    private int gridLengthZ;
     [SerializeField]
     private int nodeInterval;
 
     private Dictionary<Vector3, Node> nodes;
+
+    [SerializeField]
+    private int maxHeight;
+    [SerializeField]
+    private int width;
+    [SerializeField]
+    private int length;
 
     private int borderXLower;
     private int borderXUpper;
@@ -37,18 +39,6 @@ public class Grid : Singleton<Grid> {
 
         nodes = new Dictionary<Vector3, Node>();
 
-        //calculate borders so that the center node is at the center of the grid
-        int gridCenterX = (int)transform.position.x;
-        int gridCenterZ = (int)transform.position.z;
-        borderXLower = gridCenterX - ((gridLengthX / 2) * nodeInterval);
-        borderXUpper = gridCenterX + ((gridLengthX / 2) * nodeInterval);
-        borderZLower = gridCenterZ - ((gridLengthZ / 2) * nodeInterval);
-        borderZUpper = gridCenterZ + ((gridLengthZ / 2) * nodeInterval);
-
-        //offset center node by 1 on both axes if node count is even
-        if (gridLengthX % 2 == 0) { borderXUpper -= 1 * nodeInterval; }
-        if (gridLengthZ % 2 == 0) { borderZUpper -= 1 * nodeInterval; }
-
         //define what can be built on what
         // key/value => structure/structures that can be built on it
         stackOrder.Add(StructureType.Hut, new List<StructureType> { StructureType.Hut, StructureType.Field });
@@ -56,6 +46,7 @@ public class Grid : Singleton<Grid> {
         stackOrder.Add(StructureType.Sawmill, new List<StructureType> { StructureType.Field });
         stackOrder.Add(StructureType.Field, new List<StructureType>());
         stackOrder.Add(StructureType.Statue, new List<StructureType>());
+        stackOrder.Add(StructureType.Outpost, new List<StructureType>());
     }
 
     private Node CreateNode(Vector3 pos) {
@@ -65,13 +56,51 @@ public class Grid : Singleton<Grid> {
         return node;
     }
 
+    public void LevelUp(int level) {
+        maxHeight = level;
+        int w = width + level - 1;
+        int l = length + level - 1;
+
+        if (level % 2 == 0) {  //expand south & east every other time
+            borderXUpper += nodeInterval;
+            borderZLower -= nodeInterval;
+
+            for (int i = 0; i < w; i++) {
+                Vector3 posZ = new Vector3(borderXLower + (i * nodeInterval), 0, borderZLower);
+                Node node = CreateNode(posZ);
+                nodes.Add(posZ, node);
+            }
+            for (int i = 1; i < l; i++) { // avoid creating corner twice by starting at l=1
+                Vector3 posX = new Vector3(borderXUpper, 0, borderZLower + (i * nodeInterval));
+                Node node = CreateNode(posX);
+                nodes.Add(posX, node);
+            }
+        }
+        else {  //expand north & west every other time
+            borderXLower -= nodeInterval;
+            borderZUpper += nodeInterval;
+
+            for (int i = 0; i < w; i++) {
+                Vector3 posZ = new Vector3(borderXLower + (i * nodeInterval), 0, borderZUpper);
+                Node node = CreateNode(posZ);
+                nodes.Add(posZ, node);
+            }
+            for (int i = 1; i < l; i++) { // avoid creating corner twice by starting at l=1
+                Vector3 posX = new Vector3(borderXLower, 0, borderZUpper - (i * nodeInterval));
+                Node node = CreateNode(posX);
+                nodes.Add(posX, node);
+            }
+        }
+    }
+
     //draws a highlight-square around nodes that are valid build positions for the specified structure type
     public void HighLightValidNodes(Node node) {
         Dictionary<Vector3, Node>.ValueCollection valueColl = nodes.Values;
         foreach (Node n in valueColl) {
             if (n.isOccupied) { continue; }
             if (n.lowerNode != null && !IsNodeCompatible(n.lowerNode, node.component)) { continue; }
-            if (n.IsInSameStack(node)) { Debug.Log("in same stack, don't highlight"); continue; } //don't highlight in same stack
+            if (n.IsInSameStack(node)) { continue; } //don't highlight in same stack
+            if (n.transform.position.y > (maxHeight - 1) * nodeInterval) { continue; } //hight restriction
             n.HighLight();
         }
     }
@@ -113,7 +142,7 @@ public class Grid : Singleton<Grid> {
         //round the position to nearest node position
         int nearestX = (int)Mathf.Round(targetPos.x / nodeInterval) * nodeInterval;
         int nearestZ = (int)Mathf.Round(targetPos.z / nodeInterval) * nodeInterval;
-        int y = 0; //only considering ground level positions here
+        int y = 0; //only consider ground level positions here
 
         //cehck if the position is outside grid boundaries and apply corrections
         if (nearestX < borderXLower) { nearestX = borderXLower; }
@@ -128,10 +157,13 @@ public class Grid : Singleton<Grid> {
         if (!nearestNode.isOccupied) { return nearestNode; }
 
         Node highestOccupiedNode = nearestNode.GetTopOfStack();
+        if (highestOccupiedNode.transform.position.y >= (maxHeight - 1) * nodeInterval) {//maxheight-1 because positions start at 0
+            return curNode;
+        }
         if (IsNodeCompatible(highestOccupiedNode, curNode.component)) {
             return highestOccupiedNode.upperNode;
         }
-        else { return curNode; }
+        return curNode;
     }
 
     //finds a random free node in the grid
@@ -140,14 +172,12 @@ public class Grid : Singleton<Grid> {
 
         //at first, search bottom layer only
         foreach (Node n in valueColl) {
-            if (n.transform.position.y == 0 && !n.isOccupied) {
-                return n;
-            }
+            if (n.transform.position.y == 0 && !n.isOccupied) { return n; }
         }
         //then search any layer
         foreach (Node n in valueColl) {
             if (n.lowerNode != null && !n.isOccupied && IsNodeCompatible(n.lowerNode, comp)) {
-                return n;
+                if (n.transform.position.y < (maxHeight * nodeInterval)) { return n; }
             }
         }
         return null;
@@ -238,13 +268,27 @@ public class Grid : Singleton<Grid> {
         }
     }
 
+    //calculate borders so that the center node is at the center of the grid
+    private void CalculateBorders() {
+        int gridCenterX = (int)transform.position.x;
+        int gridCenterZ = (int)transform.position.z;
+        borderXLower = gridCenterX - ((width / 2) * nodeInterval);
+        borderXUpper = gridCenterX + ((width / 2) * nodeInterval);
+        borderZLower = gridCenterZ - ((length / 2) * nodeInterval);
+        borderZUpper = gridCenterZ + ((length / 2) * nodeInterval);
+
+        //offset center node by 1 on both axes if node count is even
+        if (width % 2 == 0) { borderXUpper -= 1 * nodeInterval; }
+        if (length % 2 == 0) { borderZUpper -= 1 * nodeInterval; }
+    }
+
+    //initialize the grid by creating 1 layer of nodes
     private void FirstLaunch() {
-        //initialize the grid by creating 1 layer of nodes
+        CalculateBorders();
         for (int i = borderXLower; i <= borderXUpper; i += nodeInterval) {
             for (int j = borderZLower; j <= borderZUpper; j += nodeInterval) {
                 Vector3 pos = new Vector3(i, 0, j);
                 Node node = CreateNode(pos);
-                node.UnHighLight();
                 nodes.Add(pos, node);
             }
         }
@@ -270,6 +314,12 @@ public class Grid : Singleton<Grid> {
 
     private void SaveState(SaveLoad.GameState gamestate) {
         GridState myState = new GridState();
+        myState.maxHeight = maxHeight;
+        myState.borderXLower = borderXLower;
+        myState.borderXUpper = borderXUpper;
+        myState.borderZLower = borderZLower;
+        myState.borderZUpper = borderZUpper;
+
         Dictionary<Vector3, Node>.KeyCollection keyColl = nodes.Keys;
         foreach (Vector3 pos in keyColl) {
             myState.nodes.Add(new GridState.NodeRepresentation(pos));
@@ -278,6 +328,12 @@ public class Grid : Singleton<Grid> {
     }
 
     private void LoadState(SaveLoad.GameState gamestate) {
+        maxHeight = gamestate.gridState.maxHeight;
+        borderXLower = gamestate.gridState.borderXLower;
+        borderXUpper = gamestate.gridState.borderXUpper;
+        borderZLower = gamestate.gridState.borderZLower;
+        borderZUpper = gamestate.gridState.borderZUpper;
+
         foreach (GridState.NodeRepresentation n in gamestate.gridState.nodes) {
             Node node = CreateNode(n.GetPos());
             nodes.Add(n.GetPos(), node);
@@ -287,6 +343,11 @@ public class Grid : Singleton<Grid> {
 
     [System.Serializable]
     public class GridState {
+        public int maxHeight;
+        public int borderXLower;
+        public int borderXUpper;
+        public int borderZLower;
+        public int borderZUpper;
         public List<NodeRepresentation> nodes;
         public GridState() {
             nodes = new List<NodeRepresentation>();

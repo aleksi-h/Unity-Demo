@@ -68,6 +68,10 @@ public class BuildingManager : Singleton<BuildingManager> {
         GameObject obj = (GameObject)Instantiate(statue[0], new Vector3(0, 0, 0), Quaternion.identity);
         obj.GetComponent<GridComponent>().AttachToGrid();
         obj.GetComponent<BaseStructure>().Activate();
+
+        obj = (GameObject)Instantiate(outpost[0], new Vector3(0, 0, 0), Quaternion.identity);
+        obj.GetComponent<GridComponent>().AttachToGrid();
+        obj.GetComponent<BaseStructure>().Activate();
     }
 
 
@@ -118,6 +122,9 @@ public class BuildingManager : Singleton<BuildingManager> {
                     break;
                 case StructureType.Statue:
                     obj = (GameObject)Instantiate(statue[s.level - 1], s.GetPos(), Quaternion.identity);
+                    break;
+                case StructureType.Outpost:
+                    obj = (GameObject)Instantiate(outpost[s.level - 1], s.GetPos(), Quaternion.identity);
                     break;
                 default:
                     break;
