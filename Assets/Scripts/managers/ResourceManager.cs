@@ -15,6 +15,7 @@ public class ResourceManager : Singleton<ResourceManager> {
     private Resource resourceCapacity;
     private List<GameObject> freeWorkers;
     private RMState state;
+    private Transform myTransform;
 
     public override void Awake() {
         base.Awake();
@@ -22,6 +23,7 @@ public class ResourceManager : Singleton<ResourceManager> {
         SaveLoad.LoadState += LoadState;
         SaveLoad.InitGame += FirstLaunch;
 
+        myTransform = transform;
         resourceCapacity = new Resource(0, 0, 0);
         resourceCount = new Resource(0, 0, 0);
         freeWorkers = new List<GameObject>(initialWorkerCount);
@@ -34,7 +36,8 @@ public class ResourceManager : Singleton<ResourceManager> {
 
     //create a worker directly into a building. employing buildings call this method when the game loads from savefile
     public GameObject CreateWorker(GameObject requestingStructure) {
-       GameObject newWorker = (GameObject)Instantiate(worker, requestingStructure.transform.position, Quaternion.identity);
+        GameObject newWorker = (GameObject)Instantiate(worker, requestingStructure.transform.position, Quaternion.identity);
+        newWorker.transform.parent = myTransform;
         newWorker.GetComponent<Worker>().AssignToStructure(requestingStructure);
         return newWorker;
     }
@@ -70,7 +73,9 @@ public class ResourceManager : Singleton<ResourceManager> {
 
     public void AddWorkers(int amount) {
         for (int i = 0; i < amount; i++) {
-            freeWorkers.Add((GameObject)Instantiate(worker, new Vector3(10, 0, 0), Quaternion.identity));
+            GameObject newWorker = (GameObject)Instantiate(worker, new Vector3(10, 0, 0), Quaternion.identity);
+            newWorker.transform.parent = myTransform;
+            freeWorkers.Add(newWorker);
         }
         updateResourceTexts();
     }
@@ -107,7 +112,9 @@ public class ResourceManager : Singleton<ResourceManager> {
         resourceCapacity = initialResourceCapacity;
         resourceCount = initialResourceCount;
         for (int i = 0; i < initialWorkerCount; i++) {
-            freeWorkers.Add((GameObject)Instantiate(worker, new Vector3(10, 0, 0), Quaternion.identity));
+            GameObject newWorker = (GameObject)Instantiate(worker, new Vector3(10, 0, 0), Quaternion.identity);
+            newWorker.transform.parent = myTransform;
+            freeWorkers.Add(newWorker);
         }
     }
 
@@ -125,7 +132,9 @@ public class ResourceManager : Singleton<ResourceManager> {
         resourceCount = gamestate.resourceManagerState.resourceCount;
 
         for (int i = 0; i < gamestate.resourceManagerState.freeWorkerCount; i++) {
-            freeWorkers.Add((GameObject)Instantiate(worker, new Vector3(10, 0, 0), Quaternion.identity));
+            GameObject newWorker = (GameObject)Instantiate(worker, new Vector3(10, 0, 0), Quaternion.identity);
+            newWorker.transform.parent = myTransform;
+            freeWorkers.Add(newWorker);
         }
         updateResourceTexts();
     }

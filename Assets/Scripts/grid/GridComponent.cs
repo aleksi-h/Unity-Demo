@@ -5,22 +5,22 @@ public class GridComponent : MonoBehaviour {
     public StructureType type;
     public Node node;
 
-    private MeshRenderer renderer;
+    private MeshRenderer meshRenderer;
     private Material defaultMat;
     private Material highlightMat;
 
     public void Awake() {
-        renderer = GetComponent<MeshRenderer>();
+        meshRenderer = GetComponent<MeshRenderer>();
         defaultMat = (Material)Resources.Load("testiatlas", typeof(Material));
         highlightMat = (Material)Resources.Load("StructureHighlight", typeof(Material));
     }
 
     public void HighLight() {
-        if (renderer.material != highlightMat) { renderer.material = highlightMat; }
+        if (meshRenderer.material != highlightMat) { meshRenderer.material = highlightMat; }
     }
 
     public void UnHighLight() {
-        if (renderer.material != defaultMat) { renderer.material = defaultMat; }
+        if (meshRenderer.material != defaultMat) { meshRenderer.material = defaultMat; }
     }
 
     private LayerMask groundLayerMask = 1 << 11;
@@ -43,6 +43,7 @@ public class GridComponent : MonoBehaviour {
         GUIManager.Instance.ShowPlacementGUI(gameObject);
         Grid.Instance.HighLightValidNodes(node);
         Grid.Instance.HighlightStack(node);
+        AudioManager.Instance.PlayOnce(AudioManager.Instance.buildingPickedUp);
     }
 
     public void CancelMove() {
@@ -62,6 +63,7 @@ public class GridComponent : MonoBehaviour {
         registeredToTapEvent = false;
         Grid.Instance.UnHighlightNodes();
         Grid.Instance.UnHighlightStack(node);
+        AudioManager.Instance.PlayOnce(AudioManager.Instance.buildingPlanted);
     }
 
     public void AttachToGrid() {

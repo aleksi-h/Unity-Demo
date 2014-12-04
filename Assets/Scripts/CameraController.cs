@@ -27,6 +27,7 @@ public class CameraController : MonoBehaviour {
         camPivotPoint = new GameObject("camtarget");
         cameraPoint = cameraPointSimulator.transform;
         myTransform = transform;
+        cameraPoint.parent = myTransform;
 
         //calculate cameraPointDistance: A = B*sin(a) / sin(b) (a & b = angles, A & B = sides)
         float cameraAngle = 90 - myTransform.eulerAngles.x;

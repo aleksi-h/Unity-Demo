@@ -43,6 +43,7 @@ public abstract class UpgradableStructure : BaseStructure, IUpgradeable {
         GUIManager.Instance.StructureUpgraded(gameObject, upgraded);
 
         isUpgrading = false;
+        AudioManager.Instance.PlayOnce(AudioManager.Instance.buildingUpgraded);
         FinishUpgrade(upgraded);
     }
 

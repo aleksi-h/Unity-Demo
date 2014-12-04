@@ -103,7 +103,11 @@ MonoBehaviour:
     food: 100
     currency: 0
   buildTime: 5
+  processTimeLeft: 0
+  isUnderConstruction: 0
   level: 1
+  upgradeTimeLeft: 0
+  isUpgrading: 0
   nextLevelPrefab: {fileID: 100000, guid: af01058d48d70744b8802692d60940a2, type: 2}
   productionInterval: 1
   baseProductionRate:

@@ -12,7 +12,8 @@ public class BuildingManager : Singleton<BuildingManager> {
     public GameObject[] statue;
     public GameObject[] outpost;
 
-    void Awake() {
+    public override void Awake() {
+        base.Awake();
         SaveLoad.SaveState += SaveState;
         SaveLoad.LoadState += LoadState;
         SaveLoad.InitGame += FirstLaunch;
@@ -33,6 +34,7 @@ public class BuildingManager : Singleton<BuildingManager> {
         ResourceManager.Instance.PayResources(cost);
         Vector3 pos = new Vector3(0, 0, 0);
         GameObject newStructure = (GameObject)Instantiate(prefab, pos, Quaternion.identity);
+        newStructure.transform.parent = transform;
         newStructure.GetComponent<BaseStructure>().Build();
     }
 
@@ -66,10 +68,12 @@ public class BuildingManager : Singleton<BuildingManager> {
 
     private void FirstLaunch() {
         GameObject obj = (GameObject)Instantiate(statue[0], new Vector3(0, 0, 0), Quaternion.identity);
+        obj.transform.parent = transform;
         obj.GetComponent<GridComponent>().AttachToGrid();
         obj.GetComponent<BaseStructure>().Activate();
 
         obj = (GameObject)Instantiate(outpost[0], new Vector3(0, 0, 0), Quaternion.identity);
+        obj.transform.parent = transform;
         obj.GetComponent<GridComponent>().AttachToGrid();
         obj.GetComponent<BaseStructure>().Activate();
     }
@@ -130,6 +134,7 @@ public class BuildingManager : Singleton<BuildingManager> {
                     break;
             }
             if (obj != null) {
+                obj.transform.parent = transform;
                 obj.GetComponent<GridComponent>().ReAttachToGrid();
                 if (obj.ImplementsInterface<IEmployer>()) { obj.GetInterface<IEmployer>().LoadWorkers(s.workerCount); }
 

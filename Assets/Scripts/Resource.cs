@@ -45,7 +45,7 @@ public class Resource {
     }
     #endregion
 
-    public string ToString() {
+    new public string ToString() {
         return "wood: " + wood + " food: " + food + " currency: " + currency;
     }
 }

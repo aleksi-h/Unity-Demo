@@ -299,6 +299,7 @@ public class GUIManager : Singleton<GUIManager> {
             if (!idle) { HideAllGUIElements(); }
             selectedStructure = hit.collider.gameObject;
             ShowContextMenu();
+            AudioManager.Instance.PlayOnce(AudioManager.Instance.buildingSelected);
             idle = false;
         }
         else { ShowDefaultMenu(); }
