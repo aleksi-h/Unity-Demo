@@ -43,7 +43,7 @@ public class CameraController : MonoBehaviour {
     }
 
     void Update() {
-        camPosDisplay.text = "Cam Pos: " + myTransform.position + " Cam rot: " + myTransform.eulerAngles;
+        //camPosDisplay.text = "Cam Pos: " + myTransform.position + " Cam rot: " + myTransform.eulerAngles;
     }
 
     private void Pan(Vector2 deltaPos) {
@@ -67,17 +67,9 @@ public class CameraController : MonoBehaviour {
     private LayerMask groundLayerMask = 1 << 11;
     GameObject camPivotPoint;
     private void Rotate(float amount) {
-        Debug.Log("Rotate " + amount);
-        //float originalX = myTransform.eulerAngles.x;
-        //float originalZ = myTransform.eulerAngles.z;
-        //myTransform.Rotate(new Vector3(-originalX, 0, -originalZ)); //reset X & Y rotations to 0
-        //myTransform.Rotate(new Vector3(0, amount * rotateSpeed, 0)); //apply rotation to Y-axis
-        //myTransform.Rotate(new Vector3(originalX, 0, originalZ)); //reapply X and Z rotations
-
-        Vector3 hitPos = new Vector3();
         RaycastHit hit;
         if (Physics.Raycast(myTransform.position, myTransform.forward, out hit, 1000, groundLayerMask)) {
-            hitPos = hit.point;
+            Vector3 hitPos = hit.point;
             camPivotPoint.transform.position = hitPos;
             myTransform.parent = camPivotPoint.transform;
             camPivotPoint.transform.Rotate(0, amount * rotateSpeed, 0);

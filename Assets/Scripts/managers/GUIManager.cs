@@ -74,6 +74,7 @@ public class GUIManager : Singleton<GUIManager> {
     public GameObject settingsButton;
     public GameObject purgeButton;
     private void OnClickSettings(GameObject button) {
+        HideAllGUIElements();
         NGUITools.SetActive(settingMenu, true);
     }
 
@@ -281,8 +282,8 @@ public class GUIManager : Singleton<GUIManager> {
         if (selectedStructure != null) { selectedStructure.GetComponent<GridComponent>().UnHighLight(); }
 
         //hide buttons
-        NGUITools.SetActive(buildButton, false);
-        NGUITools.SetActive(settingsButton, false);
+        //NGUITools.SetActive(buildButton, false);
+        //NGUITools.SetActive(settingsButton, false);
 
         //hide menus
         NGUITools.SetActive(buyMenu, false);
