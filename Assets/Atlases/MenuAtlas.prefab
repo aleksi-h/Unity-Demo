@@ -350,6 +350,24 @@ MonoBehaviour:
   - name: icon_settings_menu
     outer:
       serializedVersion: 2
+      x: 325
+      y: 127
+      width: 64
+      height: 64
+    inner:
+      serializedVersion: 2
+      x: 325
+      y: 127
+      width: 64
+      height: 64
+    rotated: 0
+    paddingLeft: 0
+    paddingRight: 0
+    paddingTop: 0
+    paddingBottom: 0
+  - name: button_return
+    outer:
+      serializedVersion: 2
       x: 0
       y: 192
       width: 64

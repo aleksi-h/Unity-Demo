@@ -24,8 +24,8 @@ public class ResourceManager : Singleton<ResourceManager> {
         SaveLoad.InitGame += FirstLaunch;
 
         myTransform = transform;
-        resourceCapacity = new Resource(0, 0, 0);
-        resourceCount = new Resource(0, 0, 0);
+        resourceCapacity = new Resource(0, 0, 0, 0);
+        resourceCount = new Resource(0, 0, 0, 0);
         freeWorkers = new List<GameObject>(initialWorkerCount);
         updateResourceTexts();
     }

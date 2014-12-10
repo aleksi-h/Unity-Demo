@@ -29,8 +29,9 @@ public class GUIManager : Singleton<GUIManager> {
         UIEventListener.Get(fieldButton).onClick += showBuyMenu;
         UIEventListener.Get(storageButton).onClick += showBuyMenu;
         UIEventListener.Get(hutButton).onClick += showBuyMenu;
-        UIEventListener.Get(buyButton1).onClick += onClickBuy1;
-        UIEventListener.Get(buyButton2).onClick += onClickBuy2;
+        UIEventListener.Get(returnButton).onClick += OnClickReturn;
+        UIEventListener.Get(buyButton1).onClick += OnClickBuy1;
+        UIEventListener.Get(buyButton2).onClick += OnClickBuy2;
         UIEventListener.Get(settingsButton).onClick += OnClickSettings;
         UIEventListener.Get(purgeButton).onClick += OnClickPurge;
     }
@@ -38,12 +39,14 @@ public class GUIManager : Singleton<GUIManager> {
     //RESOURCE TEXTS
     public GameObject woodLabel;
     public GameObject foodLabel;
+    public GameObject stoneLabel;
     public GameObject workerLabel;
     public GameObject currencyLabel;
 
     public void RefreshResourceTexts(Resource resources, int workerCount) {
         woodLabel.GetComponent<UILabel>().text = "Wood " + resources.wood;
         foodLabel.GetComponent<UILabel>().text = "Food " + resources.food;
+        stoneLabel.GetComponent<UILabel>().text = "Stone " + resources.stone;
         currencyLabel.GetComponent<UILabel>().text = "Currency " + resources.currency;
         workerLabel.GetComponent<UILabel>().text = "Workers " + workerCount;
     }
@@ -87,6 +90,7 @@ public class GUIManager : Singleton<GUIManager> {
     //BUY MENU
     public GameObject buyMenu;
     public GameObject structureIcon;
+    public GameObject returnButton;
     public GameObject buyButton1;
     public GameObject priceLabel1;
     public GameObject buyButton2;
@@ -131,12 +135,18 @@ public class GUIManager : Singleton<GUIManager> {
         }
     }
 
-    private void onClickBuy1(GameObject button) {
+    private void OnClickReturn(GameObject button) {
+        ShowBuildMenu(button);
+    }
+
+    private void OnClickBuy1(GameObject button) {
+        ShowDefaultMenu();
         Resource cost = structureToBuild.GetComponent<BaseStructure>().cost;
         BuildingManager.instance.BuildStructure(structureToBuild, cost);
     }
 
-    private void onClickBuy2(GameObject button) {
+    private void OnClickBuy2(GameObject button) {
+        ShowDefaultMenu();
         Resource cost = structureToBuild.GetComponent<BaseStructure>().cost;
         Resource costInCurrency = Resource.ConvertResourcesToCurrency(cost);
         BuildingManager.instance.BuildStructure(structureToBuild, costInCurrency);

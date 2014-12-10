@@ -100,13 +100,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cost:
     wood: 500
-    food: 0
+    food: 500
+    stone: 500
     currency: 0
   buildTime: 5
+  processTimeLeft: 0
+  isUnderConstruction: 0
   level: 1
   capacity:
-    wood: 500
-    food: 500
+    wood: 5000
+    food: 5000
+    stone: 5000
     currency: 0
 --- !u!114 &11400002
 MonoBehaviour:

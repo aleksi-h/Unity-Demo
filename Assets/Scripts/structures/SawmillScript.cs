@@ -73,7 +73,8 @@ public class SawmillScript : UpgradableStructure, IProducer, IEmployer, IRemovab
         int boost = workers.Count - minWorkerCount;
         if (boost >= 0) {
             productionBoost = new Resource(boost * productionBoostPerWorker.wood,
-                boost * productionBoostPerWorker.food, boost * productionBoostPerWorker.currency);
+                boost * productionBoostPerWorker.food, boost * productionBoostPerWorker.stone, 
+                boost * productionBoostPerWorker.currency);
         }
     }
 
@@ -82,7 +83,8 @@ public class SawmillScript : UpgradableStructure, IProducer, IEmployer, IRemovab
         int boost = workers.Count - minWorkerCount;
         if (boost >= 0) {
             productionBoost = new Resource(boost * productionBoostPerWorker.wood,
-                boost * productionBoostPerWorker.food, boost * productionBoostPerWorker.currency);
+                boost * productionBoostPerWorker.food, boost * productionBoostPerWorker.stone,
+                boost * productionBoostPerWorker.currency);
         }
     }
 
@@ -99,7 +101,8 @@ public class SawmillScript : UpgradableStructure, IProducer, IEmployer, IRemovab
         int boost = workers.Count - minWorkerCount;
         if (boost >= 0) {
             productionBoost = new Resource(boost * productionBoostPerWorker.wood,
-                boost * productionBoostPerWorker.food, boost * productionBoostPerWorker.currency);
+                boost * productionBoostPerWorker.food, boost * productionBoostPerWorker.stone,
+                boost * productionBoostPerWorker.currency);
         }
     }
     #endregion
@@ -109,7 +112,7 @@ public class SawmillScript : UpgradableStructure, IProducer, IEmployer, IRemovab
         maxHealth = 1000;
         health = maxHealth;
         workers = new List<GameObject>(minWorkerCount);
-        productionBoost = new Resource(0, 0, 0);
+        productionBoost = new Resource(0, 0, 0, 0);
     }
 
     protected override void Start() {
