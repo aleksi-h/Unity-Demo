@@ -21,12 +21,12 @@ public abstract class UpgradableStructure : BaseStructure, IUpgradeable {
     public virtual void Upgrade() {
         structureActive = false;
         float duration = nextLevelPrefab.GetComponent<BaseStructure>().buildTime;
-        StartDelayedOperation(UpgradeProcess, duration);
+        StartCoroutine(StartDelayedOperation(UpgradeProcess, duration));
         isUpgrading = true;
     }
 
     public virtual void ContinueUpgrade(float timeLeft) {
-        StartDelayedOperation(UpgradeProcess, timeLeft);
+        StartCoroutine(StartDelayedOperation(UpgradeProcess, timeLeft));
         isUpgrading = true;
     }
     #endregion

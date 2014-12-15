@@ -57,6 +57,7 @@ public class SaveLoad : MonoBehaviour {
 
     private void Load() {
         if (!File.Exists(Application.persistentDataPath + saveFile)) {
+            AudioManager.Instance.PlayOnce(AudioManager.Instance.buildingUpgraded);
             if (InitGameEarly != null) { InitGameEarly(); }
             if (InitGame != null) { InitGame(); }
             return;

@@ -201,7 +201,7 @@ public class GUIManager : Singleton<GUIManager> {
 
         if (selectedStructure.ImplementsInterface<IUpgradeable>()) {
             upgradeButton = NGUITools.AddChild(contextMenuGrid, upgradeButtonPrefab);
-            UIEventListener.Get(upgradeButton).onClick += OnClickUpgrade;//TODO ref needs to be removed somewhere?
+            UIEventListener.Get(upgradeButton).onClick += OnClickUpgrade;
         }
 
         if (selectedStructure.ImplementsInterface<IEmployer>()) {

@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-//TODO staattisista eventeistä non-static?
 public class InputManager : MonoBehaviour {
     public GUIText DebugInfo;
     public Camera NGUICamera;
@@ -9,19 +8,19 @@ public class InputManager : MonoBehaviour {
     public float longTapTreshold; //minimum tap length to be recognized as LongTap
 
     public delegate void TapEvent(Vector3 tapPos);
-    public static event TapEvent OnTap;
+    static public event TapEvent OnTap;
 
     public delegate void LongTapEvent(Vector3 tapPos);
-    public static event LongTapEvent OnLongTap;
+    static public event LongTapEvent OnLongTap;
 
     public delegate void DragEvent(Vector2 deltaPos);
-    public static event DragEvent OnDrag;
+    static public event DragEvent OnDrag;
 
     public delegate void RotateEvent(float amount);
-    public static event RotateEvent OnRotate;
+    static public event RotateEvent OnRotate;
 
     public delegate void PinchEvent(float amount);
-    public static event PinchEvent OnPinch;
+    static public event PinchEvent OnPinch;
 
     private LayerMask uiLayerMask = 1 << 5;
     private State state;
@@ -39,7 +38,7 @@ public class InputManager : MonoBehaviour {
             touchesClear = true;
             acceptNewGesture = true;
         }
-        if (state == State.IDLE && acceptNewGesture) { UpdateState(); } //IDLE ?
+        if (state == State.IDLE && acceptNewGesture) { UpdateState(); }
 
         switch (state) {
             case State.PINCHING:

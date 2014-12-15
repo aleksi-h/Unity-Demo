@@ -48,7 +48,7 @@ public abstract class BaseStructure : MonoBehaviour, IDamageable {
 
     public virtual void Build() {
         gridComponent.AttachToGrid();
-        StartDelayedOperation(BuildProcess, buildTime);
+        StartCoroutine(StartDelayedOperation(BuildProcess, buildTime));
         isUnderConstruction = true;
         gridComponent.Move();
         isNew = true;
@@ -56,30 +56,22 @@ public abstract class BaseStructure : MonoBehaviour, IDamageable {
 
     public void ContinueBuild(float timeLeft) {
         processTimeLeft = timeLeft;
-        StartDelayedOperation(BuildProcess, processTimeLeft);
+        StartCoroutine(StartDelayedOperation(BuildProcess, processTimeLeft));
         isUnderConstruction = true;
     }
 
     protected GameObject timerDisplay;
-    protected virtual void StartDelayedOperation(DelayedOperation process, float duration) {
-        delayedOperation = process;
+    protected virtual IEnumerator StartDelayedOperation(DelayedOperation operation, float duration) {
+        delayedOperation = operation;
         processTimeLeft = duration;
         timerDisplay = GUIManager.Instance.GetTimerDisplay(gameObject);
-        updateDisplayText();
-        InvokeRepeating("UpdateDelayedOperation", 1.0f, processUpdateInterval);
-    }
-
-    protected virtual void UpdateDelayedOperation() {
-        processTimeLeft -= processUpdateInterval;
-        if (processTimeLeft <= 0) {
-            CancelInvoke("UpdateDelayedOperation");
-            delayedOperation();
+        while (processTimeLeft > 0) {
+            timerDisplay.guiText.text = "Ready in " + processTimeLeft;
+            processTimeLeft -= processUpdateInterval;
+            yield return new WaitForSeconds(processUpdateInterval);
         }
-        else { updateDisplayText(); }
-    }
-
-    protected void updateDisplayText() {
-        timerDisplay.guiText.text = "Ready in " + processTimeLeft;
+        delayedOperation();
+        yield return null;
     }
 
     private void BuildProcess() {
