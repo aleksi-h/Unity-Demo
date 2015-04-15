@@ -124,8 +124,8 @@ public class SawmillScript : UpgradableStructure, IProducer, IEmployer, IRemovab
         CancelInvoke("ProduceResources");
     }
 
-    public override void Build() {
-        base.Build();
+    public override void Build(Grid grid) {
+        base.Build(grid);
         for (int i = 0; i < minWorkerCount; i++) {
             AddWorker();
         }

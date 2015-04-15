@@ -20,8 +20,8 @@ public class HutScript : BaseStructure {
         if (isNew) { ResourceManager.Instance.AddWorkers(workerCapacity); }
     }
 
-    public override void Build() {
-        base.Build();
+    public override void Build(Grid grid) {
+        base.Build(grid);
     }
 
     public override void Damage(int amount) {

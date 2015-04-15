@@ -8,12 +8,14 @@ using System.Runtime.Serialization;
  * The Grid is implemented using a dictionary, as a compromise between memory consumption and speed.
  * (Node[ , , ] would be faster, but it would contain loads of empty objects)
  * */
-public class Grid : Singleton<Grid> {
+public class Grid : MonoBehaviour {
     [SerializeField]
     private GameObject nodePrefab;
 
     [SerializeField]
     private int nodeInterval;
+    [SerializeField]
+    private int nodeHeight;
 
     private Dictionary<Vector3, Node> nodes;
 
@@ -31,8 +33,7 @@ public class Grid : Singleton<Grid> {
 
     private Dictionary<StructureType, List<StructureType>> stackOrder = new Dictionary<StructureType, List<StructureType>>();
 
-    public override void Awake() {
-        base.Awake();
+    public void Awake() {
         SaveLoad.SaveState += SaveState;
         SaveLoad.LoadStateEarly += LoadState;
         SaveLoad.InitGameEarly += FirstLaunch;
@@ -43,7 +44,7 @@ public class Grid : Singleton<Grid> {
         // key/value => structure/structures that can be built on it
         stackOrder.Add(StructureType.Hut, new List<StructureType> { StructureType.Hut, StructureType.Field });
         stackOrder.Add(StructureType.Storage, new List<StructureType> { StructureType.Hut, StructureType.Field });
-        stackOrder.Add(StructureType.Sawmill, new List<StructureType> { StructureType.Field });
+        stackOrder.Add(StructureType.Sawmill, new List<StructureType>());
         stackOrder.Add(StructureType.Field, new List<StructureType>());
         stackOrder.Add(StructureType.Statue, new List<StructureType>());
         stackOrder.Add(StructureType.Outpost, new List<StructureType>());
@@ -97,10 +98,10 @@ public class Grid : Singleton<Grid> {
     public void HighLightValidNodes(Node node) {
         Dictionary<Vector3, Node>.ValueCollection valueColl = nodes.Values;
         foreach (Node n in valueColl) {
-            if (n.isOccupied) { continue; }
+            if (n.hasComponent) { continue; }
             if (n.lowerNode != null && !IsNodeCompatible(n.lowerNode, node.component)) { continue; }
             if (n.IsInSameStack(node)) { continue; } //don't highlight in same stack
-            if (n.transform.position.y > (maxHeight - 1) * nodeInterval) { continue; } //hight restriction
+            if (n.transform.position.y > (maxHeight - 1) * nodeHeight) { continue; } //height restriction
             n.HighLight();
         }
     }
@@ -112,19 +113,19 @@ public class Grid : Singleton<Grid> {
     }
 
     public void HighlightStack(Node node) {
-        while (node.isOccupied) {
+        while (node.hasComponent) {
             node.component.HighLight();
             node = node.upperNode;
         }
     }
     public void UnHighlightStack(Node node) {
-        while (node.isOccupied) {
+        while (node.hasComponent) {
             node.component.UnHighLight();
             node = node.upperNode;
         }
     }
 
-    public bool HasRoom(GridComponent comp) {
+    public bool HasRoomForComponent(GridComponent comp) {
         if (FindFreeNode(comp) != null) { return true; }
         return false;
     }
@@ -154,10 +155,10 @@ public class Grid : Singleton<Grid> {
         Node nearestNode = getNodeByPosition(nearestPosition);
         if (nearestNode == null) { return curNode; }
         if (nearestNode.IsInSameStack(curNode)) { return curNode; }
-        if (!nearestNode.isOccupied) { return nearestNode; }
+        if (!nearestNode.hasComponent) { return nearestNode; }
 
         Node highestOccupiedNode = nearestNode.GetTopOfStack();
-        if (highestOccupiedNode.transform.position.y >= (maxHeight - 1) * nodeInterval) {//maxheight-1 because positions start at 0
+        if (highestOccupiedNode.transform.position.y >= (maxHeight - 1) * nodeHeight) {//maxheight-1 because positions start at 0
             return curNode;
         }
         if (IsNodeCompatible(highestOccupiedNode, curNode.component)) {
@@ -172,12 +173,12 @@ public class Grid : Singleton<Grid> {
 
         //at first, search bottom layer only
         foreach (Node n in valueColl) {
-            if (n.transform.position.y == 0 && !n.isOccupied) { return n; }
+            if (n.transform.position.y == 0 && !n.hasComponent) { return n; }
         }
         //then search any layer
         foreach (Node n in valueColl) {
-            if (n.lowerNode != null && !n.isOccupied && IsNodeCompatible(n.lowerNode, comp)) {
-                if (n.transform.position.y < (maxHeight * nodeInterval)) { return n; }
+            if (n.lowerNode != null && !n.hasComponent && IsNodeCompatible(n.lowerNode, comp)) {
+                if (n.transform.position.y < (maxHeight * nodeHeight)) { return n; }
             }
         }
         return null;
@@ -198,7 +199,7 @@ public class Grid : Singleton<Grid> {
 
         //add a free node on top of the building
         Node newNode = CreateNode(node.transform.position);
-        newNode.MoveUp(nodeInterval);
+        newNode.MoveUp(nodeHeight);
         newNode.lowerNode = node;
         node.upperNode = newNode;
         nodes.Add(newNode.transform.position, newNode);
@@ -211,7 +212,7 @@ public class Grid : Singleton<Grid> {
     }
 
     public void MoveStack(Node rootNode, Vector3 targetPos) {
-        if (rootNode != null && rootNode.isOccupied) {
+        if (rootNode != null && rootNode.hasComponent) {
             Node targetNode = getNodeByPosition(targetPos);
             Vector3 rootOriginalPos = rootNode.transform.position;
 
@@ -235,11 +236,11 @@ public class Grid : Singleton<Grid> {
             //move the rest of the stack
             int stackHeight = 1;
             Node nextUp = rootNode;
-            while (nextUp.isOccupied) {
+            while (nextUp.hasComponent) {
                 nextUp = nextUp.upperNode;
                 nodes.Remove(nextUp.transform.position);
                 nextUp.MoveToNewPos(rootNode.transform.position);
-                nextUp.MoveUp(nodeInterval * stackHeight);
+                nextUp.MoveUp(nodeHeight * stackHeight);
                 nodes.Add(nextUp.transform.position, nextUp);
                 stackHeight++;
             }
@@ -299,11 +300,11 @@ public class Grid : Singleton<Grid> {
         Dictionary<Vector3, Node>.ValueCollection valueColl = nodes.Values;
         foreach (Node node in valueColl) {
             if (node.upperNode == null) {
-                Vector3 upperPos = new Vector3(node.transform.position.x, node.transform.position.y + nodeInterval, node.transform.position.z);
+                Vector3 upperPos = new Vector3(node.transform.position.x, node.transform.position.y + nodeHeight, node.transform.position.z);
                 node.setUpperNode(getNodeByPosition(upperPos));
             }
             if (node.lowerNode == null) {
-                Vector3 lowerPos = new Vector3(node.transform.position.x, node.transform.position.y - nodeInterval, node.transform.position.z);
+                Vector3 lowerPos = new Vector3(node.transform.position.x, node.transform.position.y - nodeHeight, node.transform.position.z);
                 node.setLowerNode(getNodeByPosition(lowerPos));
             }
         }

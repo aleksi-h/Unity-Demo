@@ -13,8 +13,8 @@ GameObject:
   - 95: {fileID: 9500000}
   - 65: {fileID: 6500000}
   - 114: {fileID: 11400000}
-  - 114: {fileID: 11400002}
   - 208: {fileID: 20800000}
+  - 114: {fileID: 11400002}
   m_Layer: 10
   m_Name: StorageLvl1
   m_TagString: structure
@@ -60,7 +60,7 @@ MeshFilter:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 100000}
-  m_Mesh: {fileID: 4300002, guid: 2e3e2efb850d1d94f8ac43177d8b9a43, type: 3}
+  m_Mesh: {fileID: 4300000, guid: 2e3e2efb850d1d94f8ac43177d8b9a43, type: 3}
 --- !u!65 &6500000
 BoxCollider:
   m_ObjectHideFlags: 1
@@ -99,18 +99,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cost:
-    wood: 500
-    food: 500
-    stone: 500
+    wood: 300
+    food: 0
+    stone: 0
     currency: 0
   buildTime: 5
   processTimeLeft: 0
   isUnderConstruction: 0
   level: 1
   capacity:
-    wood: 5000
-    food: 5000
-    stone: 5000
+    wood: 3000
+    food: 3000
+    stone: 3000
     currency: 0
 --- !u!114 &11400002
 MonoBehaviour:
@@ -125,6 +125,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 1
   node: {fileID: 0}
+  defaultMat: {fileID: 2100000, guid: 7eda99ae50c982145a04ca5b44aaf23c, type: 2}
+  highlightMat: {fileID: 2100000, guid: e8c419584cac59e47b37c3cc24bd6399, type: 2}
 --- !u!208 &20800000
 NavMeshObstacle:
   m_ObjectHideFlags: 1
@@ -133,7 +135,7 @@ NavMeshObstacle:
   m_GameObject: {fileID: 100000}
   m_Enabled: 1
   m_Radius: .5
-  m_Height: 2
+  m_Height: 1
   m_MoveThreshold: 0
   m_Carve: 1
 --- !u!1001 &100100000

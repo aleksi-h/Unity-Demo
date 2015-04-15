@@ -2,7 +2,7 @@
 using System.Collections;
 
 public class Node : MonoBehaviour {
-    public bool isOccupied;
+    public bool hasComponent;
     public GridComponent component;
     public Node upperNode;
     public Node lowerNode;
@@ -13,6 +13,8 @@ public class Node : MonoBehaviour {
         myTransform = transform;
         meshRenderer = GetComponent<MeshRenderer>();
         UnHighLight();
+
+        Object test = new Object();
     }
 
     public void Destroy() {
@@ -22,7 +24,7 @@ public class Node : MonoBehaviour {
 
     public Node GetTopOfStack() {
         Node node = this;
-        while (node.upperNode.isOccupied) {
+        while (node.upperNode.hasComponent) {
             node = node.upperNode;
         }
         return node;
@@ -56,13 +58,13 @@ public class Node : MonoBehaviour {
     public void AttachComponent(GridComponent component) {
         this.component = component;
         component.SetNode(this);
-        isOccupied = true;
+        hasComponent = true;
     }
 
     public void DetachComponent() {
         component.SetNode(null);
         component = null;
-        isOccupied = false;
+        hasComponent = false;
     }
 
     public void setLowerNode(Node node) {

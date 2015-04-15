@@ -101,14 +101,20 @@ MonoBehaviour:
   cost:
     wood: 1000
     food: 1000
+    stone: 0
     currency: 0
   buildTime: 5
+  processTimeLeft: 0
+  isUnderConstruction: 0
   level: 2
+  upgradeTimeLeft: 0
+  isUpgrading: 0
   nextLevelPrefab: {fileID: 0}
   productionInterval: 1
   baseProductionRate:
     wood: 0
     food: 50
+    stone: 0
     currency: 0
 --- !u!114 &11400002
 MonoBehaviour:
@@ -123,6 +129,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 3
   node: {fileID: 0}
+  defaultMat: {fileID: 2100000, guid: 7eda99ae50c982145a04ca5b44aaf23c, type: 2}
+  highlightMat: {fileID: 2100000, guid: e8c419584cac59e47b37c3cc24bd6399, type: 2}
 --- !u!208 &20800000
 NavMeshObstacle:
   m_ObjectHideFlags: 1

@@ -46,8 +46,8 @@ public abstract class BaseStructure : MonoBehaviour, IDamageable {
     protected virtual void OnDestroy() {
     }
 
-    public virtual void Build() {
-        gridComponent.AttachToGrid();
+    public virtual void Build(Grid grid) {
+        gridComponent.AttachToGrid(grid);
         StartCoroutine(StartDelayedOperation(BuildProcess, buildTime));
         isUnderConstruction = true;
         gridComponent.Move();

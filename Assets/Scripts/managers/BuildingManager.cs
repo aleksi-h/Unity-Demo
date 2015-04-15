@@ -5,6 +5,7 @@ using System.Runtime.Serialization;
 
 
 public class BuildingManager : Singleton<BuildingManager> {
+    public Grid grid;
     public GameObject[] hut;
     public GameObject[] storage;
     public GameObject[] sawmill;
@@ -20,7 +21,7 @@ public class BuildingManager : Singleton<BuildingManager> {
     }
 
     public bool CanBuildStructure(GameObject prefab, Resource cost) {
-        if (!prefab.GetComponent<GridComponent>().CanBeBuilt()) { return false; }
+        if (!prefab.GetComponent<GridComponent>().CanBeBuilt(grid)) { return false; }
         if (!ResourceManager.Instance.CanAffordResources(cost)) { return false; }
         if (prefab.ImplementsInterface<IEmployer>()) {
             int minWorkerCount = prefab.GetInterface<IEmployer>().MinWorkerCount;
@@ -35,7 +36,7 @@ public class BuildingManager : Singleton<BuildingManager> {
         Vector3 pos = new Vector3(0, 0, 0);
         GameObject newStructure = (GameObject)Instantiate(prefab, pos, Quaternion.identity);
         newStructure.transform.parent = transform;
-        newStructure.GetComponent<BaseStructure>().Build();
+        newStructure.GetComponent<BaseStructure>().Build(grid);
     }
 
 
@@ -69,12 +70,12 @@ public class BuildingManager : Singleton<BuildingManager> {
     private void FirstLaunch() {
         GameObject obj = (GameObject)Instantiate(statue[0], new Vector3(0, 0, 0), Quaternion.identity);
         obj.transform.parent = transform;
-        obj.GetComponent<GridComponent>().AttachToGrid();
+        obj.GetComponent<GridComponent>().AttachToGrid(grid);
         obj.GetComponent<BaseStructure>().Activate();
 
         obj = (GameObject)Instantiate(outpost[0], new Vector3(0, 0, 0), Quaternion.identity);
         obj.transform.parent = transform;
-        obj.GetComponent<GridComponent>().AttachToGrid();
+        obj.GetComponent<GridComponent>().AttachToGrid(grid);
         obj.GetComponent<BaseStructure>().Activate();
     }
 
@@ -135,7 +136,7 @@ public class BuildingManager : Singleton<BuildingManager> {
             }
             if (obj != null) {
                 obj.transform.parent = transform;
-                obj.GetComponent<GridComponent>().ReAttachToGrid();
+                obj.GetComponent<GridComponent>().ReAttachToGrid(grid);
                 if (obj.ImplementsInterface<IEmployer>()) { obj.GetInterface<IEmployer>().LoadWorkers(s.workerCount); }
 
                 if (s.isUnderConstruction) { obj.GetComponent<BaseStructure>().ContinueBuild(s.processTimeLeft); }

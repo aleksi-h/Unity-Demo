@@ -18,12 +18,12 @@ public class Outpost : UpgradableStructure {
         base.Upgrade();
     }
 
-    public override void Build() {
-        base.Build();
+    public override void Build(Grid grid) {
+        base.Build(grid);
     }
 
     protected override void FinishUpgrade(GameObject upgraded) {
-        Grid.Instance.LevelUp(level + 1);
+        gridComponent.grid.LevelUp(level + 1);
         Destroy(this.gameObject);
     }
 

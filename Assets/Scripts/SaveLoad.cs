@@ -7,9 +7,9 @@ using System.IO;
 public class SaveLoad : MonoBehaviour {
     private const string saveFile = "/savefile.save";
 
-    public delegate void FirstLaunch();
-    public static event FirstLaunch InitGameEarly;
-    public static event FirstLaunch InitGame;
+    public delegate void InitEvent();
+    public static event InitEvent InitGameEarly;
+    public static event InitEvent InitGame;
 
     public delegate void SaveEvent(GameState gamestate);
     public static event SaveEvent SaveState;

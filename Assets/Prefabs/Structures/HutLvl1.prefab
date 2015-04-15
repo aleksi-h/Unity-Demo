@@ -121,6 +121,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 0
   node: {fileID: 0}
+  grid: {fileID: 0}
+  defaultMat: {fileID: 2100000, guid: 7eda99ae50c982145a04ca5b44aaf23c, type: 2}
+  highlightMat: {fileID: 2100000, guid: e8c419584cac59e47b37c3cc24bd6399, type: 2}
 --- !u!208 &20800000
 NavMeshObstacle:
   m_ObjectHideFlags: 1
